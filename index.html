@@ -156,6 +156,24 @@
   .callout .eyebrow { color: var(--brass-soft); display: block; margin-bottom: 1rem; }
   @media (max-width: 760px) { .about-grid, .callout { grid-template-columns: 1fr; } .callout .ph { order: 2; } }
 
+  /* Farm */
+  .farm { padding-block: 0; }
+  .farm-band { background: var(--dark); color: var(--on-dark); border-radius: 4px; overflow: hidden; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .farm-text { padding: clamp(2rem, 4.5vw, 4rem); display: flex; flex-direction: column; gap: 1.2rem; }
+  .farm-text .eyebrow { color: var(--brass-soft); }
+  .farm-text h2 { font-size: clamp(1.9rem, 3.6vw, 2.8rem); color: var(--on-dark); }
+  .farm-text p { color: var(--on-dark-muted); max-width: 52ch; }
+  .farm-text p strong { color: var(--on-dark); font-weight: 400; }
+  .farm-list { display: grid; grid-template-columns: 1fr 1fr; gap: .7rem 1.5rem; list-style: none; margin: .4rem 0 0; padding: 0; }
+  .farm-list li { display: flex; align-items: center; gap: .7em; font-size: .92rem; color: var(--on-dark); }
+  .farm-list li::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--brass-soft); flex: none; }
+  .farm-text .btn { align-self: flex-start; margin-top: .6rem; border-color: rgba(255,255,255,.25); color: var(--on-dark); }
+  .farm-text .btn:hover { border-color: var(--brass-soft); color: var(--brass-soft); }
+  .farm-band .ph { border-radius: 0; min-height: 320px; }
+  .contact-shop { margin-top: 1.8rem; font-size: .95rem; color: var(--on-dark-muted); }
+  .contact-shop a { color: var(--brass-soft); text-decoration: none; border-bottom: 1px solid currentColor; }
+  @media (max-width: 760px) { .farm-band { grid-template-columns: 1fr; } .farm-band .ph { min-height: 240px; order: -1; } .farm-list { grid-template-columns: 1fr; } }
+
   /* Vision */
   .vision-top { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: clamp(2rem, 5vw, 4rem); align-items: start; margin-bottom: clamp(3rem, 6vw, 5rem); }
   .vision-top .ph { aspect-ratio: 3 / 4; max-height: 520px; }
@@ -223,11 +241,12 @@
     <a class="brand" href="#top">הנגרייה <small>מרחב שיקומי · עבודת יד</small></a>
     <ul class="nav-links">
       <li><a href="#story">הסיפור שלנו</a></li>
+      <li><a href="#farm">חוות רום</a></li>
       <li><a href="#vision">החזון והדרך</a></li>
       <li><a href="#products">המוצרים</a></li>
       <li><a href="#contact">יצירת קשר</a></li>
     </ul>
-    <a class="btn btn-primary" href="#products">לרכישה</a>
+    <a class="btn btn-primary" href="https://havatrom.co.il/%D7%97%D7%A0%D7%95%D7%AA-%D7%94%D7%9E%D7%A9%D7%A7/" target="_blank" rel="noopener">לחנות</a>
   </div>
 </header>
 
@@ -238,9 +257,9 @@
       <div>
         <p class="eyebrow">נגרייה · מרחב שיקומי · עבודת יד</p>
         <h1>מה שנבנה בעץ,<br><em>נבנה גם באדם.</em></h1>
-        <p class="sub">נגרייה פרטית שפועלת כמרחב שיקומי ותעסוקתי. יחד עם מתמודדי נפש ומשוחררי צה"ל אנחנו מייצרים צעצועי עץ, חפצי אומנות ומעמדים לצמחים – בעבודת יד, בסבלנות, ובאמונה גדולה באנשים.</p>
+        <p class="sub">נגרייה פרטית בחוות רום שבהר כמון, שפועלת כמרחב שיקומי ותעסוקתי. יחד עם מתמודדי נפש ומשוחררי צה"ל אנחנו מייצרים צעצועי עץ, חפצי אומנות ומעמדים לצמחים – בעבודת יד, בסבלנות, ובאמונה גדולה באנשים.</p>
         <div class="hero-actions">
-          <a class="btn btn-primary" href="#products">לרכישה ותמיכה בקהילה</a>
+          <a class="btn btn-primary" href="https://havatrom.co.il/%D7%97%D7%A0%D7%95%D7%AA-%D7%94%D7%9E%D7%A9%D7%A7/" target="_blank" rel="noopener">לרכישה ותמיכה בקהילה</a>
           <a class="btn btn-ghost" href="#story">הסיפור שלנו</a>
         </div>
       </div>
@@ -313,6 +332,30 @@
     </div>
   </section>
 
+  <!-- ===== Farm ===== -->
+  <section id="farm" class="farm">
+    <div class="wrap">
+      <div class="farm-band">
+        <div class="farm-text">
+          <p class="eyebrow">הבית שלנו · חוות רום, הר כמון</p>
+          <h2>חלק מפרויקט גדול<br>ויפה בגליל.</h2>
+          <p>הנגרייה פועלת בתוך <strong>חוות רום</strong>, חווה חקלאית ושיקומית על פסגת הר כמון. כבר יותר מעשרים שנה החווה היא בית לפרויקט תעסוקתי ייחודי למתמודדי נפש ולפגועי טראומה, בפיקוח משרד הבריאות ומשרד הביטחון – ולצידו קהילה של עסקים מיוחדים שבכל אחד מהם עובדים משתקמים לצד אנשי מקצוע.</p>
+          <p>אנחנו הנגרייה של החווה. הפרויקטים שנבנים בסדנאות משמשים את החווה עצמה, והמוצרים שלנו נמכרים בחנות המשק לצד הגבינות, הירקות והשתילים.</p>
+          <ul class="farm-list">
+            <li>מחלבת עזים</li>
+            <li>משתלה וגן ירק</li>
+            <li>מסעדה מהמשק לצלחת</li>
+            <li>אירוח וספא</li>
+            <li>מרכז שיקום ותיק</li>
+            <li>נגרייה – זה אנחנו</li>
+          </ul>
+          <a class="btn btn-ghost" href="https://havatrom.co.il/" target="_blank" rel="noopener">להכיר את חוות רום</a>
+        </div>
+        <div class="ph light" role="img" aria-label="תמונה: נוף חוות רום על הר כמון"><span class="ph-cap">תמונה: חוות רום, הר כמון</span></div>
+      </div>
+    </div>
+  </section>
+
   <!-- ===== Vision ===== -->
   <section id="vision" class="section-alt">
     <div class="wrap">
@@ -368,7 +411,7 @@
           <p class="eyebrow">המוצרים שלנו</p>
           <h2>עץ מלא, עבודת יד,<br>ותשומת לב לכל פרט.</h2>
         </div>
-        <p class="body">כל מוצר שיוצא מכאן עובר דרך ידיים סבלניות: חיתוך, ליטוש, הרכבה וגימור. אנחנו עובדים עם עץ איכותי, גימורים בטוחים לילדים, ובקצב שמאפשר לעשות את הדברים נכון. <strong>שום דבר כאן לא נעשה בחיפזון – וזה מורגש.</strong></p>
+        <p class="body">כל מוצר שיוצא מכאן עובר דרך ידיים סבלניות: חיתוך, ליטוש, הרכבה וגימור. אנחנו עובדים עם עץ איכותי, גימורים בטוחים לילדים, ובקצב שמאפשר לעשות את הדברים נכון. <strong>שום דבר כאן לא נעשה בחיפזון – וזה מורגש.</strong> המוצרים נמכרים דרך חנות המשק של חוות רום, יחד עם שאר תוצרת החווה.</p>
       </div>
 
       <div class="products-grid">
@@ -376,24 +419,24 @@
           <div class="ph light" role="img" aria-label="תמונה: צעצועי עץ לילדים"><span class="ph-cap">תמונה: צעצועי עץ</span></div>
           <h3>צעצועי עץ לילדים</h3>
           <p>משחקים פשוטים וחכמים: חלקים, נעימים ליד, ובנויים להחזיק יותר מדור אחד.</p>
-          <a href="#contact">לפרטים והזמנה</a>
+          <a href="https://havatrom.co.il/%D7%97%D7%A0%D7%95%D7%AA-%D7%94%D7%9E%D7%A9%D7%A7/" target="_blank" rel="noopener">לרכישה בחנות חוות רום</a>
         </article>
         <article class="product">
           <div class="ph" role="img" aria-label="תמונה: חפצי אומנות מעץ לבית"><span class="ph-cap">תמונה: חפצי אומנות</span></div>
           <h3>חפצי אומנות לבית</h3>
           <p>פריטים ייחודיים בעבודת יד. כל אחד שונה מעט מהאחר – בדיוק כמו האנשים שבנו אותם.</p>
-          <a href="#contact">לפרטים והזמנה</a>
+          <a href="https://havatrom.co.il/%D7%97%D7%A0%D7%95%D7%AA-%D7%94%D7%9E%D7%A9%D7%A7/" target="_blank" rel="noopener">לרכישה בחנות חוות רום</a>
         </article>
         <article class="product">
           <div class="ph pale" role="img" aria-label="תמונה: מעמדים לצמחים יבשים"><span class="ph-cap">תמונה: מעמדים לצמחים</span></div>
           <h3>מעמדים לצמחים יבשים</h3>
           <p>מעמדים נקיים ומינימליסטיים שנותנים במה לפרחים יבשים, ומביאים חתיכת טבע וחום לכל חלל.</p>
-          <a href="#contact">לפרטים והזמנה</a>
+          <a href="https://havatrom.co.il/%D7%97%D7%A0%D7%95%D7%AA-%D7%94%D7%9E%D7%A9%D7%A7/" target="_blank" rel="noopener">לרכישה בחנות חוות רום</a>
         </article>
       </div>
 
       <div class="products-cta">
-        <a class="btn btn-dark" href="#contact">לצפייה בקטלוג ולהזמנה</a>
+        <a class="btn btn-dark" href="https://havatrom.co.il/%D7%97%D7%A0%D7%95%D7%AA-%D7%94%D7%9E%D7%A9%D7%A7/" target="_blank" rel="noopener">לכל המוצרים בחנות חוות רום</a>
       </div>
     </div>
   </section>
@@ -404,13 +447,14 @@
       <div>
         <p class="eyebrow">קריאה לפעולה</p>
         <h2>היו חלק<br>מהעשייה.</h2>
-        <p class="body">רוצים להזמין מוצר, לתת מתנה עם משמעות, להזמין סדרה מותאמת לעסק או לאירוע, או פשוט לבוא לבקר בנגרייה ולראות במו עיניכם? נשמח לשמוע מכם.</p>
+        <p class="body">רוצים להזמין סדרה מותאמת לעסק או לאירוע, לתת מתנה עם משמעות, או פשוט לבוא לבקר בנגרייה ולראות במו עיניכם? נשמח לשמוע מכם.</p>
         <ul>
           <li>הזמנות פרטיות ומתנות</li>
           <li>מתנות לעובדים, לאירועים ולארגונים</li>
           <li>שיתופי פעולה עם עסקים וקהילות</li>
-          <li>ביקור בנגרייה</li>
+          <li>ביקור בנגרייה ובחווה</li>
         </ul>
+        <p class="contact-shop">רוצים פשוט לקנות? <a href="https://havatrom.co.il/%D7%97%D7%A0%D7%95%D7%AA-%D7%94%D7%9E%D7%A9%D7%A7/" target="_blank" rel="noopener">המוצרים שלנו מחכים בחנות חוות רום</a>.</p>
       </div>
       <form class="form" id="contact-form" novalidate>
         <div class="form-row">
@@ -420,7 +464,7 @@
         <div class="field"><label for="f-email">אימייל</label><input id="f-email" name="email" type="email" autocomplete="email" inputmode="email"></div>
         <div class="field"><label for="f-msg">איך נוכל לעזור?</label><textarea id="f-msg" name="message" rows="4"></textarea></div>
         <button class="btn btn-primary" type="submit" id="f-submit">שלחו לנו הודעה</button>
-        <p class="form-ok" id="form-ok" role="status">תודה! ההודעה נפתחה בתוכנת המייל שלכם. אם לא נפתח דבר, כתבו לנו ישירות לכתובת הנגרייה.</p>
+        <p class="form-ok" id="form-ok" role="status">תודה! ההודעה נפתחה בתוכנת המייל שלכם. אם לא נפתח דבר, כתבו לנו ישירות: nettaamit21@gmail.com</p>
         <p class="form-note">אנחנו חוזרים לכל פנייה. בדרך כלל תוך יום עסקים.</p>
       </form>
     </div>
@@ -431,13 +475,13 @@
   <div class="wrap">
     <a class="brand" href="#top">הנגרייה</a>
     <p class="tagline">נבנה בעץ, בסבלנות, ובאמונה באנשים.</p>
-    <p>© <span id="year">2026</span> הנגרייה · כל הזכויות שמורות</p>
+    <p>© <span id="year">2026</span> הנגרייה · חוות רום, הר כמון · <a href="mailto:nettaamit21@gmail.com" style="text-decoration:none">nettaamit21@gmail.com</a></p>
   </div>
 </footer>
 
 <script>
   (function () {
-    var CONTACT_EMAIL = 'hello@example.com'; // TODO: replace with the workshop's real address
+    var CONTACT_EMAIL = 'nettaamit21@gmail.com';
     var form = document.getElementById('contact-form');
     var yearEl = document.getElementById('year');
     if (yearEl) yearEl.textContent = String(new Date().getFullYear());
