@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>הנגרייה</title>
+<meta name="description" content="נגרייה פרטית שפועלת כמרחב שיקומי: צעצועי עץ, חפצי אומנות ומעמדים לצמחים בעבודת יד. כל רכישה היא תמיכה ישירה באנשים שבנו אותה.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@300;400;500;700&family=Heebo:wght@300;400;500;600&display=swap">
+<style>
+  :root {
+    --cream: #F3EDE3;
+    --sand: #E6DAC6;
+    --sand-deep: #D9C8AD;
+    --oak: #9A6535;
+    --brass: #B8874A;
+    --brass-soft: #D4B183;
+    --walnut: #2A1F17;
+    --walnut-2: #3A2C21;
+    --ink: #241B14;
+    --muted: #6E5D4E;
+    --line: rgba(42, 31, 23, .14);
+
+    --bg: var(--cream);
+    --bg-alt: var(--sand);
+    --fg: var(--ink);
+    --fg-muted: var(--muted);
+    --card: #FBF8F2;
+    --dark: var(--walnut);
+    --dark-2: var(--walnut-2);
+    --on-dark: #F3EDE3;
+    --on-dark-muted: #CBB9A0;
+    --accent: var(--oak);
+    --accent-2: var(--brass);
+    --rule: var(--line);
+
+    --serif: "Frank Ruhl Libre", "David Libre", "Times New Roman", serif;
+    --sans: "Heebo", "Assistant", "Arial Hebrew", Arial, sans-serif;
+    --max: 1180px;
+    --gutter: clamp(16px, 5vw, 56px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #1E1611; --bg-alt: #2A1F17; --fg: #F1E9DC; --fg-muted: #BFAD95;
+      --card: #2B2018; --dark: #14100C; --dark-2: #1E1611;
+      --on-dark: #F1E9DC; --on-dark-muted: #B8A58C;
+      --accent: #D4A15F; --accent-2: #C6905A; --rule: rgba(241, 233, 220, .14);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #1E1611; --bg-alt: #2A1F17; --fg: #F1E9DC; --fg-muted: #BFAD95;
+    --card: #2B2018; --dark: #14100C; --dark-2: #1E1611;
+    --on-dark: #F1E9DC; --on-dark-muted: #B8A58C;
+    --accent: #D4A15F; --accent-2: #C6905A; --rule: rgba(241, 233, 220, .14);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font-family: var(--sans); font-size: 17px; line-height: 1.7; font-weight: 300;
+    direction: rtl; text-align: right;
+    -webkit-font-smoothing: antialiased;
+  }
+  img { max-width: 100%; display: block; }
+  a { color: inherit; }
+  h1, h2, h3, h4 { font-family: var(--serif); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; letter-spacing: -0.005em; }
+  p { margin: 0; }
+  .wrap { max-width: var(--max); margin-inline: auto; padding-inline: var(--gutter); }
+  .eyebrow { font-family: var(--sans); font-size: .78rem; font-weight: 500; letter-spacing: .14em; color: var(--accent); text-transform: uppercase; }
+  .lead { font-family: var(--serif); font-size: clamp(1.35rem, 2.4vw, 1.75rem); line-height: 1.35; color: var(--fg); max-width: 28ch; }
+  .body { max-width: 62ch; color: var(--fg-muted); }
+  .body strong { color: var(--fg); font-weight: 500; }
+
+  .btn { display: inline-flex; align-items: center; gap: .6em; padding: .85em 1.6em; border-radius: 3px; font-family: var(--sans); font-size: .95rem; font-weight: 500; text-decoration: none; border: 1px solid transparent; transition: background .2s, color .2s, border-color .2s; cursor: pointer; line-height: 1.2; }
+  .btn-primary { background: var(--accent); color: #FBF7F0; }
+  .btn-primary:hover { background: var(--accent-2); }
+  .btn-ghost { border-color: var(--rule); color: var(--fg); background: transparent; }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-dark { background: var(--dark); color: var(--on-dark); }
+  .btn-dark:hover { background: var(--dark-2); }
+  .btn:focus-visible, a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  /* ---------- Placeholder photographs ---------- */
+  .ph { position: relative; overflow: hidden; border-radius: 4px; background:
+      linear-gradient(160deg, #B67F4C 0%, #8E5B30 40%, #6A421F 100%); color: rgba(255, 245, 230, .85); }
+  .ph::before { content: ""; position: absolute; inset: -20%; opacity: .55; mix-blend-mode: multiply;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='120' viewBox='0 0 400 120'%3E%3Cg fill='none' stroke='%235a3417' stroke-width='1.2' stroke-opacity='.55'%3E%3Cpath d='M-10 10c60 10 90-14 150 0s110 20 170 4 60-4 100 0'/%3E%3Cpath d='M-10 30c50 12 100-10 160 2s120 16 170-2 50-2 90 2'/%3E%3Cpath d='M-10 52c70 6 90-16 150-2s110 22 180 6 40-6 90-2'/%3E%3Cpath d='M-10 74c60 14 100-12 160 0s110 18 170 2 50-4 90 2'/%3E%3Cpath d='M-10 96c50 8 90-12 150 2s120 14 170 0 60-4 100 2'/%3E%3Cpath d='M-10 116c70 6 90-18 150-4s110 20 180 2 40-4 90 0'/%3E%3C/g%3E%3C/svg%3E");
+      background-size: 400px 120px; transform: rotate(-4deg); }
+  .ph::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(42, 31, 23, .45), transparent 55%); }
+  .ph-cap { position: absolute; inset-inline: 0; bottom: 0; padding: 1rem 1.2rem; font-size: .8rem; letter-spacing: .04em; z-index: 1; display: flex; gap: .6em; align-items: center; }
+  .ph-cap::before { content: ""; width: 22px; height: 1px; background: currentColor; opacity: .7; }
+  .ph.light { background: linear-gradient(160deg, #E3CDAF 0%, #CBAE87 50%, #B99368 100%); color: rgba(60, 40, 22, .85); }
+  .ph.light::after { background: linear-gradient(to top, rgba(120, 85, 50, .25), transparent 55%); }
+  .ph.pale { background: linear-gradient(160deg, #EFE3D1 0%, #DCC8AB 60%, #CDB28E 100%); color: rgba(60, 40, 22, .85); }
+  .ph.pale::after { background: none; }
+
+  /* ---------- Nav ---------- */
+  .nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--rule); }
+  .nav .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 68px; }
+  .brand { font-family: var(--serif); font-size: 1.45rem; letter-spacing: .06em; text-decoration: none; display: flex; align-items: baseline; gap: .5em; }
+  .brand small { font-family: var(--sans); font-size: .7rem; letter-spacing: .12em; color: var(--fg-muted); font-weight: 400; }
+  .nav-links { display: flex; gap: 1.8rem; list-style: none; margin: 0; padding: 0; font-size: .92rem; font-weight: 400; }
+  .nav-links a { text-decoration: none; color: var(--fg-muted); padding-block: .3em; border-bottom: 1px solid transparent; }
+  .nav-links a:hover { color: var(--fg); border-bottom-color: var(--accent); }
+  .nav .btn { padding: .6em 1.2em; font-size: .85rem; }
+  @media (max-width: 760px) { .nav-links { display: none; } }
+
+  /* ---------- Hero ---------- */
+  .hero { padding-block: clamp(2.5rem, 7vw, 6rem) 0; }
+  .hero-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: clamp(2rem, 5vw, 4.5rem); align-items: center; }
+  .hero h1 { font-size: clamp(2.6rem, 6vw, 4.9rem); font-weight: 400; margin-block: 1rem 1.4rem; }
+  .hero h1 em { font-style: normal; color: var(--accent); }
+  .hero .sub { font-size: clamp(1.02rem, 1.4vw, 1.15rem); max-width: 46ch; color: var(--fg-muted); }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: .8rem; margin-top: 2rem; }
+  .hero-art { position: relative; aspect-ratio: 4 / 5; max-width: 100%; }
+  .hero-art .ph { position: absolute; inset: 0; }
+  .hero-art .stamp { position: absolute; top: -18px; inset-inline-start: -18px; width: 132px; height: 132px; border-radius: 50%; background: var(--sand-deep); color: var(--walnut); display: grid; place-items: center; text-align: center; font-family: var(--serif); font-size: .9rem; line-height: 1.25; padding: 1rem; z-index: 2; box-shadow: 0 10px 30px rgba(42, 31, 23, .15); }
+  .hero-art .stamp span { display: block; font-family: var(--sans); font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; margin-top: .3em; opacity: .7; }
+  @media (max-width: 860px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .hero-art { aspect-ratio: 5 / 4; order: -1; }
+    .hero-art .stamp { width: 108px; height: 108px; font-size: .78rem; top: auto; bottom: -14px; inset-inline-start: auto; inset-inline-end: -8px; }
+  }
+
+  /* ---------- Pillars strip ---------- */
+  .pillars { margin-top: clamp(2.5rem, 6vw, 5rem); position: relative; }
+  .pillars::after { content: ""; position: absolute; inset: 55% 0 0; background: var(--bg-alt); z-index: -1; }
+  .pillars-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .pillar { background: var(--dark); color: var(--on-dark); padding: 1.6rem 1.4rem 1.5rem; border-radius: 4px; display: flex; flex-direction: column; gap: .8rem; min-height: 200px; box-shadow: 0 18px 40px -20px rgba(42, 31, 23, .5); }
+  .pillar svg { width: 34px; height: 34px; stroke: var(--brass-soft); fill: none; stroke-width: 1.3; stroke-linecap: round; stroke-linejoin: round; }
+  .pillar h3 { font-size: 1.15rem; color: var(--on-dark); }
+  .pillar small { display: block; font-size: .68rem; letter-spacing: .12em; color: var(--brass-soft); text-transform: uppercase; margin-bottom: .2rem; }
+  .pillar p { font-size: .9rem; color: var(--on-dark-muted); line-height: 1.6; }
+  @media (max-width: 960px) { .pillars-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 520px) { .pillars-grid { grid-template-columns: 1fr; } .pillar { min-height: 0; } }
+
+  /* ---------- Sections ---------- */
+  section { padding-block: clamp(3.5rem, 8vw, 7rem); }
+  .section-alt { background: var(--bg-alt); }
+  .section-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: clamp(1.5rem, 4vw, 4rem); align-items: end; margin-bottom: clamp(2.5rem, 5vw, 4rem); }
+  .section-head h2 { font-size: clamp(2rem, 4vw, 3.1rem); margin-top: .6rem; }
+  @media (max-width: 760px) { .section-head { grid-template-columns: 1fr; } }
+
+  /* About */
+  .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 3rem; }
+  .ministry { background: var(--card); border: 1px solid var(--rule); border-radius: 4px; padding: 2rem 1.8rem; display: flex; flex-direction: column; gap: .9rem; }
+  .ministry .tag { display: inline-flex; align-self: flex-start; align-items: center; gap: .5em; font-size: .72rem; letter-spacing: .1em; color: var(--accent); font-weight: 500; text-transform: uppercase; }
+  .ministry .tag::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+  .ministry h3 { font-size: 1.55rem; }
+  .ministry p { color: var(--fg-muted); font-size: .98rem; }
+  .callout { margin-top: 3rem; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 2rem; align-items: center; background: var(--dark); color: var(--on-dark); border-radius: 4px; padding: clamp(1.6rem, 4vw, 3rem); }
+  .callout .ph { aspect-ratio: 4 / 3; }
+  .callout blockquote { margin: 0; font-family: var(--serif); font-size: clamp(1.3rem, 2.3vw, 1.75rem); line-height: 1.4; }
+  .callout blockquote strong { color: var(--brass-soft); font-weight: 400; }
+  .callout .eyebrow { color: var(--brass-soft); display: block; margin-bottom: 1rem; }
+  @media (max-width: 760px) { .about-grid, .callout { grid-template-columns: 1fr; } .callout .ph { order: 2; } }
+
+  /* Vision */
+  .vision-top { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: clamp(2rem, 5vw, 4rem); align-items: start; margin-bottom: clamp(3rem, 6vw, 5rem); }
+  .vision-top .ph { aspect-ratio: 3 / 4; max-height: 520px; }
+  .vision-top h2 { font-size: clamp(2rem, 4vw, 3.1rem); margin-block: .6rem 1.2rem; }
+  .vision-top .lead { margin-bottom: 1.2rem; }
+  .values { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
+  .value { background: var(--bg); padding: 2rem 1.6rem 2.1rem; display: flex; flex-direction: column; gap: .8rem; min-height: 230px; }
+  .value svg { width: 30px; height: 30px; stroke: var(--accent); fill: none; stroke-width: 1.3; stroke-linecap: round; stroke-linejoin: round; }
+  .value h3 { font-size: 1.35rem; }
+  .value p { color: var(--fg-muted); font-size: .95rem; }
+  .value.quote { background: var(--dark); color: var(--on-dark); justify-content: center; }
+  .value.quote blockquote { margin: 0; font-family: var(--serif); font-size: 1.4rem; line-height: 1.4; }
+  .value.quote .eyebrow { color: var(--brass-soft); }
+  @media (max-width: 960px) { .values { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 760px) { .vision-top { grid-template-columns: 1fr; } .vision-top .ph { aspect-ratio: 16 / 10; } }
+  @media (max-width: 560px) { .values { grid-template-columns: 1fr; } .value { min-height: 0; } }
+
+  /* Products */
+  .products-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+  .product { display: flex; flex-direction: column; gap: 1rem; }
+  .product .ph { aspect-ratio: 1 / 1; }
+  .product h3 { font-size: 1.45rem; }
+  .product p { color: var(--fg-muted); font-size: .95rem; flex: 1; }
+  .product a { align-self: flex-start; font-size: .9rem; font-weight: 500; text-decoration: none; color: var(--fg); border-bottom: 1px solid var(--accent); padding-bottom: .15em; }
+  .product a:hover { color: var(--accent); }
+  .products-cta { margin-top: 3rem; display: flex; justify-content: center; }
+  @media (max-width: 860px) { .products-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 520px) { .products-grid { grid-template-columns: 1fr; } .product .ph { aspect-ratio: 4 / 3; } }
+
+  /* Contact */
+  .contact { background: var(--dark); color: var(--on-dark); }
+  .contact-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(2rem, 5vw, 5rem); }
+  .contact h2 { font-size: clamp(2rem, 4vw, 3.1rem); margin-block: .6rem 1.2rem; color: var(--on-dark); }
+  .contact .eyebrow { color: var(--brass-soft); }
+  .contact .body { color: var(--on-dark-muted); }
+  .contact ul { list-style: none; margin: 1.8rem 0 0; padding: 0; display: grid; gap: .6rem; }
+  .contact li { display: flex; align-items: center; gap: .8em; color: var(--on-dark); font-size: .98rem; }
+  .contact li::before { content: ""; width: 18px; height: 1px; background: var(--brass-soft); flex: none; }
+  .form { display: grid; gap: 1rem; background: var(--dark-2); border: 1px solid rgba(255, 255, 255, .08); border-radius: 4px; padding: clamp(1.4rem, 3vw, 2.2rem); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .field { display: grid; gap: .4rem; }
+  .field label { font-size: .78rem; letter-spacing: .06em; color: var(--on-dark-muted); }
+  .field input, .field textarea { width: 100%; background: transparent; border: 0; border-bottom: 1px solid rgba(255, 255, 255, .25); color: var(--on-dark); font: inherit; font-size: 1rem; padding: .6em 0; border-radius: 0; }
+  .field textarea { min-height: 96px; resize: vertical; }
+  .field input:focus, .field textarea:focus { border-bottom-color: var(--brass-soft); outline: none; }
+  .form .btn-primary { justify-self: start; margin-top: .4rem; }
+  .form-note { font-size: .8rem; color: var(--on-dark-muted); }
+  .form-ok { display: none; background: rgba(212, 177, 131, .12); border: 1px solid rgba(212, 177, 131, .4); padding: 1rem 1.2rem; border-radius: 3px; font-size: .95rem; }
+  .form.sent .form-ok { display: block; }
+  @media (max-width: 760px) { .contact-grid, .form-row { grid-template-columns: 1fr; } }
+
+  /* Footer */
+  footer { background: var(--dark); color: var(--on-dark-muted); border-top: 1px solid rgba(255, 255, 255, .08); padding-block: 2rem; font-size: .85rem; }
+  footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; }
+  footer .brand { color: var(--on-dark); font-size: 1.2rem; }
+  footer .tagline { font-family: var(--serif); font-size: 1.05rem; color: var(--on-dark); }
+
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .btn { transition: none; } }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top">הנגרייה <small>מרחב שיקומי · עבודת יד</small></a>
+    <ul class="nav-links">
+      <li><a href="#story">הסיפור שלנו</a></li>
+      <li><a href="#vision">החזון והדרך</a></li>
+      <li><a href="#products">המוצרים</a></li>
+      <li><a href="#contact">יצירת קשר</a></li>
+    </ul>
+    <a class="btn btn-primary" href="#products">לרכישה</a>
+  </div>
+</header>
+
+<main id="top">
+  <!-- ===== Hero ===== -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="eyebrow">נגרייה · מרחב שיקומי · עבודת יד</p>
+        <h1>מה שנבנה בעץ,<br><em>נבנה גם באדם.</em></h1>
+        <p class="sub">נגרייה פרטית שפועלת כמרחב שיקומי ותעסוקתי. יחד עם מתמודדי נפש ומשוחררי צה"ל אנחנו מייצרים צעצועי עץ, חפצי אומנות ומעמדים לצמחים – בעבודת יד, בסבלנות, ובאמונה גדולה באנשים.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#products">לרכישה ותמיכה בקהילה</a>
+          <a class="btn btn-ghost" href="#story">הסיפור שלנו</a>
+        </div>
+      </div>
+      <div class="hero-art">
+        <div class="ph" role="img" aria-label="תמונה: ידיים מלטשות קרש אלון על שולחן העבודה"><span class="ph-cap">תמונה: ידיים על שולחן העבודה</span></div>
+        <div class="stamp" aria-hidden="true">עץ מלא<br>עבודת יד<span>Handmade</span></div>
+      </div>
+    </div>
+
+    <div class="pillars">
+      <div class="wrap pillars-grid">
+        <article class="pillar">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10z"/><path d="M12 8.4V21"/></svg>
+          <div><small>משרד הבריאות</small><h3>סל שיקום</h3></div>
+          <p>תעסוקה ממשית למתמודדי נפש, ורווחים מהמכירות שחוזרים ישירות אליהם.</p>
+        </article>
+        <article class="pillar">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h16"/><path d="M6 20V9l6-5 6 5v11"/><path d="M10 20v-6h4v6"/></svg>
+          <div><small>משרד הביטחון</small><h3>סדנאות תהליכיות</h3></div>
+          <p>כחצי שנה של בנייה משותפת בחווה, ופרויקט אישי שהולך הביתה.</p>
+        </article>
+        <article class="pillar">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17l5-5"/><path d="M14 3l7 7-4 4-7-7z"/><path d="M8 12l4 4-6 5H4v-2z"/></svg>
+          <div><small>איכות</small><h3>עץ מלא, עבודת יד</h3></div>
+          <p>כל פריט נחתך, מלוטש ומורכב בידיים סבלניות. בלי חיפזון.</p>
+        </article>
+        <article class="pillar">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-8-8"/><path d="M12 12l4-4"/><path d="M12 8v4h4"/></svg>
+          <div><small>המשמעות</small><h3>רכישה שהיא תמיכה</h3></div>
+          <p>כל מוצר שנקנה משלם שכר לאדם שבנה אותו, ומאפשר לו לחזור מחר.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Story ===== -->
+  <section id="story">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">הסיפור שלנו</p>
+          <h2>נגרייה אחת,<br>שני משרדים,<br>מודל אחד פשוט.</h2>
+        </div>
+        <div>
+          <p class="lead">עבודה אמיתית שמייצרת ערך אמיתי.</p>
+          <p class="body" style="margin-top:1.2rem">מבחוץ אנחנו נגרייה כמו כל נגרייה: ריח נסורת, מכונות שעובדות, קרשים שמחכים לתורם. מבפנים, אנחנו משהו קצת אחר. הנגרייה פועלת כמפעל מוגן וכמרחב שיקומי – מקום שבו אנשים בתהליך של חזרה לשגרה מוצאים עבודה, שייכות ומשמעות. <strong>לא מסגרת טיפולית שמחופשת לנגרייה, אלא נגרייה עובדת שהאנשים בה הם הלב שלה.</strong></p>
+        </div>
+      </div>
+
+      <div class="about-grid">
+        <article class="ministry">
+          <span class="tag">משרד הבריאות</span>
+          <h3>סל שיקום</h3>
+          <p>יחד עם מתמודדי נפש הזכאים לסל שיקום אנחנו מייצרים בנגרייה מוצרי עץ איכותיים: צעצועים לילדים, חפצי אומנות ומעמדים לצמחים יבשים. המוצרים נמכרים לשוק החופשי, והרווחים חוזרים למשתתפים. כך כל אחד מרוויח פעמיים – מהעשייה עצמה, ומהתמורה הכלכלית עליה.</p>
+        </article>
+        <article class="ministry">
+          <span class="tag">משרד הביטחון</span>
+          <h3>סדנאות תהליכיות</h3>
+          <p>אנחנו מלווים קבוצות בסדנאות ארוכות, לרוב כחצי שנה. בתהליך בונים יחד פרויקטים שמשמשים את החווה שבה אנחנו פועלים – ולצידם פרויקט אישי שכל משתתף מתכנן, בונה ולוקח איתו הביתה בסוף הדרך.</p>
+        </article>
+      </div>
+
+      <div class="callout">
+        <div class="ph light" role="img" aria-label="תמונה: מעמד עץ לצמחים יבשים על מדף"><span class="ph-cap">תמונה: מעמד לצמחים יבשים</span></div>
+        <div>
+          <span class="eyebrow">המשמעות של כל רכישה</span>
+          <blockquote>כשאתם קונים כאן מעמד לצמחים או צעצוע לילד, אתם לא תורמים. אתם קונים מוצר איכותי בעבודת יד – <strong>ובאותה תנועה משלמים שכר לאדם שבנה אותו, ומאפשרים לו להמשיך לבוא לכאן גם מחר.</strong></blockquote>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Vision ===== -->
+  <section id="vision" class="section-alt">
+    <div class="wrap">
+      <div class="vision-top">
+        <div>
+          <p class="eyebrow">החזון והדרך</p>
+          <h2>העץ הוא החומר.<br>האדם הוא הפרויקט.</h2>
+          <p class="lead">חוויית מסוגלות לא נולדת מדיבורים.</p>
+          <p class="body">היא נולדת מעבודה סבלנית, מהתמודדות עם קושי, ומסיום של תהליך – מגלם ועד לתוצר מוחשי שאפשר להחזיק ביד. המשתתפים לומדים לקחת אחריות, לזהות כוחות, לעבוד בצוות, ולראות את הערך של יצירת משהו חדש בעולם.</p>
+        </div>
+        <div class="ph" role="img" aria-label="תמונה: כלי נגרות – מחרצת, פטיש עץ ומקצועה"><span class="ph-cap">תמונה: כלי העבודה שלנו</span></div>
+      </div>
+
+      <div class="values">
+        <article class="value">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/></svg>
+          <h3>מרחב בטוח ויציב</h3>
+          <p>הנגרייה היא מקום מכיל וברור: מסגרת עם כללים, לצד אמפתיה והקשבה. כאן אפשר לטעות, לתקן, ולהמשיך.</p>
+        </article>
+        <article class="value">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12c3-4 6-4 9 0s6 4 9 0"/><path d="M3 17c3-4 6-4 9 0s6 4 9 0"/><path d="M3 7c3-4 6-4 9 0s6 4 9 0"/></svg>
+          <h3>מלאכה שמרגיעה ומרכזת</h3>
+          <p>עבודה בעץ מאזנת. הידיים עסוקות, הראש שקט, והקשב חוזר להווה. אצלנו העץ הוא שפה של צמיחה, למידה וחיזוק הכוח הפנימי.</p>
+        </article>
+        <article class="value">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l6-6"/><path d="M14 4l6 6-8 8-6-6z"/><path d="M16 8l-1 1"/></svg>
+          <h3>מסוגלות שנוצרת מעשייה</h3>
+          <p>לחתוך ישר, ללטש עד שחלק, להרכיב עד שיציב. כל שלב שהושלם הוא הוכחה קטנה: אני יכול.</p>
+        </article>
+        <article class="value">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="8" r="3"/><circle cx="16" cy="8" r="3"/><path d="M2 20c0-3.5 2.7-6 6-6s6 2.5 6 6"/><path d="M14 14.3c.6-.2 1.3-.3 2-.3 3.3 0 6 2.5 6 6"/></svg>
+          <h3>בגובה העיניים</h3>
+          <p>כל אדם בקצב שלו. אין כאן "מטופלים", יש צוות שעובד יחד – לוקח אחריות, מזהה כוחות, ולומד לראות את הערך במה שנוצר.</p>
+        </article>
+        <article class="value">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 20h18"/><path d="M6 20V10l6-6 6 6v10"/><path d="M12 20v-5"/><path d="M9 4l3-3 3 3"/></svg>
+          <h3>מכאן והלאה</h3>
+          <p>השאיפה שלנו: ערך עצמי חזק יותר, סבלנות והתמדה, שייכות לקהילה פעילה – ומסלולי השתלבות בעבודה ובחיים שממשיכים הרבה אחרי שיוצאים משער הנגרייה.</p>
+        </article>
+        <article class="value quote">
+          <p class="eyebrow">בסוף כל תהליך</p>
+          <blockquote>"בסוף כל תהליך יש חפץ. אבל מה שלוקחים הביתה זה הידיעה שאני מסוגל."</blockquote>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Products ===== -->
+  <section id="products">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">המוצרים שלנו</p>
+          <h2>עץ מלא, עבודת יד,<br>ותשומת לב לכל פרט.</h2>
+        </div>
+        <p class="body">כל מוצר שיוצא מכאן עובר דרך ידיים סבלניות: חיתוך, ליטוש, הרכבה וגימור. אנחנו עובדים עם עץ איכותי, גימורים בטוחים לילדים, ובקצב שמאפשר לעשות את הדברים נכון. <strong>שום דבר כאן לא נעשה בחיפזון – וזה מורגש.</strong></p>
+      </div>
+
+      <div class="products-grid">
+        <article class="product">
+          <div class="ph light" role="img" aria-label="תמונה: צעצועי עץ לילדים"><span class="ph-cap">תמונה: צעצועי עץ</span></div>
+          <h3>צעצועי עץ לילדים</h3>
+          <p>משחקים פשוטים וחכמים: חלקים, נעימים ליד, ובנויים להחזיק יותר מדור אחד.</p>
+          <a href="#contact">לפרטים והזמנה</a>
+        </article>
+        <article class="product">
+          <div class="ph" role="img" aria-label="תמונה: חפצי אומנות מעץ לבית"><span class="ph-cap">תמונה: חפצי אומנות</span></div>
+          <h3>חפצי אומנות לבית</h3>
+          <p>פריטים ייחודיים בעבודת יד. כל אחד שונה מעט מהאחר – בדיוק כמו האנשים שבנו אותם.</p>
+          <a href="#contact">לפרטים והזמנה</a>
+        </article>
+        <article class="product">
+          <div class="ph pale" role="img" aria-label="תמונה: מעמדים לצמחים יבשים"><span class="ph-cap">תמונה: מעמדים לצמחים</span></div>
+          <h3>מעמדים לצמחים יבשים</h3>
+          <p>מעמדים נקיים ומינימליסטיים שנותנים במה לפרחים יבשים, ומביאים חתיכת טבע וחום לכל חלל.</p>
+          <a href="#contact">לפרטים והזמנה</a>
+        </article>
+      </div>
+
+      <div class="products-cta">
+        <a class="btn btn-dark" href="#contact">לצפייה בקטלוג ולהזמנה</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Contact ===== -->
+  <section id="contact" class="contact">
+    <div class="wrap contact-grid">
+      <div>
+        <p class="eyebrow">קריאה לפעולה</p>
+        <h2>היו חלק<br>מהעשייה.</h2>
+        <p class="body">רוצים להזמין מוצר, לתת מתנה עם משמעות, להזמין סדרה מותאמת לעסק או לאירוע, או פשוט לבוא לבקר בנגרייה ולראות במו עיניכם? נשמח לשמוע מכם.</p>
+        <ul>
+          <li>הזמנות פרטיות ומתנות</li>
+          <li>מתנות לעובדים, לאירועים ולארגונים</li>
+          <li>שיתופי פעולה עם עסקים וקהילות</li>
+          <li>ביקור בנגרייה</li>
+        </ul>
+      </div>
+      <form class="form" id="contact-form" novalidate>
+        <div class="form-row">
+          <div class="field"><label for="f-name">שם מלא</label><input id="f-name" name="name" type="text" autocomplete="name" required></div>
+          <div class="field"><label for="f-phone">טלפון</label><input id="f-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel"></div>
+        </div>
+        <div class="field"><label for="f-email">אימייל</label><input id="f-email" name="email" type="email" autocomplete="email" inputmode="email"></div>
+        <div class="field"><label for="f-msg">איך נוכל לעזור?</label><textarea id="f-msg" name="message" rows="4"></textarea></div>
+        <button class="btn btn-primary" type="submit" id="f-submit">שלחו לנו הודעה</button>
+        <p class="form-ok" id="form-ok" role="status">תודה! ההודעה נפתחה בתוכנת המייל שלכם. אם לא נפתח דבר, כתבו לנו ישירות לכתובת הנגרייה.</p>
+        <p class="form-note">אנחנו חוזרים לכל פנייה. בדרך כלל תוך יום עסקים.</p>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <a class="brand" href="#top">הנגרייה</a>
+    <p class="tagline">נבנה בעץ, בסבלנות, ובאמונה באנשים.</p>
+    <p>© <span id="year">2026</span> הנגרייה · כל הזכויות שמורות</p>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    var CONTACT_EMAIL = 'hello@example.com'; // TODO: replace with the workshop's real address
+    var form = document.getElementById('contact-form');
+    var yearEl = document.getElementById('year');
+    if (yearEl) yearEl.textContent = String(new Date().getFullYear());
+    if (!form) return;
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var v = function (id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; };
+      var name = v('f-name'), phone = v('f-phone'), email = v('f-email'), msg = v('f-msg');
+      if (!name) { document.getElementById('f-name').focus(); return; }
+      var subject = 'פנייה מדף הנחיתה – ' + name;
+      var body = 'שם: ' + name + '\nטלפון: ' + phone + '\nאימייל: ' + email + '\n\n' + msg;
+      window.location.href = 'mailto:' + CONTACT_EMAIL + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+      form.classList.add('sent');
+    });
+  })();
+</script>
+</body>
+</html>
