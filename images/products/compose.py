@@ -16,7 +16,9 @@ def wood_mask(a):
 def clean(a,nograss=False):
     """remove grey/blue ghost pixels above the glass tube; return array + metrics"""
     w=a.shape[1]; rows=(a[...,3]>200).sum(1)
-    ys=np.where(rows>w*0.12)[0]; wood_top,wood_bot=int(ys.min()),int(ys.max())   # body = wide alpha rows (tube/grass are narrow)
+    ys=np.where(rows>w*0.12)[0]                                                    # body = longest run of wide alpha rows
+    cuts=np.where(np.diff(ys)>1)[0]; runs=np.split(ys,cuts+1); body=max(runs,key=len)
+    wood_top,wood_bot=int(body.min()),int(body.max())
     body_h=wood_bot-wood_top
     zone_top=int(wood_top-0.20*body_h)
     r,g,b,al=a[...,0],a[...,1],a[...,2],a[...,3]
@@ -44,7 +46,8 @@ def clean(a,nograss=False):
 
 def wood_lum(a):
     wm=(a[...,3]>200)&(a[...,0]>a[...,2]); rows=(a[...,3]>200).sum(1); ys=np.where(rows>a.shape[1]*0.12)[0]
-    wm[:ys.min()]=False; rgb=a[...,:3][wm]; return (0.299*rgb[:,0]+0.587*rgb[:,1]+0.114*rgb[:,2]).mean()
+    cuts=np.where(np.diff(ys)>1)[0]; body=max(np.split(ys,cuts+1),key=len)
+    wm[:body.min()]=False; rgb=a[...,:3][wm]; return (0.299*rgb[:,0]+0.587*rgb[:,1]+0.114*rgb[:,2]).mean()
 
 def render(a,m,gain,body_h=None,erase=()):
     scale=(body_h or BODY_H)/m['body_h']
