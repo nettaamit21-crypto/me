@@ -1,4 +1,4 @@
-import sys, numpy as np
+import sys, os, json, numpy as np
 from PIL import Image, ImageFilter, ImageDraw
 BG=(248,246,242)          # near-white warm
 GAP=(236,231,222)
@@ -21,7 +21,7 @@ def clean(a,nograss=False):
     zone_top=int(wood_top-0.20*body_h)
     r,g,b,al=a[...,0],a[...,1],a[...,2],a[...,3]
     zone=np.zeros(al.shape,bool); zone[:max(zone_top,0)]=True
-    warm=(r>b+10)
+    warm=(r>b+20)&~((r>g+50)&(r>b+50))   # keep golden grass, drop grey/blue ghosts and red tool remnants
     kill=(zone&(al>0)) if nograss else (zone&(~warm)&(al>0))
     a[...,3][kill]=0
     # soften faint alpha in zone (ghost remnants)
@@ -35,8 +35,8 @@ def clean(a,nograss=False):
 def wood_lum(a):
     wm=wood_mask(a); rgb=a[...,:3][wm]; return (0.299*rgb[:,0]+0.587*rgb[:,1]+0.114*rgb[:,2]).mean()
 
-def render(a,m,gain):
-    scale=BODY_H/m['body_h']
+def render(a,m,gain,body_h=None,erase=()):
+    scale=(body_h or BODY_H)/m['body_h']
     im=Image.fromarray(np.clip(a,0,255).astype(np.uint8),'RGBA')
     nw,nh=int(round(im.width*scale)),int(round(im.height*scale))
     im=im.resize((nw,nh),Image.LANCZOS)
@@ -44,6 +44,22 @@ def render(a,m,gain):
     arr=np.array(im).astype(np.float32); arr[...,:3]=np.clip(arr[...,:3]*gain,0,255); im=Image.fromarray(arr.astype(np.uint8),'RGBA')
     bx=(m['base_x0']+m['base_x1'])/2*scale; bw=(m['base_x1']-m['base_x0'])*scale; by=m['base_y']*scale
     ox=int(round(CW/2-bx)); oy=int(round(BASE_Y-by))
+    if erase:
+        arr=np.array(im).astype(np.float32)
+        for x0,y0,x1,y1,mode in erase:
+            X0,Y0,X1,Y1=max(0,x0-ox),max(0,y0-oy),min(im.width,x1-ox),min(im.height,y1-oy)
+            sub=arr[Y0:Y1,X0:X1]
+            if mode=='all': sub[...,3]=0
+            elif mode=='brass':
+                lum=0.299*sub[...,0]+0.587*sub[...,1]+0.114*sub[...,2]
+                sub[...,3][(lum>150)|(sub[...,1]>=sub[...,0])|((sub[...,0]-sub[...,2])<45)]=0
+            elif mode=='grey':
+                sub[...,3][(sub[...,0]-sub[...,2])<45]=0
+            else:
+                lum=0.299*sub[...,0]+0.587*sub[...,1]+0.114*sub[...,2]
+                pale=(lum>118)&((sub[...,0]-sub[...,2])<85)
+                sub[...,3][pale]=0
+        im=Image.fromarray(arr.astype(np.uint8),'RGBA')
     canvas=Image.new('RGBA',(CW,CH),BG+(255,))
     # shadow: soft ellipse under base
     sh=Image.new('L',(CW,CH),0); d=ImageDraw.Draw(sh)
@@ -67,10 +83,16 @@ if __name__=='__main__':
     for p in srcs:
         ng=p.endswith('!'); p=p.rstrip('!'); a=load(p); a,m=clean(a,ng); data.append((a,m,wood_lum(a)))
     med=np.median([d[2] for d in data])
+    body_h=BODY_H
+    for a,m,l in data:
+        al=a[...,3]; top=int(np.where((al>40).sum(1)>0)[0].min())
+        avail=BASE_Y-int(CH*0.05); need=(m['base_y']-top)/m['body_h']
+        body_h=min(body_h,int(avail/need))
+    print('body_h',body_h)
     singles=[]
     for k,(a,m,l) in enumerate(data):
         gain=float(np.clip(med/l,0.94,1.06))
-        img,geo=render(a,m,gain); print(srcs[k],'gain',round(gain,3),'geo',geo)
+        img,geo=render(a,m,gain,body_h,json.loads(os.environ.get('ERASE','{}')).get(str(k),())); print(srcs[k],'gain',round(gain,3),'geo',geo)
         img.save(f'{out}/single_{k+1}.jpg',quality=94,subsampling=0); singles.append(img)
     gap=36
     col=Image.new('RGB',(CW*3+gap*2,CH),GAP)
