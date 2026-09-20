@@ -15,17 +15,27 @@ def wood_mask(a):
 
 def clean(a,nograss=False):
     """remove grey/blue ghost pixels above the glass tube; return array + metrics"""
-    wm=wood_mask(a); rows=wm.sum(1); w=a.shape[1]
-    ys=np.where(rows>w*0.12)[0]; wood_top,wood_bot=ys.min(),ys.max()
+    w=a.shape[1]; rows=(a[...,3]>200).sum(1)
+    ys=np.where(rows>w*0.12)[0]; wood_top,wood_bot=int(ys.min()),int(ys.max())   # body = wide alpha rows (tube/grass are narrow)
     body_h=wood_bot-wood_top
     zone_top=int(wood_top-0.20*body_h)
     r,g,b,al=a[...,0],a[...,1],a[...,2],a[...,3]
+    if nograss:   # everything above the glass tube goes (tube = first row wider than 3% of the image)
+        y=wood_top; miss=0                                        # walk up from the wood: glass rows are neutral, grass rows warm
+        while y>0 and miss<4:
+            m=al[y]>128; n=int(m.sum())
+            warm_row=float((r[y]-b[y])[m].mean()) if n else 0.0
+            tube_row = (n>=30 and warm_row<12)                      # wide and neutral = glass; thin or warm = stems/grass
+            miss = 0 if (tube_row or n<3) else miss+1
+            y-=1
+        zone_top=y+miss-2
+        if wood_top-zone_top>0.5*body_h: zone_top=int(wood_top-0.20*body_h)
     zone=np.zeros(al.shape,bool); zone[:max(zone_top,0)]=True
-    warm=(r>b+20)&~((r>g+50)&(r>b+50))   # keep golden grass, drop grey/blue ghosts and red tool remnants
+    warm=(r>b+int(os.environ.get('WARM','20')))&~((r>g+50)&(r>b+50))   # keep golden grass, drop grey/blue ghosts and red tool remnants
     kill=(zone&(al>0)) if nograss else (zone&(~warm)&(al>0))
     a[...,3][kill]=0
     # soften faint alpha in zone (ghost remnants)
-    faint=zone&(al<90)
+    faint=zone&(al<int(os.environ.get('FAINT','90')))
     a[...,3][faint]=0
     # alpha bottom (base)
     al=a[...,3]; ys=np.where((al>128).sum(1)>w*0.12)[0]; base_y=ys.max()
@@ -33,7 +43,8 @@ def clean(a,nograss=False):
     return a, dict(wood_top=wood_top,wood_bot=wood_bot,body_h=body_h,base_y=base_y,base_x0=int(cols.min()),base_x1=int(cols.max()))
 
 def wood_lum(a):
-    wm=wood_mask(a); rgb=a[...,:3][wm]; return (0.299*rgb[:,0]+0.587*rgb[:,1]+0.114*rgb[:,2]).mean()
+    wm=(a[...,3]>200)&(a[...,0]>a[...,2]); rows=(a[...,3]>200).sum(1); ys=np.where(rows>a.shape[1]*0.12)[0]
+    wm[:ys.min()]=False; rgb=a[...,:3][wm]; return (0.299*rgb[:,0]+0.587*rgb[:,1]+0.114*rgb[:,2]).mean()
 
 def render(a,m,gain,body_h=None,erase=()):
     scale=(body_h or BODY_H)/m['body_h']
@@ -85,7 +96,7 @@ if __name__=='__main__':
     med=np.median([d[2] for d in data])
     body_h=BODY_H
     for a,m,l in data:
-        al=a[...,3]; top=int(np.where((al>40).sum(1)>0)[0].min())
+        al=a[...,3]; top=int(np.where((al>40).sum(1)>6)[0].min())
         avail=BASE_Y-int(CH*0.05); need=(m['base_y']-top)/m['body_h']
         body_h=min(body_h,int(avail/need))
     print('body_h',body_h)
