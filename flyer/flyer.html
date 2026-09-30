@@ -19,6 +19,9 @@
     --sand: #E6DAC6;
     --cream: #F3EDE3;
     --paper: #F8F3EA;
+    --amber: #E8A94F;
+    --terracotta: #C9633A;
+    --olive: #7E8C45;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { background: var(--walnut-900); }
@@ -39,116 +42,119 @@
     background: var(--walnut-700);
   }
 
-  /* רקע: לוח אגוז */
-  .wood { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 30%; filter: saturate(.85) contrast(1.05); }
+  /* רקע: התמונה מהחווה */
+  .wood { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 25%; filter: saturate(1.2) brightness(1.08); }
   .glow {
     position: absolute; inset: 0;
     background:
-      linear-gradient(180deg, rgba(30,21,15,.88) 0%, rgba(42,31,23,.72) 26%, rgba(42,31,23,.35) 45%, rgba(30,21,15,.55) 100%),
-      radial-gradient(ellipse 70% 45% at 70% 8%, rgba(255, 190, 120, .18), transparent 70%);
+      radial-gradient(ellipse 60% 40% at 80% 0%, rgba(255, 196, 110, .55), transparent 70%),
+      linear-gradient(180deg, rgba(92,48,18,.78) 0%, rgba(120,66,26,.55) 22%, rgba(150,90,40,.12) 40%, transparent 55%);
     pointer-events: none;
   }
 
-  /* כותרת עליונה על העץ */
   .top {
     position: absolute;
-    top: 70px; right: 90px; left: 90px;
-    color: var(--cream);
+    top: 64px; right: 70px; left: 70px;
     text-align: center;
   }
   .kicker {
-    display: inline-flex; align-items: center; gap: 18px;
-    font-weight: 500; font-size: 26px; letter-spacing: .12em;
-    color: var(--honey);
-  }
-  .kicker::before, .kicker::after {
-    content: ""; width: 70px; height: 1.5px; background: currentColor; opacity: .7;
+    display: inline-block;
+    background: var(--amber);
+    color: var(--walnut-800);
+    font-weight: 700; font-size: 26px; letter-spacing: .08em;
+    padding: 10px 30px;
+    border-radius: 999px;
+    box-shadow: 0 6px 16px rgba(60,30,10,.3);
   }
   h1 {
     font-family: "Frank Ruhl Libre", serif;
     font-weight: 900;
-    font-size: 132px;
+    font-size: 136px;
     line-height: 1;
-    margin-top: 22px;
-    color: var(--paper);
-    text-shadow: 0 4px 24px rgba(0,0,0,.45);
+    margin-top: 26px;
+    color: #FFF8EC;
+    text-shadow: 0 3px 0 rgba(90,45,15,.35), 0 8px 30px rgba(50,25,8,.55);
   }
   .sub {
-    margin-top: 22px;
-    font-size: 34px; font-weight: 300;
-    color: var(--sand);
+    margin-top: 20px;
+    font-size: 36px; font-weight: 500;
+    display: inline-block;
+    color: #FFF3DE;
+    background: rgba(70,36,14,.62);
+    padding: 10px 34px;
+    border-radius: 999px;
+    backdrop-filter: blur(3px);
   }
 
-  /* כרטיס שמנת */
-  .card {
+  /* פאנל שמנת עם קצה גלי */
+  .panel {
     position: absolute;
-    top: 430px; right: 70px; left: 70px; bottom: 70px;
-    background:
-      radial-gradient(ellipse at 20% 0%, rgba(255,255,255,.6), transparent 60%),
-      linear-gradient(180deg, var(--paper), var(--cream));
-    border-radius: 28px;
-    padding: 64px 64px 56px;
-    box-shadow: 0 30px 60px rgba(0,0,0,.45), inset 0 0 0 1px rgba(154,101,53,.18);
-    display: flex; flex-direction: column;
+    left: 0; right: 0; bottom: 0; top: 590px;
   }
-  .card::before {
-    content: ""; position: absolute; inset: 16px;
-    border: 1.5px solid rgba(184,135,74,.45);
-    border-radius: 18px;
-    pointer-events: none;
+  .panel .wave { position: absolute; left: 0; top: -60px; width: 100%; height: 120px; }
+  .panel-body {
+    position: absolute; inset: 58px 0 0 0;
+    background: linear-gradient(180deg, var(--paper) 0%, var(--cream) 100%);
+    padding: 40px 80px 64px;
+    display: flex; flex-direction: column; align-items: center;
+    text-align: center;
   }
   .to {
-    font-size: 30px; font-weight: 500;
-    color: var(--oak);
+    position: absolute; top: -24px; left: 50%;
+    transform: translateX(-50%) rotate(-2.5deg);
+    background: var(--terracotta);
+    color: #FFF4E4;
+    font-size: 38px; font-weight: 700;
+    padding: 14px 44px;
+    border-radius: 16px;
+    white-space: nowrap;
+    box-shadow: 0 10px 22px rgba(120,50,20,.35);
+    z-index: 2;
   }
   .lead {
-    margin-top: 16px;
+    margin-top: 40px;
     font-family: "Frank Ruhl Libre", serif;
-    font-size: 46px; font-weight: 500; line-height: 1.35;
+    font-size: 44px; font-weight: 500; line-height: 1.35;
     color: var(--walnut-800);
   }
 
   .points {
     list-style: none;
-    margin-top: 60px;
+    margin-top: 44px;
+    width: 100%;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 48px 36px;
+    gap: 44px 48px;
+    text-align: right;
   }
   .points li {
-    display: flex; align-items: flex-start; gap: 18px;
+    display: flex; align-items: flex-start; gap: 20px;
     font-size: 28px; line-height: 1.4; color: var(--walnut-700);
   }
-  .points b { display: block; font-weight: 700; color: var(--walnut-800); font-size: 31px; white-space: nowrap; margin-bottom: 4px; }
+  .points b { display: block; font-weight: 700; color: var(--walnut-800); font-size: 31px; white-space: nowrap; margin-bottom: 2px; }
   .ico {
     flex: none;
-    width: 78px; height: 78px;
-    border-radius: 50%;
-    background: var(--walnut-800);
+    width: 86px; height: 86px;
+    border-radius: 58% 42% 55% 45% / 48% 58% 42% 52%;
     display: grid; place-items: center;
+    box-shadow: 0 8px 16px rgba(90,50,20,.18);
   }
-  .ico svg { width: 50px; height: 50px; stroke: var(--honey); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .points li:nth-child(1) .ico { background: var(--amber); }
+  .points li:nth-child(2) .ico { background: var(--terracotta); border-radius: 45% 55% 42% 58% / 56% 44% 56% 44%; }
+  .points li:nth-child(3) .ico { background: var(--olive); border-radius: 52% 48% 60% 40% / 42% 55% 45% 58%; }
+  .points li:nth-child(4) .ico { background: var(--oak); border-radius: 60% 40% 48% 52% / 50% 42% 58% 50%; }
+  .ico svg { width: 50px; height: 50px; stroke: #FFF6E8; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
   .sign {
     margin-top: auto;
-    display: flex; align-items: flex-end; justify-content: space-between; gap: 30px;
-    padding-top: 30px;
-    border-top: 1.5px dashed rgba(154,101,53,.45);
-  }
-  .sign p {
+    display: flex; align-items: center; gap: 22px;
     font-family: "Frank Ruhl Libre", serif;
-    font-size: 42px; font-weight: 700; color: var(--walnut-800);
+    font-size: 46px; font-weight: 700; color: var(--walnut-800);
   }
-  .cta {
-    flex: none;
-    background: var(--walnut-800);
-    color: var(--cream);
-    border-radius: 999px;
-    padding: 22px 46px;
-    font-size: 34px; font-weight: 700;
-    box-shadow: 0 8px 18px rgba(42,31,23,.3);
+  .sign::before, .sign::after {
+    content: ""; width: 90px; height: 3px; border-radius: 3px;
+    background: linear-gradient(90deg, var(--amber), var(--terracotta));
   }
-  .cta span { color: var(--honey); }
 </style>
 </head>
 <body>
@@ -163,44 +169,46 @@
     <p class="sub">יוצרים ובונים בעץ – מהרעיון ועד הגימור</p>
   </header>
 
-  <main class="card">
-    <p class="to">לצוות משרד הביטחון בחוות רום – ברוכים הבאים!</p>
-    <p class="lead">שמח להזמין אתכם לסדנת הנגרות בחווה, לצלול לתהליכי יצירה ובנייה בעץ.</p>
+  <main class="panel">
+    <svg class="wave" viewBox="0 0 1080 120" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0 70 C 180 20, 330 20, 520 58 S 880 105, 1080 40 L1080 120 L0 120 Z" fill="#F8F3EA"/>
+    </svg>
+    <div class="panel-body">
+      <p class="to">מרכז חוסן – ברוכים הבאים!</p>
+      <p class="lead">שמח להזמין אתכם לסדנת הנגרות בחווה,<br>לצלול לתהליכי יצירה ובנייה בעץ.</p>
 
-    <ul class="points">
-      <li>
-        <span class="ico">
-          <!-- מסור -->
-          <svg viewBox="0 0 40 40"><path d="M6 26 L28 8 L34 14 L12 32 Z"/><path d="M12 32 l-2-3 l2.5-.5 l-1-3 l2.6-.3 l-.8-3 l2.7-.2 l-.6-3 l2.7-.1"/><path d="M28 8 l4-4 l6 6 l-4 4"/></svg>
-        </span>
-        <div><b>כלי עבודה מגוונים</b>נלמד לעבוד נכון ובטוח עם מגוון כלים</div>
-      </li>
-      <li>
-        <span class="ico">
-          <!-- סרגל ועיפרון -->
-          <svg viewBox="0 0 40 40"><rect x="4" y="22" width="32" height="10" rx="1.5"/><path d="M10 22v4M16 22v6M22 22v4M28 22v6"/><path d="M12 18 L28 4 l4 4 L16 22"/><path d="M12 18 l-1.5 5.5 L16 22"/></svg>
-        </span>
-        <div><b>מהרעיון ועד הגמר</b>נבצע פרויקט שלם, משרטוט ועד גימור</div>
-      </li>
-      <li>
-        <span class="ico">
-          <!-- בית -->
-          <svg viewBox="0 0 40 40"><path d="M5 19 L20 6 L35 19"/><path d="M9 16v18h22V16"/><path d="M17 34v-9h6v9"/></svg>
-        </span>
-        <div><b>משפרים את המרחב</b>נבנה יחד עבור המקום שבו אתם נמצאים</div>
-      </li>
-      <li>
-        <span class="ico">
-          <!-- שרפרף -->
-          <svg viewBox="0 0 40 40"><path d="M6 12h28v5H6z"/><path d="M10 17 L7 35M30 17 L33 35M14 17 l-1 18M26 17 l1 18"/><path d="M9 27h22"/></svg>
-        </span>
-        <div><b>פרויקט אישי הביתה</b>בוחרים מהקטלוג ולוקחים הביתה</div>
-      </li>
-    </ul>
+      <ul class="points">
+        <li>
+          <span class="ico">
+            <!-- מסור -->
+            <svg viewBox="0 0 40 40"><path d="M6 26 L28 8 L34 14 L12 32 Z"/><path d="M12 32 l-2-3 l2.5-.5 l-1-3 l2.6-.3 l-.8-3 l2.7-.2 l-.6-3 l2.7-.1"/><path d="M28 8 l4-4 l6 6 l-4 4"/></svg>
+          </span>
+          <div><b>כלי עבודה מגוונים</b>נלמד לעבוד נכון ובטוח עם מגוון כלים</div>
+        </li>
+        <li>
+          <span class="ico">
+            <!-- סרגל ועיפרון -->
+            <svg viewBox="0 0 40 40"><rect x="4" y="22" width="32" height="10" rx="1.5"/><path d="M10 22v4M16 22v6M22 22v4M28 22v6"/><path d="M12 18 L28 4 l4 4 L16 22"/><path d="M12 18 l-1.5 5.5 L16 22"/></svg>
+          </span>
+          <div><b>מהרעיון ועד הגמר</b>נבצע פרויקט שלם, משרטוט ועד גימור</div>
+        </li>
+        <li>
+          <span class="ico">
+            <!-- בית -->
+            <svg viewBox="0 0 40 40"><path d="M5 19 L20 6 L35 19"/><path d="M9 16v18h22V16"/><path d="M17 34v-9h6v9"/></svg>
+          </span>
+          <div><b>משפרים את המרחב</b>נבנה יחד עבור המקום שבו אתם נמצאים</div>
+        </li>
+        <li>
+          <span class="ico">
+            <!-- שרפרף -->
+            <svg viewBox="0 0 40 40"><path d="M6 12h28v5H6z"/><path d="M10 17 L7 35M30 17 L33 35M14 17 l-1 18M26 17 l1 18"/><path d="M9 27h22"/></svg>
+          </span>
+          <div><b>פרויקט אישי הביתה</b>בוחרים מהקטלוג ולוקחים הביתה</div>
+        </li>
+      </ul>
 
-    <div class="sign">
-      <p>מתרגש להתחיל לעבוד יחד!</p>
-      <div class="cta">הירשמו <span>עכשיו</span></div>
+      <p class="sign">מתרגש להתחיל לעבוד יחד!</p>
     </div>
   </main>
 </div>
