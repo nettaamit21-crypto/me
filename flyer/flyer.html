@@ -40,12 +40,12 @@
   }
 
   /* רקע: לוח אגוז */
-  .wood { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .wood { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 30%; filter: saturate(.85) contrast(1.05); }
   .glow {
     position: absolute; inset: 0;
     background:
-      radial-gradient(ellipse 70% 45% at 70% 8%, rgba(255, 200, 130, .30), transparent 70%),
-      radial-gradient(ellipse 120% 80% at 50% 50%, transparent 55%, rgba(10, 6, 3, .65) 100%);
+      linear-gradient(180deg, rgba(30,21,15,.88) 0%, rgba(42,31,23,.72) 26%, rgba(42,31,23,.35) 45%, rgba(30,21,15,.55) 100%),
+      radial-gradient(ellipse 70% 45% at 70% 8%, rgba(255, 190, 120, .18), transparent 70%);
     pointer-events: none;
   }
 
@@ -154,51 +154,7 @@
 <body>
 <div class="flyer" id="flyer">
 
-  <!-- לוח עץ אגוז, מצויר ב-SVG -->
-  <svg class="wood" viewBox="0 0 1080 1350" preserveAspectRatio="none" aria-hidden="true">
-    <defs>
-      <filter id="grain" x="0" y="0" width="100%" height="100%">
-        <feTurbulence type="fractalNoise" baseFrequency="0.0035 0.055" numOctaves="4" seed="7" result="n"/>
-        <feColorMatrix in="n" type="matrix"
-          values="0 0 0 0 0
-                  0 0 0 0 0
-                  0 0 0 0 0
-                  0 0 0 -2.6 1.9" result="lines"/>
-        <feComponentTransfer in="lines" result="dark">
-          <feFuncA type="discrete" tableValues="0 .15 .3 .45 .6 .75"/>
-        </feComponentTransfer>
-        <feFlood flood-color="#140c07"/>
-        <feComposite in2="dark" operator="in" result="shade"/>
-        <feTurbulence type="fractalNoise" baseFrequency="0.6 0.02" numOctaves="2" seed="3" result="fine"/>
-        <feColorMatrix in="fine" type="matrix"
-          values="0 0 0 0 .95
-                  0 0 0 0 .75
-                  0 0 0 0 .5
-                  0 0 0 .22 -.05" result="fineLight"/>
-        <feMerge><feMergeNode in="shade"/><feMergeNode in="fineLight"/></feMerge>
-      </filter>
-      <linearGradient id="base" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stop-color="#6B4A31"/>
-        <stop offset=".45" stop-color="#4A3222"/>
-        <stop offset="1" stop-color="#2E1F15"/>
-      </linearGradient>
-    </defs>
-    <rect width="1080" height="1350" fill="url(#base)"/>
-    <rect width="1080" height="1350" filter="url(#grain)"/>
-    <!-- חיבורי קרשים -->
-    <g stroke="#140c07" stroke-opacity=".55" stroke-width="3">
-      <line x1="0" y1="218" x2="1080" y2="218"/>
-      <line x1="0" y1="560" x2="1080" y2="560"/>
-      <line x1="0" y1="905" x2="1080" y2="905"/>
-      <line x1="0" y1="1210" x2="1080" y2="1210"/>
-    </g>
-    <g stroke="#E6C08A" stroke-opacity=".12" stroke-width="1.5">
-      <line x1="0" y1="221" x2="1080" y2="221"/>
-      <line x1="0" y1="563" x2="1080" y2="563"/>
-      <line x1="0" y1="908" x2="1080" y2="908"/>
-      <line x1="0" y1="1213" x2="1080" y2="1213"/>
-    </g>
-  </svg>
+  <img class="wood" src="logs.jpg" alt="">
   <div class="glow"></div>
 
   <header class="top">
