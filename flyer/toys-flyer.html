@@ -31,7 +31,14 @@
   /* A4 לאורך: 1240 × 1754 (מודפס ב-300dpi בחדות כפולה) */
   .flyer { position: relative; width: 1240px; height: 1754px; overflow: hidden; background: var(--paper); }
 
-  .photo { position: absolute; top: 0; left: 0; width: 100%; height: 980px; object-fit: cover; object-position: center 38%; filter: saturate(1.12) brightness(1.04); }
+  .photo {
+    position: absolute; top: 0; left: 0; width: 100%; height: 980px;
+    /* זום על אבני העץ והמכוניות */
+    background: url(blocks.jpg) no-repeat;
+    background-size: 1500px auto;
+    background-position: -250px -160px;
+    filter: saturate(1.15) brightness(1.05) sepia(.08);
+  }
   .glow {
     position: absolute; top: 0; left: 0; right: 0; height: 980px;
     background:
@@ -128,7 +135,7 @@
 <body>
 <div class="flyer" id="flyer">
 
-  <img class="photo" src="toys.jpg" alt="מכוניות עץ צבעוניות מהנגרייה">
+  <div class="photo" role="img" aria-label="אבני עץ ומכוניות עץ בנגרייה"></div>
   <div class="glow"></div>
 
   <header class="top">
