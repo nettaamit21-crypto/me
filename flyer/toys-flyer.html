@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>צעצועי עץ בעבודת יד</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700;900&family=Heebo:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --walnut-900: #1E150F;
+    --walnut-800: #2A1F17;
+    --walnut-700: #3B2A1E;
+    --oak: #9A6535;
+    --honey: #D9B27C;
+    --cream: #F3EDE3;
+    --paper: #F8F3EA;
+    --amber: #E8A94F;
+    --terracotta: #C9633A;
+    /* צבעי הצעצועים */
+    --lime: #C9CF62;
+    --orange: #E2794F;
+    --sky: #7FA6C4;
+    --lilac: #B79BB7;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--walnut-900); }
+  body { display: grid; place-items: center; min-height: 100vh; font-family: "Heebo", sans-serif; color: var(--walnut-800); }
+
+  /* A4 לאורך: 1240 × 1754 (מודפס ב-300dpi בחדות כפולה) */
+  .flyer { position: relative; width: 1240px; height: 1754px; overflow: hidden; background: var(--paper); }
+
+  .photo { position: absolute; top: 0; left: 0; width: 100%; height: 980px; object-fit: cover; object-position: center 38%; filter: saturate(1.12) brightness(1.04); }
+  .glow {
+    position: absolute; top: 0; left: 0; right: 0; height: 980px;
+    background:
+      radial-gradient(ellipse 60% 40% at 85% 0%, rgba(255, 196, 110, .45), transparent 70%),
+      linear-gradient(180deg, rgba(60,34,16,.86) 0%, rgba(80,46,20,.66) 24%, rgba(110,70,30,.12) 44%, transparent 56%);
+  }
+
+  .top { position: absolute; top: 70px; right: 70px; left: 70px; text-align: center; }
+  .kicker {
+    display: inline-block; background: var(--amber); color: var(--walnut-800);
+    font-weight: 700; font-size: 28px; letter-spacing: .08em;
+    padding: 10px 32px; border-radius: 999px;
+    box-shadow: 0 6px 16px rgba(60,30,10,.3);
+  }
+  h1 {
+    font-family: "Frank Ruhl Libre", serif; font-weight: 900;
+    font-size: 116px; line-height: 1; margin-top: 26px; white-space: nowrap;
+    color: #FFF8EC;
+    text-shadow: 0 3px 0 rgba(90,45,15,.35), 0 8px 30px rgba(40,20,6,.6);
+  }
+  .sub {
+    display: inline-block; margin-top: 26px;
+    font-size: 36px; font-weight: 500; color: #FFF3DE;
+    background: rgba(70,36,14,.62); padding: 10px 38px; border-radius: 999px;
+  }
+
+  /* חותמת תקן */
+  .stamp {
+    position: absolute; top: 700px; left: 70px;
+    width: 210px; height: 210px; border-radius: 50%;
+    background: var(--sky);
+    color: #fff; text-align: center;
+    display: grid; place-content: center; gap: 2px;
+    transform: rotate(-10deg);
+    box-shadow: 0 12px 26px rgba(30,40,60,.35), inset 0 0 0 7px rgba(255,255,255,.85), inset 0 0 0 10px var(--sky), inset 0 0 0 12px rgba(255,255,255,.5);
+    z-index: 3;
+  }
+  .stamp small { font-size: 21px; font-weight: 500; }
+  .stamp strong { font-size: 44px; font-weight: 800; letter-spacing: .02em; direction: ltr; line-height: 1.05; }
+  .stamp span { font-size: 22px; font-weight: 700; }
+
+  .panel { position: absolute; left: 0; right: 0; bottom: 0; top: 900px; }
+  .panel .wave { position: absolute; left: 0; top: -60px; width: 100%; height: 120px; }
+  .panel-body {
+    position: absolute; inset: 58px 0 0 0;
+    background: linear-gradient(180deg, var(--paper) 0%, var(--cream) 100%);
+    padding: 0 90px 64px;
+    display: flex; flex-direction: column; align-items: center; text-align: center;
+  }
+  .lead {
+    font-size: 33px; font-weight: 400; line-height: 1.5; color: var(--walnut-700);
+    max-width: 980px;
+  }
+  .lead b { font-weight: 700; color: var(--walnut-800); }
+
+  .ribbon {
+    margin-top: 40px;
+    transform: rotate(-2deg);
+    background: var(--terracotta); color: #FFF4E4;
+    font-size: 38px; font-weight: 700;
+    padding: 12px 46px; border-radius: 16px;
+    box-shadow: 0 10px 22px rgba(120,50,20,.3);
+  }
+
+  .points {
+    list-style: none; margin-top: 46px; width: 100%;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 40px 50px;
+    text-align: right;
+  }
+  .points li { display: flex; align-items: flex-start; gap: 20px; font-size: 27px; line-height: 1.42; color: var(--walnut-700); }
+  .points b { display: block; font-weight: 700; color: var(--walnut-800); font-size: 31px; margin-bottom: 2px; }
+  .ico {
+    flex: none; width: 90px; height: 90px;
+    border-radius: 58% 42% 55% 45% / 48% 58% 42% 52%;
+    display: grid; place-items: center;
+    box-shadow: 0 8px 16px rgba(90,50,20,.18);
+  }
+  .points li:nth-child(1) .ico { background: var(--lime); }
+  .points li:nth-child(2) .ico { background: var(--orange); border-radius: 45% 55% 42% 58% / 56% 44% 56% 44%; }
+  .points li:nth-child(3) .ico { background: var(--sky); border-radius: 52% 48% 60% 40% / 42% 55% 45% 58%; }
+  .points li:nth-child(4) .ico { background: var(--lilac); border-radius: 60% 40% 48% 52% / 50% 42% 58% 50%; }
+  .ico svg { width: 52px; height: 52px; stroke: #fff; fill: none; stroke-width: 2.1; stroke-linecap: round; stroke-linejoin: round; }
+
+  .sign {
+    margin-top: auto; display: flex; align-items: center; gap: 24px;
+    font-family: "Frank Ruhl Libre", serif; font-size: 50px; font-weight: 700; color: var(--walnut-800);
+  }
+  .sign::before, .sign::after {
+    content: ""; width: 100px; height: 3px; border-radius: 3px;
+    background: linear-gradient(90deg, var(--lime), var(--orange), var(--sky));
+  }
+</style>
+</head>
+<body>
+<div class="flyer" id="flyer">
+
+  <img class="photo" src="toys.jpg" alt="מכוניות עץ צבעוניות מהנגרייה">
+  <div class="glow"></div>
+
+  <header class="top">
+    <div class="kicker">חוות רום · הנגרייה</div>
+    <h1>צעצועי עץ בעבודת יד</h1>
+    <p class="sub">נבנו באהבה, בטוחים לידיים קטנות</p>
+  </header>
+
+  <div class="stamp">
+    <small>לכה בתקן</small>
+    <strong>EN 71-3</strong>
+    <span>בטוח לילדים</span>
+  </div>
+
+  <main class="panel">
+    <svg class="wave" viewBox="0 0 1240 120" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0 70 C 200 20, 380 20, 600 58 S 1010 105, 1240 40 L1240 120 L0 120 Z" fill="#F8F3EA"/>
+    </svg>
+    <div class="panel-body">
+      <p class="lead">כל צעצוע בחנות נבנה <b>בנגרייה השיקומית שלנו, בידי המשתקמים.</b><br>
+        כשאתם קונים צעצוע, אתם לוקחים הביתה משחק לילדים<br>וגם תומכים בתהליך של יצירה, עבודה וצמיחה.</p>
+
+      <p class="ribbon">חשבנו על הבטיחות בכל שלב</p>
+
+      <ul class="points">
+        <li>
+          <span class="ico">
+            <!-- גדם עץ -->
+            <svg viewBox="0 0 40 40"><ellipse cx="20" cy="11" rx="13" ry="5"/><path d="M7 11v17c0 2.8 5.8 5 13 5s13-2.2 13-5V11"/><ellipse cx="20" cy="11" rx="7" ry="2.4"/><path d="M14 20v8M26 21v6"/></svg>
+          </span>
+          <div><b>עץ מלא וטבעי</b>בלי פלסטיק ובלי חומרים מיותרים.</div>
+        </li>
+        <li>
+          <span class="ico">
+            <!-- יד מלטפת משטח -->
+            <svg viewBox="0 0 40 40"><path d="M4 32h32"/><path d="M8 27c4-6 8-8 14-8h8c2 0 3 1.5 3 3s-1 3-3 3h-6"/><path d="M15 21l3-8c.5-1.5 2.5-1.5 3 0l1 6"/><path d="M8 7l2 2M14 4v3M20 6l-1.5 2"/></svg>
+          </span>
+          <div><b>פינות מעוגלות וליטוש עדין</b>כל משטח עבר ליטוש עד שהוא חלק ונעים למגע, בלי קוצים.</div>
+        </li>
+        <li>
+          <span class="ico">
+            <!-- טיפה -->
+            <svg viewBox="0 0 40 40"><path d="M20 4c6 8 11 14 11 20a11 11 0 0 1-22 0c0-6 5-12 11-20z"/><path d="M14 25a6 6 0 0 0 6 6"/></svg>
+          </span>
+          <div><b>לכת הידרו קליר של יעקובי</b>על בסיס מים וללא רעלים, עומדת בתקן האירופי EN&nbsp;71-3 לצעצועי ילדים.</div>
+        </li>
+        <li>
+          <span class="ico">
+            <!-- גלגל -->
+            <svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="14"/><circle cx="20" cy="20" r="8"/><circle cx="20" cy="20" r="2.2"/></svg>
+          </span>
+          <div><b>חיבורים חזקים</b>הגלגלים והחלקים מחוברים היטב, כדי שהצעצוע יחזיק מעמד במשחק אמיתי.</div>
+        </li>
+      </ul>
+
+      <p class="sign">צעצוע שעובר מיד ליד, ומדור לדור.</p>
+    </div>
+  </main>
+</div>
+</body>
+</html>
