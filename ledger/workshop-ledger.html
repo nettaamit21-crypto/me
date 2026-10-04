@@ -386,6 +386,85 @@
     .week-row .hide-sm{ display:none; }
   }
 
+
+  /* ---------- Pricing v2 ---------- */
+  .lead-note{ font-size:0.88rem; color:#4a3d2e; margin:0 0 10px; line-height:1.6; }
+  .src-legend{ display:flex; flex-wrap:wrap; gap:4px 8px; align-items:center; font-size:0.72rem; color:var(--muted); margin-bottom:6px; }
+  .src-legend .src{ margin-inline-start:0; }
+  .src{ display:inline-block; font-size:0.64rem; font-weight:700; padding:1px 7px; border-radius:999px; margin-inline-start:8px; vertical-align:middle; letter-spacing:0; text-transform:none; white-space:nowrap; }
+  .src-ledger{ background:#E1EBF7; color:#1c5cab; }
+  .src-auto{ background:var(--pine-light); color:var(--pine); }
+  .src-manual{ background:#EDE2CB; color:var(--brass-dark); }
+  .tip{ display:inline-block; margin-inline-start:4px; vertical-align:middle; }
+  .tip summary{ list-style:none; cursor:pointer; color:var(--brass-dark); font-size:0.82rem; font-weight:700; display:inline-block; padding:0 3px; border-radius:6px; }
+  .tip summary::-webkit-details-marker{ display:none; }
+  .tip summary:hover{ background:#EDE2CB; }
+  .tip[open]{ display:block; margin-inline-start:0; }
+  .tip-body{ font-size:0.76rem; font-weight:400; color:#4a3d2e; background:#fff; border:1px solid var(--border); border-radius:9px; padding:8px 10px; margin-top:4px; line-height:1.55; text-transform:none; letter-spacing:0; }
+  .result-row .tip{ font-size:0.86rem; }
+  .subrow.off{ opacity:.55; }
+  .result-row.wrapv .val{ white-space:normal; direction:rtl; text-align:left; font-family:inherit; }
+  .subrow input.unit{ width:44px; }
+  .subrow select{ max-width:160px; }
+  .subrow .cap.tot{ min-width:72px; text-align:left; direction:ltr; color:var(--walnut); font-weight:700; font-size:0.8rem; }
+  .range{ width:100%; accent-color:var(--pine); margin-top:6px; }
+  .chips{ display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
+  .chip{ border:1.5px dashed var(--brass); color:var(--brass-dark); background:transparent; border-radius:999px; padding:5px 11px; font-size:0.78rem; font-weight:600; }
+  .chip:hover{ background:var(--brass); color:var(--paper); }
+  .check{ display:flex; align-items:center; gap:6px; font-size:0.85rem; padding:4px 0; cursor:pointer; }
+  .check input{ width:17px; height:17px; accent-color:var(--pine); }
+  .strong{ font-weight:700; }
+  .money-bar{ display:flex; gap:2px; height:28px; margin:6px 0 10px; }
+  .money-bar span{ height:100%; min-width:3px; }
+  .money-bar span:first-child{ border-radius:0 6px 6px 0; }
+  .money-bar span:last-child{ border-radius:6px 0 0 6px; }
+  .money-bar span:only-child{ border-radius:6px; }
+  .money-legend{ display:grid; grid-template-columns:repeat(auto-fill, minmax(190px, 1fr)); gap:5px 14px; }
+  .money-legend .lg{ display:flex; align-items:center; gap:7px; font-size:0.8rem; }
+  .money-legend .sw{ width:11px; height:11px; border-radius:3px; flex-shrink:0; }
+  .money-legend .lg-name{ flex:1; }
+  .money-legend .lg-val{ direction:ltr; font-family:"Courier New",Consolas,monospace; font-weight:600; white-space:nowrap; }
+  .money-legend .lg.neg .lg-val{ color:var(--rust); }
+  .proj-card{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; background:#fff; border:1px solid var(--border); border-radius:12px; padding:11px 13px; margin-bottom:8px; }
+  .proj-main{ flex:1; min-width:180px; }
+  .proj-name{ font-weight:700; font-size:0.95rem; }
+  .proj-nums{ text-align:left; }
+  .proj-nums .mono{ direction:ltr; font-size:1.1rem; }
+  .proj-act{ display:flex; gap:4px; align-items:center; }
+  .goal{ margin-bottom:12px; }
+  .goal-foot{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; padding:0 4px; }
+  table.rep tr.hl td{ background:rgba(63,102,80,.08); font-weight:700; }
+  table.rep tr.tot td{ border-top:2px solid var(--walnut); font-weight:700; }
+  table.rep td.strong{ font-weight:700; }
+  @media (max-width:620px){
+    table.rep .hide-sm{ display:none; }
+    .proj-nums{ text-align:right; }
+    .price-hero .big{ font-size:1.6rem; }
+    .result-row .val{ white-space:normal; text-align:left; }
+  }
+
+  /* ---------- Invoices ---------- */
+  .drop-zone{ border:2px dashed var(--brass); border-radius:16px; padding:26px 16px; text-align:center; background:rgba(255,255,255,.5); cursor:pointer; transition:.15s; }
+  .drop-zone:hover, .drop-zone.over{ background:var(--pine-light); border-color:var(--pine); }
+  .drop-zone .big-ico{ font-size:2rem; }
+  .inv-card{ background:#fff; border:1px solid var(--border); border-radius:12px; padding:10px 12px; margin-bottom:9px; display:flex; gap:12px; align-items:flex-start; }
+  .inv-card.review{ border-inline-start:4px solid var(--brass); }
+  .inv-card.dup{ border-inline-start:4px solid var(--rust); }
+  .inv-thumb{ width:62px; height:80px; object-fit:cover; border-radius:8px; border:1px solid var(--border); background:var(--card); display:flex; align-items:center; justify-content:center; font-size:1.6rem; flex-shrink:0; cursor:pointer; }
+  .inv-fields{ flex:1; display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:6px 10px; }
+  .inv-fields .f{ display:flex; flex-direction:column; gap:1px; }
+  .inv-fields .f label{ font-size:0.66rem; color:var(--muted); font-weight:700; }
+  .inv-fields input, .inv-fields select{ border:none; border-bottom:1px solid var(--border); padding:3px 2px; font-size:0.85rem; font-family:inherit; background:transparent; color:var(--walnut); width:100%; }
+  .inv-fields input:focus, .inv-fields select:focus{ outline:none; border-bottom-color:var(--brass); }
+  .inv-fields input.num{ direction:ltr; text-align:right; font-family:"Courier New",Consolas,monospace; }
+  .inv-fields .wide2{ grid-column:span 2; }
+  .inv-flags{ grid-column:1 / -1; display:flex; gap:6px; flex-wrap:wrap; align-items:center; font-size:0.72rem; }
+  .inv-progress{ font-size:0.82rem; padding:8px 10px; border-radius:10px; background:var(--card); border:1px solid var(--border); margin-top:10px; }
+  @media (max-width:700px){
+    .inv-fields{ grid-template-columns:repeat(2, minmax(0,1fr)); }
+    .inv-thumb{ width:48px; height:62px; }
+  }
+
   @media print{
     body > *{ display:none !important; }
     body > .modal-backdrop{ display:block !important; position:static; background:none; padding:0; overflow:visible; }
@@ -407,7 +486,7 @@
       <div class="brand-badge">🔨</div>
       <div>
         <h1>פנקס בית המלאכה</h1>
-        <p>כספים · תמחור · חיתוך · הצעות מחיר</p>
+        <p>כספים · תמחור · חיתוך · הצעות מחיר · חשבוניות</p>
       </div>
     </div>
     <div class="header-actions">
@@ -425,6 +504,7 @@
     <button class="viewtab" data-view="hourly" type="button">⏱ תעריף שעה</button>
     <button class="viewtab" data-view="cutting" type="button">🪚 חיתוך פלטות</button>
     <button class="viewtab" data-view="clients" type="button">👥 לקוחות והצעות</button>
+    <button class="viewtab" data-view="invoices" type="button">🧾 חשבוניות</button>
     <button class="viewtab" data-view="capture" type="button">📲 קליטה מהטלפון</button>
   </nav>
 </header>
@@ -606,6 +686,11 @@
     <div id="cutting-results"></div>
   </section>
 
+  <!-- ============ INVOICES ============ -->
+  <section class="view" id="view-invoices">
+    <div id="invoices-content"></div>
+  </section>
+
   <!-- ============ CAPTURE ============ -->
   <section class="view" id="view-capture">
     <div id="capture-content"></div>
@@ -637,7 +722,7 @@
   /* ============================================================ */
 
   var STORAGE_KEY = "workshopLedgerData_v1";
-  var SCHEMA_VERSION = 3;
+  var SCHEMA_VERSION = 4;
 
   function uid(){ return "id-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2,9); }
   function pad2(n){ return String(n).length < 2 ? "0" + n : String(n); }
@@ -884,6 +969,13 @@
     if (!s.pricing) s.pricing = dp;
     if (!s.pricing.workshop) s.pricing.workshop = dp.workshop;
     if (!s.pricing.product)  s.pricing.product  = dp.product;
+    if (!s.pricing.rate) s.pricing.rate = defaultRateSettings();
+    var dr = defaultRateSettings();
+    Object.keys(dr).forEach(function(k){ if (s.pricing.rate[k] === undefined) s.pricing.rate[k] = dr[k]; });
+    if (!Array.isArray(s.projects)) s.projects = [];
+    if (!s.growth) s.growth = defaultGrowth();
+    if (!Array.isArray(s.growth.goals)) s.growth.goals = [];
+    if (!s.invoices || !Array.isArray(s.invoices.items)) s.invoices = { items: [] };
     if (!Array.isArray(s.pricing.saved)) s.pricing.saved = [];
     if (s.pricing.settings) delete s.pricing.settings;
     var p = s.pricing.product;
@@ -2890,12 +2982,1414 @@
     return { node: wrap, actions: [] };
   }
 
+  /* ============================================================ */
+  /* Pricing engine v2 — hour cost, project quotes, growth         */
+  /* ============================================================ */
+  /* שלושה דברים שונים שקל לבלבל:                                  */
+  /*   עלות העסק — מה שצריך כדי שהסדנה תפעל: תקורה, חומרים, הוצאות. */
+  /*   שכר אישי  — מה שאתה מקבל על השעות שלך, נטו לכיס.             */
+  /*   רווח עסקי — מה שנשאר בעסק אחרי שכוסו העלויות והשכר.          */
+  /* מיסים לפי אחוז מהמחזור והתשלום לחווה הם אחוז מהמחיר, ולכן הם   */
+  /* מגולמים במחיר (מחלקים ב-1 פחות האחוז) ולא מתווספים על העלות.  */
+  /* כך גם הרווח: 15% רווח = 15% ממחיר המכירה, לא 15% על העלות.      */
+
+  function defaultRateSettings(){
+    var cur = todayMonthKey();
+    return {
+      overheadBasis: "avg3",          /* avg3 | current */
+      includeInstallments: true,
+      rowRules: {},                   /* שם שורה -> "include" | "exclude" */
+      farm: [ { id: uid(), from: cur, pct: 15 }, { id: uid(), from: shiftMonthKey(cur, 2), pct: 5 } ],
+      profitPct: 15, safetyPct: 10, roundTo: 10,
+      depositThreshold: 10000, depositPct: 30,
+      factor: 3,
+      workers: []                     /* { id, name, hourlyCost } */
+    };
+  }
+  function defaultGrowth(){ return { manualProfit: "", goals: [] }; }
+
+  var DEFAULT_STAGES = ["תכנון","הכנת חומר","ניסור ועיבוד","הרכבה","שיוף","גימור","התקנה","הובלה"];
+  var EXTRA_PRESETS = ["הובלה","חומרי עזר","קבלן משנה","שכירת ציוד","התקנה","בלתי צפוי"];
+  var PROJECT_STATUS = {
+    draft:    { label:"טיוטה",        cls:"badge-soft", quote:"draft" },
+    sent:     { label:"נשלחה ללקוח",  cls:"badge",      quote:"sent" },
+    active:   { label:"אושרה · פעיל", cls:"badge-pine", quote:"approved" },
+    done:     { label:"הושלם",        cls:"badge-pine", quote:"approved" },
+    rejected: { label:"נדחתה",        cls:"badge-rust", quote:"rejected" }
+  };
+
+  function mkProject(){
+    var r = state.pricing.rate;
+    var cur = todayMonthKey();
+    var now = new Date().toISOString();
+    return {
+      id: uid(), name: "", clientId: "", status: "draft", createdAt: now, updatedAt: now,
+      materials: [
+        { id: uid(), name:"עץ", qty:1, unit:"", unitPrice:0 },
+        { id: uid(), name:"פרזול וברגים", qty:1, unit:"", unitPrice:0 },
+        { id: uid(), name:"חומרי גמר (שמן, לכה, צבע)", qty:1, unit:"", unitPrice:0 }
+      ],
+      wastePct: 0,
+      stages: DEFAULT_STAGES.map(function(n){ return { id: uid(), name:n, hours:0, worker:"self" }; }),
+      extras: [],
+      method: "cost", factor: r.factor,
+      factorIncludes: { labor:true, overhead:true, profit:true },
+      profitPct: r.profitPct, safetyPct: r.safetyPct,
+      vatPercent: num(state.vat.rate) || 18, roundTo: r.roundTo,
+      approvalMonth: cur, deliveryMonth: shiftMonthKey(cur, 1),
+      depositPct: "", quoteId: null, note: ""
+    };
+  }
+
+  function projectById(id){
+    var f = (state.projects||[]).filter(function(p){ return p.id === id; });
+    return f.length ? f[0] : null;
+  }
+  function workerById(id){
+    var f = (state.pricing.rate.workers||[]).filter(function(w){ return w.id === id; });
+    return f.length ? f[0] : null;
+  }
+
+  /* ---------- שעת העבודה ---------- */
+
+  function nameKey(s){ return String(s || "").trim(); }
+  function looksLikeFarm(name){ return /חוו/.test(name || ""); }
+  function looksLikeVat(name){ return /מע["״'׳]?מ/.test(name || ""); }
+
+  /* שורה של תשלום לחווה כבר נספרת כאחוז מהמחיר, ולכן כברירת מחדל
+     היא לא נכנסת לתקורה. אפשר לשנות כל שורה ידנית. */
+  function overheadRowIncluded(item){
+    var rule = state.pricing.rate.rowRules[nameKey(item.name)];
+    if (rule === "exclude") return false;
+    if (rule === "include") return true;
+    return !looksLikeFarm(item.name);
+  }
+
+  function overheadBasisMonths(){
+    if (state.pricing.rate.overheadBasis === "current") return [currentMonthKey];
+    var ks = [0,-1,-2].map(function(d){ return shiftMonthKey(currentMonthKey, d); })
+      .filter(function(k){ return !!state.months[k]; });
+    return ks.length ? ks : [currentMonthKey];
+  }
+
+  function overheadForMonth(k){
+    var m = state.months[k];
+    var rows = m ? filterScope(m.recurringExpenses, "business") : [];
+    var recurring = sum(rows.filter(overheadRowIncluded).map(function(i){ return lineNet(i, "out"); }));
+    var inst = !state.pricing.rate.includeInstallments ? 0 : sum(installmentsForMonth(k)
+      .filter(function(i){ return inScope(i.plan, "business"); })
+      .map(function(i){ return num(i.amount); }));
+    return { month:k, recurring: recurring, installments: inst, total: recurring + inst };
+  }
+
+  /* שורות מס שנספרות: לא מע"מ (הוא לא שלך) ולא החווה (נספרת בנפרד) */
+  function taxRowCounts(t){
+    if (looksLikeVat(t.name) || looksLikeFarm(t.name)) return false;
+    return !state.hourly.excludedTaxes[t.id];
+  }
+
+  function farmPctFor(monthKey){
+    var list = (state.pricing.rate.farm||[]).filter(function(f){ return isMonthKey(f.from); })
+      .slice().sort(function(a,b){ return a.from < b.from ? -1 : a.from > b.from ? 1 : 0; });
+    var v = 0;
+    list.forEach(function(f){ if (f.from <= monthKey) v = num(f.pct); });
+    return v;
+  }
+
+  function calcRate(farmMonth){
+    var h = state.hourly, r = state.pricing.rate;
+    var per = overheadBasisMonths().map(overheadForMonth);
+    var n = Math.max(1, per.length);
+    var recurring = sum(per.map(function(x){ return x.recurring; })) / n;
+    var installments = sum(per.map(function(x){ return x.installments; })) / n;
+    var overhead = recurring + installments;
+
+    var cur = state.months[currentMonthKey];
+    var taxes = cur ? cur.taxes : [];
+    var pctTax = sum(taxes.filter(function(t){ return t.mode === "percent" && taxRowCounts(t); })
+      .map(function(t){ return num(t.value); })) / 100;
+    var fixedTax = sum(taxes.filter(function(t){ return t.mode !== "percent" && taxRowCounts(t); })
+      .map(function(t){ return num(t.value); }));
+
+    var grossHours = num(h.workDaysPerMonth) * num(h.hoursPerDay);
+    var billable = Math.max(0, h.useManualHours ? num(h.manualHours) : grossHours * num(h.billablePct)/100);
+    var salaryNet = num(h.desiredNet);
+    var farm = farmPctFor(farmMonth || currentMonthKey) / 100;
+
+    var ohRate = billable > 0 ? overhead / billable : 0;
+    var salaryRate = billable > 0 ? (salaryNet + fixedTax) / billable : 0;
+    var deductions = Math.min(0.9, pctTax + farm);
+    var baseRate = ohRate + salaryRate;
+    var hourCost = baseRate / (1 - deductions);
+    var profit = num(r.profitPct) / 100;
+    var hourPrice = baseRate / Math.max(0.05, 1 - deductions - profit);
+
+    return {
+      months: per, recurring: recurring, installments: installments, overhead: overhead,
+      pctTax: pctTax, fixedTax: fixedTax, farm: farm, deductions: deductions,
+      grossHours: grossHours, billable: billable, nonBillable: Math.max(0, grossHours - billable),
+      salaryNet: salaryNet, ohRate: ohRate, salaryRate: salaryRate, baseRate: baseRate,
+      taxPerHour: hourCost * pctTax, farmPerHour: hourCost * farm,
+      hourCost: hourCost, profitPct: profit, hourPrice: hourPrice,
+      hourProfit: hourPrice * profit
+    };
+  }
+
+  /* ---------- הצעת מחיר לפרויקט ---------- */
+
+  function projectFarmMonth(p){ return isMonthKey(p.deliveryMonth) ? p.deliveryMonth : currentMonthKey; }
+
+  function calcProject(p, rate){
+    rate = rate || calcRate(projectFarmMonth(p));
+    var matRaw = sum((p.materials||[]).map(function(m){ return num(m.qty) * num(m.unitPrice); }));
+    var waste = matRaw * num(p.wastePct) / 100;
+    var M = matRaw + waste;
+    var E = sum((p.extras||[]).map(function(x){ return num(x.amount); }));
+
+    var selfHours = 0, workerHours = 0, workerCost = 0;
+    (p.stages||[]).forEach(function(s){
+      var hrs = num(s.hours);
+      if (s.worker && s.worker !== "self"){
+        var w = workerById(s.worker);
+        workerHours += hrs;
+        workerCost += hrs * (w ? num(w.hourlyCost) : 0);
+      } else selfHours += hrs;
+    });
+    var H = selfHours + workerHours;
+    var S = selfHours * rate.salaryRate;          /* שכר אישי המיוחס לפרויקט */
+    var OH = H * rate.ohRate;                      /* חלק הפרויקט בתקורה */
+    var C = (M + E) * num(p.safetyPct) / 100;      /* מרווח ביטחון */
+    var direct = M + E + C + workerCost;           /* עלויות ישירות */
+    var costs = direct + OH;                       /* סך עלויות העסק */
+    var f = rate.farm, t = rate.pctTax, pr = num(p.profitPct) / 100;
+    var vatR = num(p.vatPercent) / 100;
+
+    function safeDiv(a, d){ return a / Math.max(0.05, d); }
+
+    var floorEx = safeDiv(costs, 1 - f);
+    var minEx = safeDiv(costs + S, 1 - f - t);
+    var recEx = safeDiv(costs + S, 1 - f - t - pr);
+
+    /* שיטה ב: מקדם על החומרים. מה שהמקדם לא כולל מתווסף בנפרד */
+    var inc = p.factorIncludes || {};
+    var k = num(p.factor);
+    var addsB = E + E * num(p.safetyPct) / 100 +
+                (inc.labor ? 0 : S + workerCost) + (inc.overhead ? 0 : OH);
+    var factorEx = M * k + safeDiv(addsB, 1 - f - t);
+    if (!inc.profit) factorEx = safeDiv(factorEx, 1 - pr);
+
+    function split(rawEx){
+      var fin = finalizePrice(rawEx, p.vatPercent, p.roundTo, "incVat");
+      var P = fin.exVat;
+      var farm = P * f, tax = P * t;
+      var profit = P - costs - S - farm - tax;
+      return {
+        exVat: P, vat: fin.vatAmount, incVat: fin.incVat,
+        costs: costs, salary: S, farm: farm, tax: tax, profit: profit,
+        profitPct: P > 0 ? profit / P * 100 : 0,
+        markupPct: (costs + S) > 0 ? (P - costs - S) / (costs + S) * 100 : 0,
+        grossProfit: P - direct - farm,
+        operatingProfit: P - costs - farm - S,
+        effectiveHourly: selfHours > 0 ? (S + profit) / selfHours : 0
+      };
+    }
+
+    var A = split(recEx), B = split(factorEx);
+    var chosen = p.method === "factor" ? B : A;
+    var depositPct = projectDepositPct(p, chosen);
+
+    return {
+      rate: rate, matRaw: matRaw, waste: waste, M: M, E: E, C: C,
+      selfHours: selfHours, workerHours: workerHours, workerCost: workerCost, H: H,
+      S: S, OH: OH, direct: direct, costs: costs, f: f, t: t, pr: pr, vatR: vatR,
+      floor: { exVat: floorEx, incVat: floorEx * (1 + vatR) },
+      minimum: { exVat: minEx, incVat: minEx * (1 + vatR) },
+      A: A, B: B, chosen: chosen, factorBase: M * k,
+      depositPct: depositPct, deposit: chosen.incVat * depositPct / 100
+    };
+  }
+
+  function projectDepositPct(p, chosen){
+    if (p.depositPct !== "" && p.depositPct !== null && p.depositPct !== undefined) return num(p.depositPct);
+    var r = state.pricing.rate;
+    return chosen.incVat > num(r.depositThreshold) ? num(r.depositPct) : 0;
+  }
+
+  /* ---------- חיבור ליומן ---------- */
+
+  /* כל השורות ביומן שמשויכות לפרויקט. נסרק בכל פעם, כדי שמחיקה ביומן
+     תתעדכן כאן מיד ולא יישאר מונה כפול. */
+  function projectLedger(p){
+    var out = { income: [], expenses: [], received: 0, receivedNet: 0, spent: 0, spentNet: 0 };
+    Object.keys(state.months).sort().forEach(function(k){
+      var m = state.months[k];
+      (m.oneTimeIncome||[]).concat(m.recurringIncome||[]).forEach(function(i){
+        if (i.projectId !== p.id) return;
+        out.income.push({ month:k, item:i });
+        out.received += lineGross(i, "in"); out.receivedNet += lineNet(i, "in");
+      });
+      (m.oneTimeExpenses||[]).forEach(function(i){
+        if (i.projectId !== p.id) return;
+        out.expenses.push({ month:k, item:i });
+        out.spent += lineGross(i, "out"); out.spentNet += lineNet(i, "out");
+      });
+    });
+    return out;
+  }
+
+  /* היומן סופר מע"מ רק אם הוא מופעל. אחרת משווים למחיר לפני מע"מ */
+  function ledgerBasisTotal(res){ return state.vat.enabled ? res.chosen.incVat : res.chosen.exVat; }
+
+  function recordProjectReceipt(p, amount, monthKey, label){
+    var item = mkIncomeItem((p.name || "פרויקט") + (label ? " · " + label : ""), 1, r2(amount));
+    item.projectId = p.id;
+    if (state.vat.enabled) item.vatInc = true;
+    ensureMonth(monthKey).oneTimeIncome.push(item);
+    scheduleSave(); renderLedger();
+    toast("נרשם תקבול של " + formatCurrency(amount) + " ב" + monthKeyLabel(monthKey) + ".");
+  }
+
+  function recordProjectExpense(p, name, amount, monthKey){
+    var item = mkItem((p.name || "פרויקט") + " · " + (name || "הוצאה"), r2(amount));
+    item.projectId = p.id;
+    ensureMonth(monthKey).oneTimeExpenses.push(item);
+    scheduleSave(); renderLedger();
+    toast("ההוצאה נרשמה ביומן תחת הוצאות חד-פעמיות של " + monthKeyLabel(monthKey) + ".");
+  }
+
+  function quoteById(id){
+    var f = (state.quotes||[]).filter(function(q){ return q.id === id; });
+    return f.length ? f[0] : null;
+  }
+
+  /* סטטוס ההצעה בלשונית הלקוחות מעדכן את הפרויקט, כדי שלא יהיו שני מקורות אמת */
+  function syncProjectFromQuote(p){
+    var q = p.quoteId ? quoteById(p.quoteId) : null;
+    if (!q) return;
+    if (p.status === "draft" || p.status === "sent"){
+      if (q.status === "approved") p.status = "active";
+      else if (q.status === "rejected") p.status = "rejected";
+      else if (q.status === "sent") p.status = "sent";
+    }
+  }
+
+  function setProjectStatus(p, status){
+    p.status = status;
+    p.updatedAt = new Date().toISOString();
+    var q = p.quoteId ? quoteById(p.quoteId) : null;
+    if (q) q.status = PROJECT_STATUS[status].quote;
+    scheduleSave();
+  }
+
+  function projectQuoteDoc(p){
+    var res = calcProject(p);
+    var q = p.quoteId ? quoteById(p.quoteId) : null;
+    var fresh = !q;
+    if (!q){ q = mkQuote(p.clientId); state.quotes.push(q); p.quoteId = q.id; }
+    q.projectId = p.id;
+    q.clientId = p.clientId || q.clientId;
+    q.title = p.name || "";
+    q.vatPercent = num(p.vatPercent);
+    q.discountPct = 0;
+    q.items = [ mkQuoteItem(p.name || "פרויקט נגרות", 1, r2(res.chosen.exVat)) ];
+    q.status = PROJECT_STATUS[p.status].quote;
+    if (res.depositPct > 0){
+      var depLine = "מקדמה של " + res.depositPct + "% (" + formatCurrency(res.deposit) + " כולל מע\"מ) בעת אישור ההצעה, היתרה במסירה.";
+      if (String(q.note || "").indexOf("מקדמה") === -1) q.note = (q.note ? q.note + "\n" : "") + depLine;
+    }
+    scheduleSave();
+    switchView("clients");
+    clientsSelectTab("quotes");
+    openQuoteEditor(q);
+    toast(fresh ? "נוצר מסמך הצעת מחיר מהפרויקט." : "מסמך ההצעה עודכן למחיר הנוכחי.");
+  }
+
+  /* ---------- תחזית ---------- */
+
+  function maxMonth(a, b){ return a > b ? a : b; }
+
+  /* כסף שעוד צפוי להיכנס מהפרויקט, לפי מקדמה ויתרה */
+  function projectCashSchedule(p, res, led){
+    var total = ledgerBasisTotal(res);
+    var got = led.received;
+    var remaining = Math.max(0, total - got);
+    if (remaining < 0.5) return [];
+    var now = todayMonthKey();
+    var dep = total * res.depositPct / 100;
+    var depDue = Math.max(0, Math.min(remaining, dep - got));
+    var am = maxMonth(isMonthKey(p.approvalMonth) ? p.approvalMonth : now, now);
+    var dm = maxMonth(isMonthKey(p.deliveryMonth) ? p.deliveryMonth : am, am);
+    var out = [];
+    if (depDue > 0.5) out.push({ month: am, amount: depDue, kind:"מקדמה" });
+    if (remaining - depDue > 0.5) out.push({ month: dm, amount: remaining - depDue, kind:"יתרה" });
+    return out;
+  }
+
+  function projectForecast(monthsAhead){
+    var now = todayMonthKey();
+    var rows = [];
+    for (var i = 0; i < monthsAhead; i++){
+      rows.push({ month: shiftMonthKey(now, i), cash:0, potential:0, profit:0, salary:0, potentialProfit:0 });
+    }
+    function rowFor(k){ var f = rows.filter(function(r){ return r.month === k; }); return f.length ? f[0] : null; }
+    var open = { active:0, sent:0, profit:0, salary:0, gross:0, operating:0, cash:0, potentialProfit:0, count:0, sentCount:0 };
+    (state.projects||[]).forEach(function(p){
+      syncProjectFromQuote(p);
+      if (p.status !== "active" && p.status !== "sent") return;
+      var res = calcProject(p);
+      var led = projectLedger(p);
+      var sched = projectCashSchedule(p, res, led);
+      var dm = maxMonth(isMonthKey(p.deliveryMonth) ? p.deliveryMonth : now, now);
+      var r = rowFor(dm);
+      if (p.status === "active"){
+        open.count++; open.active += res.chosen.exVat;
+        open.profit += res.chosen.profit; open.salary += res.chosen.salary;
+        open.gross += res.chosen.grossProfit; open.operating += res.chosen.operatingProfit;
+        sched.forEach(function(s){ open.cash += s.amount; var rr = rowFor(s.month); if (rr) rr.cash += s.amount; });
+        if (r){ r.profit += res.chosen.profit; r.salary += res.chosen.salary; }
+      } else {
+        open.sentCount++; open.sent += res.chosen.exVat; open.potentialProfit += res.chosen.profit;
+        sched.forEach(function(s){ var rr = rowFor(s.month); if (rr) rr.potential += s.amount; });
+        if (r) r.potentialProfit += res.chosen.profit;
+      }
+    });
+    return { rows: rows, open: open };
+  }
+
+  function goalMonthly(g){
+    var left = Math.max(0, num(g.target) - num(g.saved));
+    if (left <= 0) return 0;
+    var months = isMonthKey(g.targetMonth) ? monthDiff(todayMonthKey(), g.targetMonth) : 12;
+    return left / Math.max(1, months);
+  }
+
+  /* ---------- רכיבי ממשק משותפים ---------- */
+
+  function tip(text){
+    return el("details", { className:"tip" }, [
+      el("summary", { textContent:"ⓘ", title:"מה זה?" }),
+      el("div", { className:"tip-body", textContent: text })
+    ]);
+  }
+  function withTip(field, text){ field.firstChild.appendChild(tip(text)); return field; }
+  function srcBadge(kind){
+    var map = { ledger:["src src-ledger","🔗 מהיומן"], auto:["src src-auto","⚙ מחושב"], manual:["src src-manual","✎ הזנה ידנית"] };
+    return el("span", { className: map[kind][0], textContent: map[kind][1] });
+  }
+  function sectionTitleSrc(t, kind){
+    var s = sectionTitle(t);
+    if (kind) s.appendChild(srcBadge(kind));
+    return s;
+  }
+  function srcLegend(){
+    return el("div", { className:"src-legend" }, [
+      srcBadge("manual"), el("span", { textContent:"אתה מזין" }),
+      srcBadge("ledger"), el("span", { textContent:"נמשך מהיומן, בלי הזנה כפולה" }),
+      srcBadge("auto"), el("span", { textContent:"המערכת מחשבת" })
+    ]);
+  }
+  function statCell(k, v, d, cls){
+    return el("div", { className:"combo-cell" + (cls ? " " + cls : "") }, [
+      el("div", { className:"k", textContent:k }),
+      el("div", { className:"v", textContent:v }),
+      d ? el("div", { className:"d", textContent:d }) : null
+    ]);
+  }
+
+  /* פס חלוקת הכסף. הצבעים קבועים לכל רכיב בכל המסכים */
+  var MONEY_PARTS = [
+    { key:"costs",  label:"כיסוי עלויות העסק", color:"#2a78d6" },
+    { key:"farm",   label:"תשלום לחווה",       color:"#eb6834" },
+    { key:"salary", label:"שכר אישי",          color:"#1baf7a" },
+    { key:"tax",    label:"מיסים (הערכה)",     color:"#eda100" },
+    { key:"profit", label:"רווח העסק",         color:"#e87ba4" },
+    { key:"vat",    label:"מע\"מ (עובר למדינה)", color:"#A9A294" }
+  ];
+  function moneySplit(values, total){
+    var wrap = el("div", {});
+    var bar = el("div", { className:"money-bar", role:"img", "aria-label":"חלוקת המחיר ללקוח" });
+    var legend = el("div", { className:"money-legend" });
+    MONEY_PARTS.forEach(function(part){
+      var v = num(values[part.key]);
+      var share = total > 0 ? v / total * 100 : 0;
+      if (v > 0.5 && share > 0) bar.appendChild(el("span", {
+        style:"width:" + share.toFixed(2) + "%; background:" + part.color + ";",
+        title: part.label + ": " + formatCurrency(v) + " (" + pct(share) + ")" }));
+      legend.appendChild(el("div", { className:"lg" + (v < 0 ? " neg" : "") }, [
+        el("span", { className:"sw", style:"background:" + part.color + ";" }),
+        el("span", { className:"lg-name", textContent: part.label }),
+        el("span", { className:"lg-val", textContent: formatCurrency(v) + " · " + pct(share) })
+      ]));
+    });
+    wrap.appendChild(bar);
+    wrap.appendChild(legend);
+    return wrap;
+  }
+
+  function miniBar(value, max, color){
+    var w = max > 0 ? Math.max(0, Math.min(100, value / max * 100)) : 0;
+    return el("div", { className:"bar", style:"margin-top:4px;" }, [
+      el("span", { style:"width:" + w.toFixed(1) + "%; background:" + (color || "var(--pine)") + ";" })
+    ]);
+  }
+
+  function textInput(obj, key, onChange, cls, placeholder){
+    var inp = el("input", { type:"text", className: cls || "nm", placeholder: placeholder || "" });
+    inp.value = obj[key] || "";
+    inp.addEventListener("input", function(e){ obj[key] = e.target.value; if (onChange) onChange(); });
+    return inp;
+  }
+
+  /* ============================================================ */
+  /* אזור 1 — שעת העבודה שלי                                       */
+  /* ============================================================ */
+
+  function buildRateTab(){
+    var h = state.hourly, r = state.pricing.rate;
+    var wrap = el("div", {});
+    var expWrap = el("div", {});
+    var taxWrap = el("div", {});
+    var farmWrap = el("div", {});
+    var workersWrap = el("div", {});
+    var hoursWrap = el("div", {});
+    var results = el("div", {});
+    var hoursBar = el("div", {});
+    var expTotal = el("span", { className:"mono" });
+
+    function recalc(){
+      var res = calcRate();
+      paintResults(res);
+      var gh = res.grossHours;
+      hoursBar.innerHTML = "";
+      hoursBar.appendChild(el("div", { className:"small muted", style:"margin-top:10px;", textContent:
+        "מתוך " + r2(gh) + " שעות בחודש: " + r2(res.billable) + " שעות לחיוב, " + r2(res.nonBillable) +
+        " שעות לרכש, הצעות מחיר, תחזוקה, ניקיון, שיווק, נסיעות וניהול" }));
+      hoursBar.appendChild(el("div", { className:"bar", style:"height:10px;" }, [
+        el("span", { style:"width:" + (gh > 0 ? Math.min(100, res.billable/gh*100) : 0).toFixed(1) + "%; background:var(--pine);" }),
+        el("span", { style:"width:" + (gh > 0 ? Math.max(0, 100 - res.billable/gh*100) : 0).toFixed(1) + "%; background:#D9C39B;" })
+      ]));
+      var curOh = overheadForMonth(currentMonthKey);
+      expTotal.textContent = formatCurrency(curOh.recurring) + " בחודש הזה";
+    }
+    function onChange(){ scheduleSave(); recalc(); }
+    function onLedgerChange(){ scheduleSave(); renderLedger(); recalc(); }
+
+    wrap.appendChild(el("p", { className:"lead-note", textContent:
+      "כמה עולה שעה אחת שלך: החלק שמכסה את הסדנה (תקורה), החלק שהוא השכר שלך, והחלק שהולך למיסים ולחווה. " +
+      "הרווח של העסק מתווסף רק אחר כך, בהצעת המחיר." }));
+    wrap.appendChild(srcLegend());
+
+    /* --- 1. הוצאות קבועות --- */
+    wrap.appendChild(sectionTitleSrc("1 · ההוצאות הקבועות של העסק", "ledger"));
+    wrap.appendChild(el("div", { className:"small muted", style:"margin-bottom:8px;" }, [
+      "אלה אותן שורות של \"הוצאות קבועות\" ביומן, בחודש " + monthKeyLabel(currentMonthKey) +
+      ". שינוי כאן משנה את היומן עצמו. רק שורות עסקיות (🔨) נכנסות, שורות פרטיות (🏠) לא. ",
+      expTotal
+    ]));
+    function renderExpenses(){
+      expWrap.innerHTML = "";
+      var m = ensureMonth(currentMonthKey);
+      var biz = filterScope(m.recurringExpenses, "business");
+      var personalCount = filterScope(m.recurringExpenses, "personal").length;
+      if (!biz.length) expWrap.appendChild(el("p", { className:"empty-note", textContent:"אין עדיין הוצאות קבועות עסקיות בחודש הזה." }));
+      biz.forEach(function(item){
+        var inc = overheadRowIncluded(item);
+        var amt = numInput(item, "amount", onLedgerChange);
+        var nm = el("input", { type:"text", className:"nm", placeholder:"שכירות סדנה, חשמל, ביטוח..." });
+        nm.value = item.name || "";
+        nm.addEventListener("input", function(e){ item.name = e.target.value; scheduleSave(); });
+        nm.addEventListener("change", function(){ renderLedger(); renderExpenses(); recalc(); });
+        expWrap.appendChild(el("div", { className:"subrow" + (inc ? "" : " off") }, [
+          nm, el("span", { className:"cap", textContent:"₪ לחודש" }), amt,
+          el("button", { className:"link-btn", type:"button",
+            title: inc ? "נכלל בתקורה. לחיצה מחריגה" : "מוחרג מהתקורה. לחיצה מחזירה",
+            textContent: inc ? "✓ בתקורה" : "✕ מוחרג",
+            onclick: function(){
+              r.rowRules[nameKey(item.name)] = inc ? "exclude" : "include";
+              scheduleSave(); renderExpenses(); recalc(); } })
+        ]));
+        if (!inc && looksLikeFarm(item.name) && r.rowRules[nameKey(item.name)] === undefined){
+          expWrap.appendChild(el("div", { className:"small muted", style:"margin:-3px 4px 7px;", textContent:
+            "השורה הזו הוחרגה אוטומטית: התשלום לחווה נספר כאחוז מהמחיר (בשלב 4), כדי שלא ייספר פעמיים." }));
+        }
+      });
+      if (personalCount) expWrap.appendChild(el("div", { className:"small muted", textContent:
+        personalCount + " שורות פרטיות ביומן לא נכללות בחישוב." }));
+      expWrap.appendChild(el("button", { className:"btn-add", type:"button", style:"margin-top:8px;",
+        textContent:"+ הוספת הוצאה קבועה (תתווסף גם ליומן)", onclick: function(){
+          ensureMonth(currentMonthKey).recurringExpenses.push(mkItem("", 0));
+          scheduleSave(); renderLedger(); renderExpenses(); recalc();
+          var inputs = expWrap.querySelectorAll("input.nm");
+          if (inputs.length) inputs[inputs.length-1].focus();
+        } }));
+    }
+    renderExpenses();
+    wrap.appendChild(expWrap);
+
+    var instNow = overheadForMonth(currentMonthKey);
+    var instBox = { inc: r.includeInstallments ? "yes" : "no" };
+    wrap.appendChild(grid([
+      withTip(fieldSelect("לפי איזה חודש לחשב", r, "overheadBasis", [
+        { value:"avg3",    label:"ממוצע 3 החודשים האחרונים" },
+        { value:"current", label:"החודש הפתוח ביומן בלבד" }
+      ], onChange), "הוצאות משתנות קצת מחודש לחודש (חשמל בחורף, ביטוח שנתי). ממוצע של 3 חודשים נותן מספר יציב יותר לתמחור."),
+      withTip(fieldSelect("תשלומים בפריסה של העסק", instBox, "inc", [
+        { value:"yes", label:"לכלול בתקורה" + (instNow.installments ? " (" + formatCurrency(instNow.installments) + " החודש)" : "") },
+        { value:"no",  label:"לא לכלול" }
+      ], function(){ r.includeInstallments = instBox.inc === "yes"; onChange(); }),
+      "מכונה או ציוד שנקנו בתשלומים הם עלות של החזקת העסק. כל עבודה צריכה לשאת חלק מהם.")
+    ]));
+
+    /* --- 2. שעות --- */
+    wrap.appendChild(sectionTitleSrc("2 · שעות העבודה שלך", "manual"));
+    var modeBox = { mode: h.useManualHours ? "manual" : "pct" };
+    function renderHours(){
+      hoursWrap.innerHTML = "";
+      var fields = [
+        fieldNum("ימי עבודה בחודש", h, "workDaysPerMonth", onChange),
+        fieldNum("שעות עבודה ביום", h, "hoursPerDay", onChange),
+        withTip(fieldSelect("איך להגדיר שעות לחיוב", modeBox, "mode", [
+          { value:"pct",    label:"אחוז ניצולת מהשעות" },
+          { value:"manual", label:"מספר שעות ישירות" }
+        ], function(){ h.useManualHours = modeBox.mode === "manual"; scheduleSave(); renderHours(); recalc(); }),
+        "שעות לחיוב הן שעות שאפשר לגבות עליהן מלקוח: ניסור, הרכבה, גימור, התקנה. רכש, הצעות מחיר וניקיון הן עבודה אמיתית, אבל לקוח לא משלם עליהן ישירות. לכן כל העלויות מתחלקות רק על השעות לחיוב.")
+      ];
+      if (h.useManualHours) fields.push(fieldNum("שעות לחיוב בחודש", h, "manualHours", onChange));
+      else fields.push(withTip(fieldNum("אחוז ניצולת %", h, "billablePct", onChange, { hint:"בעסק עצמאי מקובל 55 עד 75 אחוז" }),
+        "איזה חלק מהזמן בסדנה הולך לעבודה שמחייבים עליה. 65% מתוך 160 שעות = 104 שעות לחיוב."));
+      hoursWrap.appendChild(grid(fields));
+      hoursWrap.appendChild(hoursBar);
+    }
+    renderHours();
+    wrap.appendChild(hoursWrap);
+
+    /* --- 3. שכר --- */
+    wrap.appendChild(sectionTitleSrc("3 · השכר שאתה רוצה למשוך", "manual"));
+    var salaryField = withTip(fieldNum("יעד שכר חודשי נטו לכיס", h, "desiredNet", function(){
+      slider.value = num(h.desiredNet); onChange(); }, { hint:"הסכום שאתה רוצה שייכנס לחשבון הפרטי בכל חודש" }),
+      "זה השכר שלך על העבודה, לא הרווח של העסק. גם אם תעבוד אצל מישהו אחר תקבל שכר. הרווח הוא מה שהעסק מרוויח מעבר לזה, וקובעים אותו בנפרד בכל הצעת מחיר.");
+    var slider = el("input", { type:"range", min:"0", max:"40000", step:"500", className:"range" });
+    slider.value = num(h.desiredNet);
+    slider.addEventListener("input", function(e){
+      h.desiredNet = e.target.value;
+      salaryField.querySelector("input").value = e.target.value;
+      onChange();
+    });
+    salaryField.appendChild(slider);
+    wrap.appendChild(grid([ salaryField ]));
+
+    function renderTaxes(){
+      taxWrap.innerHTML = "";
+      var m = state.months[currentMonthKey];
+      var rows = m ? m.taxes : [];
+      taxWrap.appendChild(el("div", { className:"small muted", style:"margin:10px 0 6px;" }, [
+        "מיסים מתוך היומן (פאנל מיסים וביטוח לאומי). כדי שהשכר יגיע אליך נטו, המחיר צריך לכסות גם אותם. ",
+        srcBadge("ledger")
+      ]));
+      if (!rows.length) taxWrap.appendChild(el("div", { className:"small muted", textContent:"לא הוגדרו מיסים ביומן לחודש הזה." }));
+      rows.forEach(function(t){
+        var auto = looksLikeVat(t.name) ? "מע\"מ לא נחשב עלות, הוא עובר דרכך למדינה" :
+                   looksLikeFarm(t.name) ? "החווה נספרת בנפרד בשלב 4" : null;
+        var on = !auto && !h.excludedTaxes[t.id];
+        taxWrap.appendChild(el("div", { className:"subrow" + (on ? "" : " off") }, [
+          el("span", { className:"nm", textContent: t.name || "מס" }),
+          el("span", { className:"cap mono", textContent: t.mode === "percent" ? num(t.value) + "% מהמחזור" : formatCurrency(num(t.value)) + " לחודש" }),
+          auto ? el("span", { className:"cap", textContent: auto }) :
+          el("button", { className:"link-btn", type:"button", textContent: on ? "✓ נכלל" : "✕ לא נכלל",
+            onclick: function(){ if (on) h.excludedTaxes[t.id] = true; else delete h.excludedTaxes[t.id];
+              scheduleSave(); renderTaxes(); recalc(); } })
+        ]));
+      });
+    }
+    renderTaxes();
+    wrap.appendChild(taxWrap);
+
+    /* --- 4. החווה --- */
+    wrap.appendChild(sectionTitleSrc("4 · התשלום לחווה", "manual"));
+    wrap.appendChild(el("div", { className:"small muted", style:"margin-bottom:8px;", textContent:
+      "אחוז מההכנסות שעובר לחווה. אפשר להגדיר מאיזה חודש כל אחוז בתוקף, והמערכת תשתמש באחוז שנכון לחודש המסירה של כל פרויקט." }));
+    function renderFarm(){
+      farmWrap.innerHTML = "";
+      (r.farm||[]).forEach(function(f){
+        var month = el("input", { type:"month" });
+        month.value = f.from || todayMonthKey();
+        month.addEventListener("change", function(e){ f.from = e.target.value || todayMonthKey(); onChange(); });
+        farmWrap.appendChild(el("div", { className:"subrow" }, [
+          el("span", { className:"cap", textContent:"החל מ-" }), month,
+          el("span", { className:"cap", textContent:"אחוז מההכנסה" }), numInput(f, "pct", onChange),
+          el("span", { className:"cap", textContent:"%" }),
+          el("button", { className:"del-btn", type:"button", title:"מחיקה", onclick: function(){
+            r.farm.splice(r.farm.indexOf(f), 1); scheduleSave(); renderFarm(); recalc(); } }, [trashIcon()])
+        ]));
+      });
+      farmWrap.appendChild(el("button", { className:"btn-add", type:"button", textContent:"+ שינוי אחוז מחודש מסוים", onclick: function(){
+        r.farm.push({ id: uid(), from: todayMonthKey(), pct: 0 }); scheduleSave(); renderFarm(); recalc(); } }));
+    }
+    renderFarm();
+    wrap.appendChild(farmWrap);
+
+    /* --- 5. עובדים --- */
+    wrap.appendChild(sectionTitleSrc("5 · עובדים ותעריפים נוספים (לא חובה)", "manual"));
+    wrap.appendChild(el("div", { className:"small muted", style:"margin-bottom:8px;", textContent:
+      "אם בעתיד יעבוד איתך עובד או קבלן לפי שעה, הגדר כאן כמה הוא עולה לשעה. בהצעת המחיר תוכל לשייך אליו שלבים, והעלות שלו תיחשב כהוצאה של העסק ולא כשכר שלך." }));
+    function renderWorkers(){
+      workersWrap.innerHTML = "";
+      (r.workers||[]).forEach(function(w){
+        workersWrap.appendChild(el("div", { className:"subrow" }, [
+          textInput(w, "name", function(){ scheduleSave(); }, "nm", "עוזר נגר, מתקין..."),
+          el("span", { className:"cap", textContent:"עלות לשעה ₪" }), numInput(w, "hourlyCost", onChange),
+          el("button", { className:"del-btn", type:"button", title:"מחיקה", onclick: function(){
+            r.workers.splice(r.workers.indexOf(w), 1); scheduleSave(); renderWorkers(); } }, [trashIcon()])
+        ]));
+      });
+      workersWrap.appendChild(el("button", { className:"btn-add", type:"button", textContent:"+ הוספת עובד או קבלן לפי שעה", onclick: function(){
+        r.workers.push({ id: uid(), name:"", hourlyCost:0 }); scheduleSave(); renderWorkers(); } }));
+    }
+    renderWorkers();
+    wrap.appendChild(workersWrap);
+
+    /* --- תוצאות --- */
+    wrap.appendChild(results);
+
+    function paintResults(res){
+      results.innerHTML = "";
+      results.appendChild(el("div", { className:"price-hero" }, [
+        el("div", {}, [
+          el("div", { className:"lbl", textContent:"עלות שעת עבודה לפני רווח" }),
+          el("div", { className:"big", textContent: formatCurrency(res.hourCost) }),
+          el("div", { className:"small", style:"color:rgba(242,236,221,.7);", textContent:"המינימום לשעה כדי לכסות את העסק ואת השכר שלך" })
+        ]),
+        el("div", { className:"side" }, [
+          el("div", { className:"lbl", textContent:"מחיר שעה ללקוח עם " + num(r.profitPct) + "% רווח לעסק" }),
+          el("div", { textContent: formatCurrency(res.hourPrice) + " לפני מע\"מ" }),
+          el("div", { textContent: formatCurrency(res.hourPrice * (1 + num(state.vat.rate)/100)) + " כולל מע\"מ" })
+        ])
+      ]));
+
+      if (res.billable <= 0){
+        results.appendChild(el("div", { className:"warn-line" }, [ el("span", { textContent:"אין שעות לחיוב. הגדר ימים, שעות ואחוז ניצולת." }) ]));
+        return;
+      }
+      if (res.overhead <= 0){
+        results.appendChild(el("div", { className:"warn-line" }, [ el("span", { textContent:"לא נמצאו הוצאות קבועות עסקיות. אם יש לך שכירות, ביטוח או חשבונות של הסדנה, הוסף אותם בשלב 1." }) ]));
+      }
+
+      var box = el("div", { className:"result-box" }, [ el("h5", {}, [ "איך הגענו למספר", srcBadge("auto") ]) ]);
+      box.appendChild(resultRow("סך הוצאות קבועות בחודש", formatCurrency(res.overhead)));
+      box.appendChild(resultRow("סך הוצאות קבועות בשנה", formatCurrency(res.overhead * 12), "sub"));
+      if (res.installments > 0) box.appendChild(resultRow("מתוך זה תשלומים בפריסה", formatCurrency(res.installments), "sub"));
+      box.appendChild(resultRow("שעות עבודה לחיוב בחודש", r2(res.billable) + " ש' מתוך " + r2(res.grossHours)));
+      box.appendChild(resultRow("עלות תקורה לשעה", formatCurrency2(res.ohRate)));
+      box.appendChild(resultRow("שכר אישי רצוי (נטו)", formatCurrency(res.salaryNet)));
+      if (res.fixedTax > 0) box.appendChild(resultRow("תשלומים קבועים על השכר (ביטוח לאומי וכד')", formatCurrency(res.fixedTax), "sub"));
+      box.appendChild(resultRow("עלות השכר לשעה", formatCurrency2(res.salaryRate)));
+      if (res.pctTax > 0) box.appendChild(resultRow("מיסים מהמחזור (" + pct(res.pctTax*100) + ") לשעה", formatCurrency2(res.taxPerHour), "sub"));
+      if (res.farm > 0) box.appendChild(resultRow("תשלום לחווה (" + pct(res.farm*100) + ") לשעה", formatCurrency2(res.farmPerHour), "sub"));
+      box.appendChild(resultRow("עלות שעת עבודה כוללת לפני רווח", formatCurrency2(res.hourCost), "total"));
+      box.appendChild(el("div", { className:"small muted", style:"margin-top:8px;", textContent:
+        "החישוב: (תקורה לשעה + שכר לשעה) ÷ (1 − מיסים − חווה). מחלקים ולא מוסיפים, כי המיסים והחווה הם אחוז מהמחיר הסופי, לא מהעלות." }));
+      results.appendChild(box);
+
+      var box2 = el("div", { className:"result-box" }, [ el("h5", { textContent:"לאן הולך כל שקל של שעת עבודה" }) ]);
+      box2.appendChild(moneySplit({ costs: res.ohRate, salary: res.salaryRate, tax: res.taxPerHour * res.hourPrice / Math.max(0.01, res.hourCost),
+        farm: res.farmPerHour * res.hourPrice / Math.max(0.01, res.hourCost), profit: res.hourProfit, vat: 0 }, res.hourPrice));
+      box2.appendChild(el("div", { className:"small muted", style:"margin-top:8px;", textContent:
+        "השכר שלך והרווח של העסק הם שני דברים נפרדים. השכר משלם על הזמן שלך. הרווח נשאר בעסק לקרן חירום, למכונות ולצמיחה." }));
+      results.appendChild(box2);
+
+      /* מה קורה כשמשנים את יעד השכר */
+      var box3 = el("div", { className:"result-box" }, [ el("h5", { textContent:"איך יעד השכר משפיע על מחיר השעה" }) ]);
+      var table = el("table", { className:"rep" });
+      table.appendChild(el("thead", {}, [ el("tr", {}, [
+        el("th", { textContent:"שכר נטו בחודש" }), el("th", { textContent:"עלות שעה לפני רווח" }), el("th", { textContent:"מחיר שעה עם רווח" })
+      ]) ]));
+      var tb = el("tbody", {});
+      var base = Math.max(4000, Math.round(res.salaryNet / 1000) * 1000);
+      [base - 4000, base - 2000, base, base + 2000, base + 4000].filter(function(v){ return v >= 0; }).forEach(function(sv){
+        var salaryRate = (sv + res.fixedTax) / res.billable;
+        var cost = (res.ohRate + salaryRate) / (1 - res.deductions);
+        var price = (res.ohRate + salaryRate) / Math.max(0.05, 1 - res.deductions - res.profitPct);
+        tb.appendChild(el("tr", { className: sv === base ? "hl" : "" }, [
+          el("td", { className:"n", textContent: formatCurrency(sv) }),
+          el("td", { className:"n", textContent: formatCurrency(cost) }),
+          el("td", { className:"n", textContent: formatCurrency(price) })
+        ]));
+      });
+      table.appendChild(tb);
+      box3.appendChild(table);
+      results.appendChild(box3);
+
+      results.appendChild(el("div", { style:"display:flex; gap:8px; flex-wrap:wrap; margin-top:12px;" }, [
+        el("button", { className:"btn", type:"button", textContent:"⏱ מטריצת תרחישים מלאה בלשונית תעריף שעה", onclick: function(){ switchView("hourly"); } }),
+        el("button", { className:"btn", type:"button", textContent:"החלת התעריף על מחשבון הסדנאות", onclick: function(){
+          state.pricing.workshop.hourlyRate = r2(res.hourCost); scheduleSave();
+          toast("תעריף השעה במחשבון הסדנאות עודכן ל-" + formatCurrency2(res.hourCost) + "."); } })
+      ]));
+    }
+
+    recalc();
+    return { node: wrap, actions: [] };
+  }
+
+  /* ============================================================ */
+  /* אזור 2 — הצעת מחיר לפרויקט                                    */
+  /* ============================================================ */
+
+  var pricingUi = { projectId: null };
+
+  function buildProjectTab(){
+    var p = pricingUi.projectId ? projectById(pricingUi.projectId) : null;
+    if (p) return buildProjectEditor(p);
+    return buildProjectList();
+  }
+
+  function openProject(p){ pricingUi.projectId = p.id; pricingSelectTab("project"); window.scrollTo(0, 0); }
+
+  function buildProjectList(){
+    var wrap = el("div", {});
+    var list = (state.projects||[]).slice().sort(function(a,b){ return String(b.updatedAt).localeCompare(String(a.updatedAt)); });
+    list.forEach(syncProjectFromQuote);
+
+    var fc = projectForecast(12);
+    wrap.appendChild(el("div", { className:"combo-grid", style:"margin-top:0;" }, [
+      statCell("ממתינות לאישור", formatCurrency(fc.open.sent), fc.open.sentCount + " הצעות שנשלחו, לפני מע\"מ"),
+      statCell("פרויקטים פעילים", formatCurrency(fc.open.active), fc.open.count + " פרויקטים, לפני מע\"מ"),
+      statCell("רווח עסקי צפוי מפעילים", formatCurrency(fc.open.profit), "ועוד " + formatCurrency(fc.open.salary) + " שכר אישי", "total")
+    ]));
+
+    var bar = el("div", { style:"display:flex; gap:8px; flex-wrap:wrap; margin:16px 0 10px;" }, [
+      el("button", { className:"btn btn-primary", type:"button", textContent:"+ פרויקט חדש", onclick: function(){
+        var p = mkProject(); state.projects.push(p); scheduleSave(); openProject(p); } })
+    ]);
+    wrap.appendChild(bar);
+
+    if (!list.length){
+      wrap.appendChild(el("p", { className:"empty-note", textContent:"עדיין אין פרויקטים. צור פרויקט חדש, למשל שולחן אוכל מעץ מלא, והמערכת תחשב לך מחיר מומלץ." }));
+      return { node: wrap, actions: [] };
+    }
+
+    list.forEach(function(p){
+      var res = calcProject(p);
+      var st = PROJECT_STATUS[p.status] || PROJECT_STATUS.draft;
+      var c = clientById(p.clientId);
+      var card = el("div", { className:"proj-card" }, [
+        el("div", { className:"proj-main" }, [
+          el("div", { className:"proj-name" }, [ p.name || "פרויקט ללא שם", " ", el("span", { className:"badge " + st.cls, textContent: st.label }) ]),
+          el("div", { className:"small muted", textContent: (c ? c.name + " · " : "") + "מסירה " + monthKeyLabel(p.deliveryMonth) +
+            " · " + (p.method === "factor" ? "מקדם ×" + num(p.factor) : "לפי עלויות") })
+        ]),
+        el("div", { className:"proj-nums" }, [
+          el("div", { className:"mono strong", textContent: formatCurrency(res.chosen.incVat) }),
+          el("div", { className:"small muted", textContent:"רווח " + formatCurrency(res.chosen.profit) + " · שכר " + formatCurrency(res.chosen.salary) })
+        ]),
+        el("div", { className:"proj-act" }, [
+          el("button", { className:"btn btn-sm", type:"button", textContent:"פתיחה", onclick: function(){ openProject(p); } }),
+          el("button", { className:"link-btn", type:"button", textContent:"שכפול", onclick: function(){
+            var c2 = deep(p); c2.id = uid(); c2.name = (p.name || "פרויקט") + " (עותק)"; c2.status = "draft"; c2.quoteId = null;
+            c2.createdAt = c2.updatedAt = new Date().toISOString();
+            state.projects.push(c2); scheduleSave(); renderPricingView(); toast("הפרויקט שוכפל."); } }),
+          el("button", { className:"link-btn", type:"button", textContent:"מחיקה", onclick: function(){
+            confirmAction("למחוק את הפרויקט \"" + (p.name || "ללא שם") + "\"? שורות שכבר נרשמו ביומן יישארו ביומן.", function(){
+              state.projects.splice(state.projects.indexOf(p), 1); scheduleSave(); renderPricingView(); }); } })
+        ])
+      ]);
+      wrap.appendChild(card);
+    });
+    return { node: wrap, actions: [] };
+  }
+
+  function buildProjectEditor(p){
+    var wrap = el("div", {});
+    var hero = el("div", {});
+    var results = el("div", {});
+    var matWrap = el("div", {}), stageWrap = el("div", {}), extraWrap = el("div", {}), methodWrap = el("div", {});
+    var live = [];   /* פונקציות שמעדכנות סכומי שורה בלי לבנות מחדש את הטופס */
+
+    function touch(){ p.updatedAt = new Date().toISOString(); scheduleSave(); }
+    function recalc(){
+      var res = calcProject(p);
+      live.forEach(function(fn){ fn(res); });
+      paintHero(res);
+      paintResults(res);
+    }
+    function onChange(){ touch(); recalc(); }
+
+    wrap.appendChild(el("div", { style:"display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:6px;" }, [
+      el("button", { className:"link-btn", type:"button", style:"font-size:0.85rem;", textContent:"‹ לכל הפרויקטים", onclick: function(){
+        pricingUi.projectId = null; renderPricingView(); } }),
+      srcLegend()
+    ]));
+
+    var clientOpts = [{ value:"", label:"ללא לקוח" }].concat((state.clients||[]).map(function(c){ return { value:c.id, label:c.name || "לקוח ללא שם" }; }));
+    var statusBox = { s: p.status };
+    wrap.appendChild(grid([
+      fieldText("שם הפרויקט", p, "name", function(){ touch(); }, { placeholder:"שולחן אוכל מעץ מלא", wide:true }),
+      fieldSelect("לקוח", p, "clientId", clientOpts, function(){ touch(); }, { hint: state.clients.length ? "" : "אפשר להוסיף לקוחות בלשונית לקוחות והצעות" }),
+      withTip(fieldSelect("סטטוס", statusBox, "s", Object.keys(PROJECT_STATUS).map(function(k){ return { value:k, label:PROJECT_STATUS[k].label }; }),
+        function(){ setProjectStatus(p, statusBox.s); recalc(); }),
+        "טיוטה: עדיין מתמחר. נשלחה: מופיעה בתחזית כפוטנציאל, לא כהכנסה. אושרה: פרויקט פעיל, נספר בתחזית ההכנסות והרווח. הכסף עצמו נרשם ביומן רק כשהוא נכנס בפועל.")
+    ]));
+    wrap.appendChild(hero);
+
+    /* --- חומרים --- */
+    wrap.appendChild(sectionTitleSrc("חומרי גלם", "manual"));
+    function renderMaterials(){
+      matWrap.innerHTML = "";
+      live = live.filter(function(fn){ return fn.group !== "mat"; });
+      p.materials.forEach(function(m){
+        var tot = el("span", { className:"cap tot mono" });
+        var upd = function(){ tot.textContent = formatCurrency2(num(m.qty) * num(m.unitPrice)); };
+        upd.group = "mat"; live.push(upd); upd();
+        matWrap.appendChild(el("div", { className:"subrow" }, [
+          textInput(m, "name", function(){ touch(); }, "nm", "סוג החומר: אלון, פרזול, שמן..."),
+          el("span", { className:"cap", textContent:"כמות" }), numInput(m, "qty", onChange),
+          textInput(m, "unit", function(){ touch(); }, "unit", "יח'"),
+          el("span", { className:"cap", textContent:"× ₪" }), numInput(m, "unitPrice", onChange),
+          el("span", { className:"cap", textContent:"=" }), tot,
+          el("button", { className:"del-btn", type:"button", title:"מחיקה", onclick: function(){
+            p.materials.splice(p.materials.indexOf(m), 1); touch(); renderMaterials(); recalc(); } }, [trashIcon()])
+        ]));
+      });
+      matWrap.appendChild(el("button", { className:"btn-add", type:"button", textContent:"+ הוספת חומר", onclick: function(){
+        p.materials.push({ id: uid(), name:"", qty:1, unit:"", unitPrice:0 }); touch(); renderMaterials(); recalc();
+        var ins = matWrap.querySelectorAll("input.nm"); if (ins.length) ins[ins.length-1].focus(); } }));
+    }
+    renderMaterials();
+    wrap.appendChild(matWrap);
+    wrap.appendChild(grid([ withTip(fieldNum("פחת חומר %", p, "wastePct", onChange, { hint:"0 אם כבר כללת פחת בכמויות" }),
+      "חלק מהעץ הולך לנסורת, קצוות וחתיכות פגומות. בעץ מלא מקובל 15 עד 25 אחוז. אם כבר קנית לפי הכמות שאתה צריך כולל פחת, השאר 0.") ]));
+
+    /* --- שעות --- */
+    wrap.appendChild(sectionTitleSrc("שעות עבודה לפי שלבים", "manual"));
+    function workerOpts(){
+      return [{ value:"self", label:"אני" }].concat((state.pricing.rate.workers||[]).map(function(w){
+        return { value:w.id, label:(w.name || "עובד") + " · " + formatCurrency(num(w.hourlyCost)) + "/ש'" }; }));
+    }
+    function renderStages(){
+      stageWrap.innerHTML = "";
+      live = live.filter(function(fn){ return fn.group !== "stage"; });
+      p.stages.forEach(function(s){
+        var tot = el("span", { className:"cap tot mono" });
+        var upd = function(res){
+          var hrs = num(s.hours), w = s.worker !== "self" ? workerById(s.worker) : null;
+          var perHour = (w ? num(w.hourlyCost) : res.rate.salaryRate) + res.rate.ohRate;
+          tot.textContent = formatCurrency(hrs * perHour);
+          tot.title = (w ? "עלות העובד" : "שכר") + " + תקורה לשעה: " + formatCurrency2(perHour);
+        };
+        upd.group = "stage"; live.push(upd);
+        var sel = el("select", {});
+        workerOpts().forEach(function(o){ sel.appendChild(el("option", { value:o.value, textContent:o.label })); });
+        sel.value = s.worker || "self";
+        sel.addEventListener("change", function(e){ s.worker = e.target.value; onChange(); });
+        stageWrap.appendChild(el("div", { className:"subrow" }, [
+          textInput(s, "name", function(){ touch(); }, "nm", "שם השלב"),
+          el("span", { className:"cap", textContent:"שעות" }), numInput(s, "hours", onChange),
+          sel, tot,
+          el("button", { className:"del-btn", type:"button", title:"מחיקה", onclick: function(){
+            p.stages.splice(p.stages.indexOf(s), 1); touch(); renderStages(); recalc(); } }, [trashIcon()])
+        ]));
+      });
+      stageWrap.appendChild(el("button", { className:"btn-add", type:"button", textContent:"+ הוספת שלב", onclick: function(){
+        p.stages.push({ id: uid(), name:"", hours:0, worker:"self" }); touch(); renderStages(); recalc(); } }));
+    }
+    renderStages();
+    wrap.appendChild(stageWrap);
+    var hoursNote = el("div", { className:"small muted", style:"margin-top:6px;" });
+    live.push(function(res){
+      hoursNote.className = res.rate.billable <= 0 || res.rate.ohRate <= 0 ? "warn-line" : "small muted";
+      if (res.rate.billable <= 0){ hoursNote.textContent = "לא הוגדרו שעות לחיוב בלשונית \"שעת העבודה שלי\", ולכן השעות לא מתומחרות."; return; }
+      if (res.rate.ohRate <= 0){ hoursNote.textContent = "התקורה היא 0: לא נמצאו הוצאות קבועות עסקיות. הגדר אותן בלשונית \"שעת העבודה שלי\" כדי שכל פרויקט ישא חלק מהן."; return; }
+      hoursNote.textContent = "סה\"כ " + r2(res.H) + " שעות. כל שעה שלך = " + formatCurrency2(res.rate.salaryRate) +
+        " שכר + " + formatCurrency2(res.rate.ohRate) + " תקורה (מהלשונית \"שעת העבודה שלי\").";
+    });
+    wrap.appendChild(hoursNote);
+
+    /* --- הוצאות נוספות --- */
+    wrap.appendChild(sectionTitleSrc("הוצאות נוספות לפרויקט", "manual"));
+    function renderExtras(){
+      extraWrap.innerHTML = "";
+      if (!p.extras.length) extraWrap.appendChild(el("div", { className:"small muted", style:"margin-bottom:6px;", textContent:"אין הוצאות נוספות. הוסף לפי הצורך:" }));
+      p.extras.forEach(function(x){
+        extraWrap.appendChild(el("div", { className:"subrow" }, [
+          textInput(x, "name", function(){ touch(); }, "nm", "שם ההוצאה"),
+          el("span", { className:"cap", textContent:"₪" }), numInput(x, "amount", onChange),
+          el("button", { className:"del-btn", type:"button", title:"מחיקה", onclick: function(){
+            p.extras.splice(p.extras.indexOf(x), 1); touch(); renderExtras(); recalc(); } }, [trashIcon()])
+        ]));
+      });
+      extraWrap.appendChild(el("div", { className:"chips" }, EXTRA_PRESETS.concat(["אחר"]).map(function(n){
+        return el("button", { className:"chip", type:"button", textContent:"+ " + n, onclick: function(){
+          p.extras.push({ id: uid(), name: n === "אחר" ? "" : n, amount:0 }); touch(); renderExtras(); recalc();
+          var ins = extraWrap.querySelectorAll("input.num"); if (ins.length) ins[ins.length-1].focus(); } });
+      })));
+    }
+    renderExtras();
+    wrap.appendChild(extraWrap);
+
+    /* --- שיטת תמחור --- */
+    wrap.appendChild(sectionTitleSrc("שיטת התמחור", "manual"));
+    function renderMethod(){
+      methodWrap.innerHTML = "";
+      var tb = el("div", { className:"cap-type" });
+      [["cost","א · לפי עלויות בפועל"],["factor","ב · מקדם על חומרים"]].forEach(function(m){
+        tb.appendChild(el("button", { type:"button", className: p.method === m[0] ? "on" : "", textContent: m[1], onclick: function(){
+          p.method = m[0]; touch(); renderMethod(); recalc(); } }));
+      });
+      methodWrap.appendChild(tb);
+      if (p.method === "cost"){
+        methodWrap.appendChild(el("div", { className:"small muted", textContent:
+          "חומרים + שעות (שכר ותקורה) + הוצאות נוספות + מרווח ביטחון, ועליהם רווח, מיסים ותשלום לחווה כאחוז מהמחיר." }));
+        return;
+      }
+      if (!p.factorIncludes) p.factorIncludes = { labor:true, overhead:true, profit:true };
+      var fi = p.factorIncludes;
+      methodWrap.appendChild(grid([
+        withTip(fieldNum("מקדם על החומרים", p, "factor", onChange, { hint:"כלל האצבע בנגרות: עלות העץ × 3" }),
+          "המחיר נקבע כמכפלה של עלות החומרים. זו שיטה מהירה, אבל היא לא יודעת כמה שעות לקח הפרויקט. בפרויקט עם חומר זול ועבודה רבה היא תמחר נמוך מדי.")
+      ]));
+      methodWrap.appendChild(el("div", { className:"small", style:"margin:10px 0 4px; font-weight:700;", textContent:"מה המקדם כבר כולל? מה שמסומן לא יתווסף שוב:" }));
+      [["labor","עבודה (השכר שלך ועובדים)"],["overhead","תקורה (חלק הפרויקט בהוצאות הקבועות)"],["profit","רווח לעסק"]].forEach(function(o){
+        var cb = el("input", { type:"checkbox" });
+        cb.checked = !!fi[o[0]];
+        cb.addEventListener("change", function(e){ fi[o[0]] = e.target.checked; onChange(); renderMethod(); });
+        methodWrap.appendChild(el("label", { className:"check" }, [ cb, " " + o[1] ]));
+      });
+      methodWrap.appendChild(el("div", { className:"small muted", style:"margin-top:6px;", textContent:
+        "הוצאות נוספות (הובלה, התקנה, קבלני משנה) תמיד מתווספות מעל המקדם." }));
+      if (!fi.labor && num(p.factor) >= 2){
+        methodWrap.appendChild(el("div", { className:"warn-line" }, [ el("span", { textContent:
+          "שים לב: מקדם של " + num(p.factor) + " בדרך כלל כבר כולל את העבודה. הוספת השעות מעליו עלולה לחייב את הלקוח פעמיים על אותה עבודה." }) ]));
+      }
+      if (fi.labor){
+        methodWrap.appendChild(el("div", { className:"ok-line", textContent:
+          "השעות שהזנת לא מתווספות למחיר בשיטה הזו. הן משמשות רק כדי לבדוק אם המקדם באמת מכסה את השכר שלך." }));
+      }
+    }
+    renderMethod();
+    wrap.appendChild(methodWrap);
+
+    /* --- יעדים --- */
+    wrap.appendChild(sectionTitleSrc("רווח, ביטחון ומע\"מ", "manual"));
+    wrap.appendChild(grid([
+      withTip(fieldNum("רווח עסקי % ממחיר המכירה", p, "profitPct", onChange, { hint:"מחושב מתוך המחיר, לא כתוספת על העלות" }),
+        "רווח (Margin) הוא אחוז מהמחיר שהלקוח משלם. תוספת (Markup) היא אחוז שמוסיפים על העלות. 15% רווח מתוך מחיר של 1,000 ₪ = 150 ₪. כדי להגיע לזה צריך להוסיף 17.6% על עלות של 850 ₪, לא 15%."),
+      withTip(fieldNum("מרווח ביטחון %", p, "safetyPct", onChange, { hint:"על החומרים וההוצאות הנוספות" }),
+        "כרית לבלתי צפוי: לוח שנפגם, ברגים שנגמרו, נסיעה נוספת. הוא נספר כעלות ולא כרווח. אם לא תצטרך אותו, הוא יישאר בעסק."),
+      fieldNum("מע\"מ %", p, "vatPercent", onChange),
+      fieldNum("עיגול המחיר ללקוח ל-", p, "roundTo", onChange, { hint:"₪, על המחיר כולל מע\"מ. 0 = בלי עיגול" })
+    ]));
+
+    /* --- תשלומים ותזמון --- */
+    wrap.appendChild(sectionTitleSrc("מועדים ומקדמה", "manual"));
+    var depHint = el("span", {});
+    live.push(function(res){
+      depHint.textContent = (p.depositPct === "" ? "אוטומטי: " : "") + res.depositPct + "% = " + formatCurrency(res.deposit) +
+        ". מעל " + formatCurrency(state.pricing.rate.depositThreshold) + " כולל מע\"מ נלקחת מקדמה של " + num(state.pricing.rate.depositPct) + "%.";
+    });
+    var depField = fieldNum("מקדמה % (ריק = אוטומטי)", p, "depositPct", onChange);
+    depField.appendChild(el("span", { className:"hint" }, [ depHint ]));
+    wrap.appendChild(grid([
+      fieldMonth("חודש אישור צפוי (מקדמה)", p, "approvalMonth", onChange),
+      withTip(fieldMonth("חודש מסירה צפוי (יתרה)", p, "deliveryMonth", onChange),
+        "לפי החודש הזה המערכת משייכת את הרווח בתחזית, ובוחרת את אחוז התשלום לחווה שיהיה בתוקף."),
+      depField
+    ]));
+    wrap.appendChild(grid([ fieldText("הערות פנימיות", p, "note", function(){ touch(); }, { wide:true }) ]));
+
+    wrap.appendChild(results);
+
+    /* --- ציור התוצאות --- */
+    function paintHero(res){
+      hero.innerHTML = "";
+      var ch = res.chosen;
+      hero.appendChild(el("div", { className:"price-hero" }, [
+        el("div", {}, [
+          el("div", { className:"lbl", textContent:"מחיר סופי ללקוח · " + (p.method === "factor" ? "שיטת מקדם" : "לפי עלויות") }),
+          el("div", { className:"big", textContent: formatCurrency(ch.incVat) })
+        ]),
+        el("div", { className:"side" }, [
+          el("div", { className:"lbl", textContent:"לפני מע\"מ · רווח לעסק" }),
+          el("div", { textContent: formatCurrency(ch.exVat) }),
+          el("div", { textContent: formatCurrency(ch.profit) + " (" + pct(ch.profitPct) + ")" })
+        ])
+      ]));
+    }
+
+    function paintResults(res){
+      results.innerHTML = "";
+      var ch = res.chosen;
+
+      /* טבלת הסיכום */
+      var box = el("div", { className:"result-box" }, [ el("h5", {}, [ "סיכום הצעת המחיר: " + (p.name || "פרויקט ללא שם"), srcBadge("auto") ]) ]);
+      box.appendChild(resultRow("חומרי גלם" + (res.waste > 0 ? " (כולל פחת " + formatCurrency(res.waste) + ")" : ""), formatCurrency(res.M)));
+      box.appendChild(resultRow("שעות עבודה: " + r2(res.selfHours) + " ש' שלך" + (res.workerHours ? " + " + r2(res.workerHours) + " ש' עובדים" : ""),
+        formatCurrency(res.S + res.workerCost)));
+      if (res.workerCost > 0) box.appendChild(resultRow("מתוך זה עלות עובדים", formatCurrency(res.workerCost), "sub"));
+      box.appendChild(resultRow("תקורה (" + r2(res.H) + " ש' × " + formatCurrency2(res.rate.ohRate) + ")", formatCurrency(res.OH)));
+      box.appendChild(resultRow("הוצאות נוספות", formatCurrency(res.E)));
+      box.appendChild(resultRow("מרווח ביטחון (" + num(p.safetyPct) + "%)", formatCurrency(res.C), "sub"));
+      box.appendChild(resultRow("סך עלויות", formatCurrency(res.costs + res.S), "total"));
+      box.appendChild(resultRow("מתוך זה: שכר אישי המיוחס לפרויקט", formatCurrency(ch.salary), "sub"));
+      box.appendChild(resultRow("מתוך זה: עלות העסק", formatCurrency(res.costs), "sub"));
+      box.appendChild(resultRow("תשלום לחווה (" + pct(res.f*100) + ")", formatCurrency(ch.farm)));
+      if (ch.tax > 0) box.appendChild(resultRow("מיסים מהמחזור (" + pct(res.t*100) + ", הערכה)", formatCurrency(ch.tax)));
+      box.appendChild(resultRow("רווח העסק", formatCurrency(ch.profit) + " · " + pct(ch.profitPct)));
+      box.appendChild(resultRow("מחיר לפני מע\"מ", formatCurrency(ch.exVat), "total"));
+      box.appendChild(resultRow("מע\"מ (" + num(p.vatPercent) + "%)", formatCurrency(ch.vat)));
+      box.appendChild(resultRow("מחיר סופי ללקוח", formatCurrency(ch.incVat), "total"));
+      results.appendChild(box);
+
+      if (ch.profit < -0.5){
+        results.appendChild(el("div", { className:"warn-line" }, [ el("span", { textContent:
+          "במחיר הזה העסק מפסיד " + formatCurrency(-ch.profit) + ". המחיר לא מכסה את העלויות ואת השכר שלך." }) ]));
+      }
+
+      /* חלוקת הכסף */
+      var box2 = el("div", { className:"result-box" }, [ el("h5", { textContent:"לאן הולך הכסף שהלקוח משלם" }) ]);
+      box2.appendChild(moneySplit({ costs: ch.costs, farm: ch.farm, salary: ch.salary, tax: ch.tax, profit: ch.profit, vat: ch.vat }, ch.incVat));
+      results.appendChild(box2);
+
+      /* סולם מחירים */
+      var box3 = el("div", { className:"result-box" }, [ el("h5", { textContent:"סולם מחירים, לפני מע\"מ" }) ]);
+      box3.appendChild(el("div", { className:"combo-grid", style:"margin-top:0;" }, [
+        statCell("רצפה: מכסה את עלויות העסק", formatCurrency(res.floor.exVat), "בלי שכר ובלי רווח · " + formatCurrency(res.floor.incVat) + " כולל מע\"מ"),
+        statCell("מינימום: מכסה עלויות ושכר", formatCurrency(res.minimum.exVat), "בלי רווח לעסק · " + formatCurrency(res.minimum.incVat) + " כולל מע\"מ"),
+        statCell("מומלץ: עם " + num(p.profitPct) + "% רווח", formatCurrency(res.A.exVat), formatCurrency(res.A.incVat) + " כולל מע\"מ", "total")
+      ]));
+      box3.appendChild(el("div", { className:"small muted", style:"margin-top:8px;", textContent:
+        "מתחת לרצפה כל עבודה עולה לעסק כסף. בין הרצפה למינימום אתה מוותר על חלק מהשכר. מעל המינימום מתחיל רווח לעסק." }));
+      results.appendChild(box3);
+
+      /* השוואת שיטות */
+      var box4 = el("div", { className:"result-box" }, [ el("h5", { textContent:"השוואה בין שתי השיטות" }) ]);
+      var t = el("table", { className:"rep" });
+      t.appendChild(el("thead", {}, [ el("tr", {}, [
+        el("th", { textContent:"" }), el("th", { textContent:"א · עלויות בפועל" }), el("th", { textContent:"ב · מקדם ×" + num(p.factor) })
+      ]) ]));
+      var tb = el("tbody", {});
+      [
+        ["מחיר לפני מע\"מ", res.A.exVat, res.B.exVat, formatCurrency],
+        ["מחיר כולל מע\"מ", res.A.incVat, res.B.incVat, formatCurrency],
+        ["רווח לעסק", res.A.profit, res.B.profit, formatCurrency],
+        ["רווח % מהמחיר", res.A.profitPct, res.B.profitPct, pct],
+        ["מה מרוויחה כל שעה שלך (שכר + רווח)", res.A.effectiveHourly, res.B.effectiveHourly, formatCurrency]
+      ].forEach(function(row){
+        tb.appendChild(el("tr", {}, [
+          el("td", { textContent: row[0] }),
+          el("td", { className:"n" + (p.method === "cost" ? " strong" : ""), textContent: row[3](row[1]) }),
+          el("td", { className:"n" + (p.method === "factor" ? " strong" : ""), textContent: row[3](row[2]) })
+        ]));
+      });
+      t.appendChild(tb);
+      box4.appendChild(t);
+      var diff = res.B.exVat - res.A.exVat;
+      var msg;
+      if (res.M <= 0) msg = "הזן עלות חומרים כדי לראות את שיטת המקדם.";
+      else if (Math.abs(diff) < 1) msg = "שתי השיטות מגיעות כמעט לאותו מחיר.";
+      else if (diff > 0) msg = "שיטת המקדם יקרה ב-" + formatCurrency(diff) + ". זה סביר כשיש הרבה חומר ומעט עבודה, אבל בדוק שהמחיר תחרותי.";
+      else msg = "שיטת המקדם זולה ב-" + formatCurrency(-diff) + ". במחיר הזה העבודה שלך לא מתומחרת במלואה" +
+        (res.B.profit < 0 ? ", והעסק מפסיד " + formatCurrency(-res.B.profit) + "." : ".");
+      box4.appendChild(el("div", { className: diff < -1 && res.M > 0 ? "warn-line" : "small muted", style:"margin-top:8px;" }, [ el("span", { textContent: msg }) ]));
+      if (res.H <= 0) box4.appendChild(el("div", { className:"small muted", style:"margin-top:6px;", textContent:
+        "בלי שעות עבודה אי אפשר לבדוק אם המקדם מכסה את השכר. כדאי להזין הערכת שעות גם כשמתמחרים במקדם." }));
+      results.appendChild(box4);
+
+      /* ארבעה מושגים נפרדים */
+      var box5 = el("div", { className:"result-box" }, [ el("h5", { textContent:"רווח גולמי, רווח תפעולי, שכר ותזרים" }) ]);
+      var r1 = resultRow("רווח גולמי", formatCurrency(ch.grossProfit));
+      r1.firstChild.appendChild(tip("המחיר לפני מע\"מ פחות העלויות הישירות של הפרויקט: חומרים, הוצאות נוספות, מרווח ביטחון, עובדים, ותשלום לחווה. זה מה שהפרויקט תורם לכיסוי הסדנה, השכר שלך והרווח."));
+      box5.appendChild(r1);
+      var r2r = resultRow("רווח תפעולי, לפני מס", formatCurrency(ch.operatingProfit));
+      r2r.firstChild.appendChild(tip("רווח גולמי פחות חלק הפרויקט בתקורה ופחות השכר שלך. זה מה שהעסק מרוויח לפני מס הכנסה."));
+      box5.appendChild(r2r);
+      box5.appendChild(resultRow("שכר אישי (נטו + תשלומים קבועים)", formatCurrency(ch.salary)));
+      box5.appendChild(resultRow("רווח העסק אחרי הערכת מיסים", formatCurrency(ch.profit)));
+      var led = projectLedger(p);
+      var sched = projectCashSchedule(p, res, led);
+      var cashTxt = sched.length ? sched.map(function(s){ return s.kind + " " + formatCurrency(s.amount) + " ב" + monthKeyLabel(s.month); }).join(" · ") : "כל הסכום כבר התקבל";
+      var r3 = resultRow("תזרים צפוי", cashTxt, "wrapv");
+      r3.firstChild.appendChild(tip("תזרים הוא מתי הכסף נכנס בפועל לחשבון, כולל מע\"מ. רווח הוא כמה נשאר בסוף. אפשר להרוויח בפרויקט ועדיין להיות במינוס בחשבון עד שהלקוח משלם."));
+      box5.appendChild(r3);
+      results.appendChild(box5);
+
+      /* מה כבר קרה בפועל ביומן */
+      var box6 = el("div", { className:"result-box" }, [ el("h5", {}, [ "בפועל ביומן", srcBadge("ledger") ]) ]);
+      box6.appendChild(resultRow("התקבל מהלקוח", formatCurrency(led.received) + " מתוך " + formatCurrency(ledgerBasisTotal(res)), "wrapv"));
+      box6.appendChild(resultRow("הוצאות שנרשמו לפרויקט (לפני מע\"מ)", formatCurrency(led.spentNet) + " מול הערכה של " + formatCurrency(res.M + res.E), "wrapv"));
+      if (led.spentNet > res.M + res.E + res.C + 0.5){
+        box6.appendChild(el("div", { className:"warn-line" }, [ el("span", { textContent:"ההוצאות בפועל כבר עברו את ההערכה כולל מרווח הביטחון. הרווח בפרויקט הזה יהיה נמוך מהמתוכנן." }) ]));
+      }
+      if (led.received > ledgerBasisTotal(res) + 1){
+        box6.appendChild(el("div", { className:"warn-line" }, [ el("span", { textContent:"נרשם ביומן יותר כסף מהמחיר של ההצעה. בדוק שאין תקבול כפול." }) ]));
+      }
+      box6.appendChild(el("div", { className:"small muted", style:"margin-top:8px;", textContent:
+        "הוצאות פרויקט נרשמות ביומן כהוצאה חד-פעמית עם תגית הפרויקט. התקורה מחושבת רק מההוצאות הקבועות, ולכן שום הוצאה לא נספרת פעמיים." }));
+      results.appendChild(box6);
+    }
+
+    recalc();
+
+    return {
+      node: wrap,
+      actions: [
+        el("button", { className:"btn", type:"button", textContent:"🧾 רישום הוצאת פרויקט", onclick: function(){ openProjectMoneyModal(p, "expense"); } }),
+        el("button", { className:"btn", type:"button", textContent:"💰 רישום תקבול מהלקוח", onclick: function(){ openProjectMoneyModal(p, "income"); } }),
+        el("button", { className:"btn btn-brass", type:"button", textContent: p.quoteId && quoteById(p.quoteId) ? "📄 עדכון מסמך ההצעה" : "📄 יצירת מסמך הצעת מחיר",
+          onclick: function(){ projectQuoteDoc(p); } })
+      ]
+    };
+  }
+
+  function openProjectMoneyModal(p, kind){
+    var res = calcProject(p);
+    var led = projectLedger(p);
+    var draft = { name:"", amount:"", month: currentMonthKey, label:"" };
+    if (kind === "income"){
+      var sched = projectCashSchedule(p, res, led);
+      if (sched.length){ draft.amount = String(r2(sched[0].amount)); draft.label = sched[0].kind; }
+    }
+    var box = el("div", {});
+    if (kind === "income"){
+      box.appendChild(el("p", { className:"small muted", style:"margin-top:0;", textContent:
+        state.vat.enabled ? "הסכום כולל מע\"מ, כפי שנכנס לחשבון. היומן יפריד את המע\"מ לבד."
+                          : "המע\"מ ביומן כבוי, ולכן רושמים את הסכום לפני מע\"מ." }));
+      box.appendChild(grid([
+        fieldText("תיאור", draft, "label", null, { placeholder:"מקדמה / יתרה" }),
+        fieldNum("סכום", draft, "amount", null),
+        fieldMonth("באיזה חודש נכנס הכסף", draft, "month", null)
+      ]));
+    } else {
+      box.appendChild(el("p", { className:"small muted", style:"margin-top:0;", textContent:
+        "ההוצאה תירשם ביומן כהוצאה חד-פעמית של הפרויקט. היא לא נכנסת לתקורה, ולכן לא תיספר פעמיים." }));
+      box.appendChild(grid([
+        fieldText("על מה ההוצאה", draft, "name", null, { placeholder:"לוחות אלון", wide:true }),
+        fieldNum("סכום ששולם", draft, "amount", null, { hint: state.vat.enabled ? "כפי ששולם בפועל" : "" }),
+        fieldMonth("חודש", draft, "month", null)
+      ]));
+    }
+    var m = openModal({
+      title: kind === "income" ? "רישום תקבול: " + (p.name || "פרויקט") : "רישום הוצאה: " + (p.name || "פרויקט"),
+      body: box,
+      footer: [
+        el("button", { className:"btn", type:"button", textContent:"ביטול", onclick: function(){ m.close(); } }),
+        el("button", { className:"btn btn-primary", type:"button", textContent:"רישום ביומן", onclick: function(){
+          if (!(num(draft.amount) > 0)){ toast("צריך להזין סכום."); return; }
+          if (kind === "income"){
+            recordProjectReceipt(p, num(draft.amount), draft.month, draft.label);
+            if (p.status === "draft" || p.status === "sent") setProjectStatus(p, "active");
+          } else recordProjectExpense(p, draft.name, num(draft.amount), draft.month);
+          m.close(); renderPricingView();
+        } })
+      ]
+    });
+  }
+
+  /* ============================================================ */
+  /* אזור 3 — הרווח והצמיחה שלי                                    */
+  /* ============================================================ */
+
+  var GOAL_PRESETS = ["רכישת מכונה חדשה","שדרוג הסדנה","העסקת עובד","קרן חירום עסקית","מלאי חומרי גלם","הגדלת היקף הפעילות"];
+
+  function buildGrowthTab(){
+    var g = state.growth;
+    var wrap = el("div", {});
+    var top = el("div", {});
+    var goalsWrap = el("div", {});
+    var alloc = el("div", {});
+
+    function recalc(){ paintTop(); paintAlloc(); }
+    function onChange(){ scheduleSave(); recalc(); }
+
+    var rate = calcRate();
+    var fc = projectForecast(12);
+
+    wrap.appendChild(el("p", { className:"lead-note", textContent:
+      "מה נשאר לך אישית ומה נשאר בעסק. השכר שלך מגיע מהשעות שתמחרת. הרווח של העסק מגיע מאחוז הרווח בכל הצעה, וממנו מפרישים ליעדי הצמיחה." }));
+    wrap.appendChild(top);
+
+    function expectedProfit(){
+      if (String(g.manualProfit).trim() !== "") return { v: num(g.manualProfit), src:"manual" };
+      var next3 = fc.rows.slice(0, 3);
+      return { v: sum(next3.map(function(r){ return r.profit; })) / 3, src:"auto" };
+    }
+    function goalsMonthly(){ return sum((g.goals||[]).map(goalMonthly)); }
+
+    function paintTop(){
+      top.innerHTML = "";
+      var ep = expectedProfit();
+      var G = goalsMonthly();
+      var free = ep.v - G;
+      top.appendChild(el("div", { className:"combo-grid", style:"margin-top:0;" }, [
+        statCell("שכר אישי חודשי (יעד נטו)", formatCurrency(rate.salaryNet), "נכלל במחיר כל שעה שלך"),
+        statCell("רווח עסקי חודשי צפוי", formatCurrency(ep.v), ep.src === "manual" ? "לפי ההערכה שהזנת" : "ממוצע 3 החודשים הקרובים, מפרויקטים שאושרו"),
+        statCell(free >= 0 ? "פנוי למשיכה מעבר לשכר" : "חסר כדי לממן את היעדים", formatCurrency(Math.abs(free)),
+          "אחרי הפרשה של " + formatCurrency(G) + " ליעדים", "total")
+      ]));
+    }
+
+    /* --- תחזית --- */
+    wrap.appendChild(sectionTitleSrc("תחזית חודשית ושנתית מפרויקטים", "auto"));
+    var maxCash = Math.max.apply(null, fc.rows.map(function(r){ return r.cash + r.potential; }).concat([1]));
+    var t = el("table", { className:"rep" });
+    t.appendChild(el("thead", {}, [ el("tr", {}, [
+      el("th", { textContent:"חודש" }), el("th", { textContent:"תקבולים מאושרים" }),
+      el("th", { textContent:"פוטנציאל (נשלחו)" }), el("th", { textContent:"רווח עסקי" }), el("th", { className:"hide-sm", textContent:"שכר מפרויקטים" })
+    ]) ]));
+    var tb = el("tbody", {});
+    fc.rows.forEach(function(r){
+      var cell = el("td", {}, [
+        el("div", { className:"n", textContent: formatCurrency(r.cash) }),
+        miniBar(r.cash, maxCash, "var(--pine)")
+      ]);
+      tb.appendChild(el("tr", {}, [
+        el("td", { textContent: monthKeyLabel(r.month) }), cell,
+        el("td", { className:"n muted", textContent: r.potential ? formatCurrency(r.potential) : "—" }),
+        el("td", { className:"n", textContent: formatCurrency(r.profit) }),
+        el("td", { className:"n hide-sm", textContent: formatCurrency(r.salary) })
+      ]));
+    });
+    tb.appendChild(el("tr", { className:"tot" }, [
+      el("td", { textContent:"12 חודשים" }),
+      el("td", { className:"n", textContent: formatCurrency(sum(fc.rows.map(function(r){ return r.cash; }))) }),
+      el("td", { className:"n muted", textContent: formatCurrency(sum(fc.rows.map(function(r){ return r.potential; }))) }),
+      el("td", { className:"n", textContent: formatCurrency(sum(fc.rows.map(function(r){ return r.profit; }))) }),
+      el("td", { className:"n hide-sm", textContent: formatCurrency(sum(fc.rows.map(function(r){ return r.salary; }))) })
+    ]));
+    t.appendChild(tb);
+    wrap.appendChild(t);
+    wrap.appendChild(el("div", { className:"small muted", style:"margin-top:6px;", textContent:
+      "תקבולים הם תזרים, כולל מע\"מ אם הוא מופעל ביומן, לפי מקדמה ויתרה. רווח ושכר משויכים לחודש המסירה. הצעות שנשלחו מופיעות רק כפוטנציאל ולא נכנסות לסכומים." }));
+    if (!fc.open.count && !fc.open.sentCount){
+      wrap.appendChild(el("p", { className:"empty-note", style:"margin-top:10px;", textContent:"אין עדיין פרויקטים שנשלחו או אושרו. התחזית תתמלא כשתסמן הצעות כנשלחו או כאושרו." }));
+    }
+
+    var box = el("div", { className:"result-box" }, [ el("h5", { textContent:"כל הפרויקטים הפעילים יחד" }) ]);
+    box.appendChild(resultRow("מחזור לפני מע\"מ", formatCurrency(fc.open.active)));
+    box.appendChild(resultRow("רווח גולמי", formatCurrency(fc.open.gross)));
+    box.appendChild(resultRow("רווח תפעולי, לפני מס", formatCurrency(fc.open.operating)));
+    box.appendChild(resultRow("שכר אישי", formatCurrency(fc.open.salary)));
+    box.appendChild(resultRow("רווח העסק", formatCurrency(fc.open.profit), "total"));
+    box.appendChild(resultRow("כסף שעוד צפוי להיכנס", formatCurrency(fc.open.cash), "sub"));
+    if (fc.open.sentCount) box.appendChild(resultRow("רווח פוטנציאלי מהצעות שנשלחו", formatCurrency(fc.open.potentialProfit), "sub"));
+    wrap.appendChild(box);
+
+    /* --- יעדים --- */
+    wrap.appendChild(sectionTitleSrc("יעדי צמיחה", "manual"));
+    function renderGoals(){
+      goalsWrap.innerHTML = "";
+      (g.goals||[]).forEach(function(goal){
+        var monthly = el("span", { className:"mono strong" });
+        var prog = el("div", {});
+        function upd(){
+          monthly.textContent = formatCurrency(goalMonthly(goal)) + " לחודש";
+          var p = num(goal.target) > 0 ? Math.min(100, num(goal.saved) / num(goal.target) * 100) : 0;
+          prog.innerHTML = "";
+          prog.appendChild(miniBar(p, 100, "#e87ba4"));
+          var months = isMonthKey(goal.targetMonth) ? monthDiff(todayMonthKey(), goal.targetMonth) : 12;
+          prog.appendChild(el("div", { className:"small muted", textContent:
+            pct(p) + " · נצברו " + formatCurrency(num(goal.saved)) + " מתוך " + formatCurrency(num(goal.target)) +
+            (months > 0 ? " · נשארו " + months + " חודשים" : " · תאריך היעד עבר") }));
+        }
+        var ch = function(){ upd(); onChange(); };
+        var month = el("input", { type:"month" });
+        month.value = goal.targetMonth || "";
+        month.addEventListener("change", function(e){ goal.targetMonth = e.target.value; ch(); });
+        goalsWrap.appendChild(el("div", { className:"goal" }, [
+          el("div", { className:"subrow", style:"margin-bottom:4px;" }, [
+            textInput(goal, "name", function(){ scheduleSave(); }, "nm", "שם היעד"),
+            el("span", { className:"cap", textContent:"יעד ₪" }), numInput(goal, "target", ch),
+            el("span", { className:"cap", textContent:"עד" }), month,
+            el("button", { className:"del-btn", type:"button", title:"מחיקה", onclick: function(){
+              g.goals.splice(g.goals.indexOf(goal), 1); scheduleSave(); renderGoals(); recalc(); } }, [trashIcon()])
+          ]),
+          el("div", { className:"goal-foot" }, [
+            el("div", { style:"flex:1; min-width:180px;" }, [ prog ]),
+            monthly,
+            el("button", { className:"btn btn-sm", type:"button", textContent:"+ הפקדה", onclick: function(){
+              var d = { amount: String(r2(goalMonthly(goal))) };
+              var mm2 = openModal({ title:"הפקדה ליעד: " + (goal.name || ""), body: grid([ fieldNum("סכום שהופרש", d, "amount", null) ]),
+                footer: [ el("button", { className:"btn btn-primary", type:"button", textContent:"שמירה", onclick: function(){
+                  goal.saved = r2(num(goal.saved) + num(d.amount)); scheduleSave(); mm2.close(); renderGoals(); recalc(); } }) ] });
+            } })
+          ])
+        ]));
+        upd();
+      });
+      if (!(g.goals||[]).length) goalsWrap.appendChild(el("div", { className:"small muted", style:"margin-bottom:6px;", textContent:
+        "הגדר יעד, סכום ותאריך, והמערכת תחשב כמה להפריש מהרווח בכל חודש. למשל: מכונה ב-30,000 ₪ בעוד שנה = 2,500 ₪ לחודש." }));
+      goalsWrap.appendChild(el("div", { className:"chips" }, GOAL_PRESETS.concat(["יעד אחר"]).map(function(n){
+        return el("button", { className:"chip", type:"button", textContent:"+ " + n, onclick: function(){
+          g.goals.push({ id: uid(), name: n === "יעד אחר" ? "" : n, target:0, saved:0, targetMonth: shiftMonthKey(todayMonthKey(), 12) });
+          scheduleSave(); renderGoals(); recalc();
+          var ins = goalsWrap.querySelectorAll(".goal input.num"); if (ins.length) ins[ins.length-2].focus(); } });
+      })));
+    }
+    renderGoals();
+    wrap.appendChild(goalsWrap);
+
+    /* --- חלוקת הרווח --- */
+    wrap.appendChild(sectionTitleSrc("כמה למשוך וכמה להשאיר בעסק", "auto"));
+    wrap.appendChild(grid([
+      withTip(fieldNum("הערכת רווח עסקי חודשי (לא חובה)", g, "manualProfit", onChange, { hint:"ריק = לפי הפרויקטים שאושרו" }),
+        "כשעוד אין מספיק פרויקטים מאושרים, התחזית נמוכה מהמציאות. כאן אפשר להזין הערכה של הרווח החודשי הממוצע של העסק, אחרי השכר שלך.")
+    ]));
+    wrap.appendChild(alloc);
+
+    function paintAlloc(){
+      alloc.innerHTML = "";
+      var ep = expectedProfit().v;
+      var G = goalsMonthly();
+      var keep = Math.min(Math.max(0, ep), G);
+      var free = Math.max(0, ep - G);
+      var b = el("div", { className:"result-box" }, [ el("h5", { textContent:"חלוקת הרווח החודשי של העסק" }) ]);
+      b.appendChild(resultRow("רווח עסקי חודשי צפוי", formatCurrency(ep)));
+      b.appendChild(resultRow("להשאיר בעסק להפרשות ליעדים", formatCurrency(keep)));
+      b.appendChild(resultRow("ניתן למשוך, מעבר לשכר החודשי", formatCurrency(free), "total"));
+      if (ep > 0) b.appendChild(el("div", { className:"bar", style:"height:12px; margin-top:10px;" }, [
+        el("span", { style:"width:" + (keep/ep*100).toFixed(1) + "%; background:#e87ba4;" }),
+        el("span", { style:"width:" + (free/ep*100).toFixed(1) + "%; background:#1baf7a;" })
+      ]));
+      if (G > ep + 0.5){
+        b.appendChild(el("div", { className:"warn-line" }, [ el("span", { textContent:
+          "היעדים דורשים " + formatCurrency(G) + " בחודש, והרווח הצפוי הוא " + formatCurrency(ep) +
+          ". אפשר לדחות תאריך יעד, להעלות את אחוז הרווח בהצעות, או לקחת יותר פרויקטים." }) ]));
+      }
+      /* כמה העסק צריך למכור */
+      var need = (rate.overhead + rate.salaryNet + rate.fixedTax + G) / Math.max(0.05, 1 - rate.deductions);
+      b.appendChild(el("div", { style:"margin-top:12px;" }, [
+        el("div", { className:"strong", textContent:"מה העסק צריך כדי לגדול" }),
+        el("div", { className:"small", style:"margin-top:4px; line-height:1.6;", textContent:
+          "כדי לכסות את ההוצאות הקבועות (" + formatCurrency(rate.overhead) + "), לשלם לך " + formatCurrency(rate.salaryNet) +
+          " נטו ולהפריש " + formatCurrency(G) + " ליעדים, העסק צריך לעבוד על פרויקטים במחזור של כ-" + formatCurrency(need) +
+          " בחודש לפני מע\"מ, בנוסף לעלות החומרים וההוצאות של הפרויקטים." })
+      ]));
+      alloc.appendChild(b);
+    }
+
+    recalc();
+    return { node: wrap, actions: [] };
+  }
+
+  /* מנוע החישוב חשוף לבדיקות מהקונסולה. לא משנה נתונים */
+  window.workshopPricing = {
+    calcRate: function(m){ return calcRate(m); },
+    calcProject: function(p){ return calcProject(p); },
+    farmPctFor: function(m){ return farmPctFor(m); },
+    projectForecast: function(n){ return projectForecast(n || 12); },
+    goalMonthly: function(g){ return goalMonthly(g); }
+  };
+
+  /* מחשבון המוצרים הישן הוחלף בהצעת המחיר לפרויקט. הוא נשאר זמין רק
+     כשטוענים תמחור מוצר שנשמר בעבר. */
   var PRICING_TABS = [
+    { key:"rate",     label:"⏱ שעת העבודה שלי", build: buildRateTab },
+    { key:"project",  label:"📐 הצעת מחיר לפרויקט", build: buildProjectTab },
+    { key:"growth",   label:"📈 הרווח והצמיחה שלי", build: buildGrowthTab },
     { key:"workshop", label:"תמחור סדנאות", build: buildWorkshopCalc },
-    { key:"product",  label:"תמחור מוצרי נגרייה", build: buildProductCalc },
+    { key:"product",  label:"מוצר (מחשבון ישן)", build: buildProductCalc, hidden: true },
     { key:"saved",    label:"תמחורים שמורים", build: buildSavedQuotes }
   ];
-  var pricingTab = "workshop";
+  var pricingTab = "rate";
 
   function pricingSelectTab(key){
     pricingTab = key;
@@ -2908,6 +4402,7 @@
     var actions = document.getElementById("pricing-actions");
     bar.innerHTML = ""; content.innerHTML = ""; actions.innerHTML = "";
     PRICING_TABS.forEach(function(t){
+      if (t.hidden && t.key !== pricingTab) return;
       bar.appendChild(el("button", { className:"tab" + (t.key === pricingTab ? " active" : ""), type:"button",
         textContent: t.label, onclick: function(){ pricingSelectTab(t.key); } }));
     });
@@ -3038,15 +4533,17 @@
     }
 
     panel.appendChild(el("div", { style:"display:flex; gap:8px; flex-wrap:wrap; margin-top:14px;" }, [
-      el("button", { className:"btn btn-brass", type:"button", textContent:"⇦ העברת עלות החומר לתמחור המוצר", onclick: function(){
-        var p = state.pricing.product;
-        p.materialMode = "sheets";
-        p.sheetsCost = r2(st.materialCost);
-        p.sheetsNote = st.sheetCount + " פלטות + " + st.bandingMeters.toFixed(1) + " מ' קנט, פחת מחושב " + pct(st.wastePct);
+      el("button", { className:"btn btn-brass", type:"button", textContent:"⇦ העברת עלות החומר להצעת מחיר לפרויקט", onclick: function(){
+        var p = pricingUi.projectId ? projectById(pricingUi.projectId) : null;
+        if (!p){ p = mkProject(); p.name = state.cutting.projectName || ""; state.projects.push(p); }
+        p.materials.push({ id: uid(), name: "פלטות לפי תוכנית חיתוך: " + st.sheetCount + " פלטות + " +
+          st.bandingMeters.toFixed(1) + " מ' קנט", qty: 1, unit: "", unitPrice: r2(st.materialCost) });
+        p.updatedAt = new Date().toISOString();
+        pricingUi.projectId = p.id;
         scheduleSave();
         switchView("pricing");
-        pricingSelectTab("product");
-        toast("עלות החומר הועברה לתמחור המוצר.");
+        pricingSelectTab("project");
+        toast("עלות החומר נוספה לפרויקט \"" + (p.name || "ללא שם") + "\".");
       } }),
       el("button", { className:"btn", type:"button", textContent:"🖨 הדפסת תוכנית החיתוך", onclick: printCuttingPlan }),
       el("button", { className:"btn", type:"button", textContent:"📋 העתקת רשימת חיתוך", onclick: function(){
@@ -3245,7 +4742,9 @@
     (q.items||[]).forEach(function(i){
       var lineTotal = num(i.qty) * num(i.unitPrice) * factor;
       if (lineTotal <= 0) return;
-      month.oneTimeIncome.push(mkIncomeItem(i.desc || q.title || "פריט", num(i.qty) || 1, r2(lineTotal)));
+      var row = mkIncomeItem(i.desc || q.title || "פריט", num(i.qty) || 1, r2(lineTotal));
+      if (q.projectId) row.projectId = q.projectId;
+      month.oneTimeIncome.push(row);
     });
     q.ledgerMonth = currentMonthKey;
     if (q.status !== "approved") q.status = "approved";
@@ -6473,7 +7972,7 @@
 
   function switchView(view){
     currentView = view;
-    ["ledger","cashflow","pricing","hourly","cutting","clients","capture"].forEach(function(v){
+    ["ledger","cashflow","pricing","hourly","cutting","clients","invoices","capture"].forEach(function(v){
       var sec = document.getElementById("view-" + v);
       if (sec) sec.className = "view" + (v === view ? " active" : "");
     });
@@ -6486,8 +7985,635 @@
     if (view === "cashflow") renderCashflowView();
     if (view === "hourly") renderHourlyView();
     if (view === "capture") renderCaptureView();
+    if (view === "invoices") renderInvoicesView();
     window.scrollTo(0,0);
   }
+
+  /* ============================================================ */
+  /* Invoices — קריאת חשבוניות מתמונות ו-PDF, וייצוא לאקסל          */
+  /* ============================================================ */
+  /* הזיהוי רץ בדפדפן, במכשיר שלך. הקבצים לא נשלחים לשום שרת.       */
+  /* בפעם הראשונה הדפדפן מוריד את ספריות הזיהוי (כמה מגה), ולכן    */
+  /* צריך אינטרנט. שאר האפליקציה ממשיכה לעבוד גם בלי.                */
+
+  var INV_LIBS = {
+    tesseract: "https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js",
+    pdf:       "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js",
+    pdfWorker: "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js",
+    xlsx:      "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"
+  };
+  var INV_CATEGORIES = ["חומרי גלם","פרזול","חומרי גמר","כלים וציוד","דלק ורכב","חשמל ומים","תקשורת",
+    "ביטוח","שכירות","הנהלת חשבונות","מנויים ותוכנות","הובלה","קבלני משנה","אחר"];
+  var INV_CAT_RULES = [
+    [/עצים|עץ |לוחות|סנדוויץ|דיקט|MDF|פורניר|אורן|אלון|אגוז|טיק|בוק|מסגר/i, "חומרי גלם"],
+    [/פרזול|צירים|ציר |מסילות|ברגים|בלום|blum|hettich|ידיות/i, "פרזול"],
+    [/צבע|לכה|שמן|טמבור|נירלט|כספית|osmo|רובו|גמר/i, "חומרי גמר"],
+    [/מקיטה|makita|bosch|בוש|dewalt|דיוולט|festool|פסטול|הום סנטר|ace |כלי עבודה|להבים|מסור/i, "כלים וציוד"],
+    [/דלק|סונול|דור אלון|paz|תחנת|סולר|בנזין/i, "דלק ורכב"],
+    [/חברת החשמל|חשמל|תאגיד|מי |מים/i, "חשמל ומים"],
+    [/סלקום|פרטנר|בזק|hot|פלאפון|גולן|אינטרנט|סלולר/i, "תקשורת"],
+    [/ביטוח|הראל|מגדל|הפניקס|מנורה|איילון|כלל ביט/i, "ביטוח"],
+    [/שכירות|שכ["״]ד|דמי שכירות/i, "שכירות"],
+    [/רו["״]ח|רואה חשבון|הנהלת חשבונות|יועץ מס/i, "הנהלת חשבונות"],
+    [/מנוי|google|microsoft|adobe|canva|wix|apple|תוכנה/i, "מנויים ותוכנות"],
+    [/הובלה|הובלות|משלוח|שליחויות/i, "הובלה"]
+  ];
+
+  var invLoaded = {};
+  function loadScript(url){
+    if (invLoaded[url]) return invLoaded[url];
+    invLoaded[url] = new Promise(function(resolve, reject){
+      var s = document.createElement("script");
+      s.src = url; s.async = true;
+      s.onload = function(){ resolve(); };
+      s.onerror = function(){ delete invLoaded[url]; reject(new Error("לא הצלחתי לטעון את " + url.split("/")[2] + ". צריך חיבור לאינטרנט בפעם הראשונה.")); };
+      document.head.appendChild(s);
+    });
+    return invLoaded[url];
+  }
+
+  /* ---------- פענוח הטקסט ---------- */
+
+  function invAmounts(line){
+    var out = [];
+    var re = /(\d{1,3}(?:,\d{3})+(?:\.\d{1,2})?|\d+\.\d{1,2}|\d+)(\s*%)?/g, mt;
+    while ((mt = re.exec(line))){
+      if (mt[2]) continue;                          /* אחוז, לא סכום */
+      var v = parseFloat(mt[1].replace(/,/g, ""));
+      if (!isNaN(v)) out.push({ v: v, dec: /\.\d{1,2}$/.test(mt[1]) || /,\d{3}/.test(mt[1]) });
+    }
+    return out;
+  }
+
+  function invDate(text){
+    var lines = text.split("\n");
+    var best = null;
+    lines.forEach(function(line, idx){
+      var re = /(\d{1,2})\s*[.\/\-]\s*(\d{1,2})\s*[.\/\-]\s*(\d{4}|\d{2})(?!\d)/g, mt;
+      while ((mt = re.exec(line))){
+        var d = parseInt(mt[1],10), m = parseInt(mt[2],10), y = parseInt(mt[3],10);
+        if (y < 100) y += 2000;
+        if (d < 1 || d > 31 || m < 1 || m > 12 || y < 2015 || y > 2040) continue;
+        var score = /תאריך|date/i.test(line) ? 2 : 1;
+        if (!best || score > best.score) best = { score: score, iso: y + "-" + pad2(m) + "-" + pad2(d), idx: idx };
+      }
+    });
+    return best ? best.iso : "";
+  }
+
+  function parseInvoiceText(text){
+    var clean = String(text || "").replace(/[“”״]/g, '"').replace(/[׳’`]/g, "'").replace(/[ \t]+/g, " ");
+    var lines = clean.split("\n").map(function(l){ return l.trim(); }).filter(Boolean);
+    var res = { supplier:"", taxId:"", invoiceNo:"", date:"", net:0, vat:0, total:0, vatEstimated:false, found:{} };
+
+    /* סה"כ לתשלום */
+    var totalCands = [];
+    lines.forEach(function(l){
+      if (!/סה"?כ|סך הכל|לתשלום|total|סכום כולל|סכום לתשלום/i.test(l)) return;
+      if (/לפני מע|ללא מע|חייב במע|הנחה|עיגול/.test(l)) return;
+      var am = invAmounts(l).filter(function(a){ return a.v > 0 && a.v < 1e7; });
+      if (!am.length) return;
+      var w = /לתשלום|כולל מע|total/i.test(l) ? 2 : 1;
+      am.forEach(function(a){ totalCands.push({ v:a.v, w:w + (a.dec ? 0.5 : 0) }); });
+    });
+    if (totalCands.length){
+      totalCands.sort(function(a,b){ return b.w - a.w || b.v - a.v; });
+      res.total = totalCands[0].v; res.found.total = true;
+    } else {
+      var all = [];
+      lines.forEach(function(l){ invAmounts(l).forEach(function(a){ if (a.dec && a.v < 1e7) all.push(a.v); }); });
+      if (all.length){ res.total = Math.max.apply(null, all); }
+    }
+
+    /* לפני מע"מ */
+    lines.forEach(function(l){
+      if (res.found.net) return;
+      if (!/לפני מע|ללא מע|חייב במע|subtotal|before vat/i.test(l)) return;
+      var am = invAmounts(l).filter(function(a){ return a.v > 0 && (!res.total || a.v < res.total); });
+      if (am.length){ res.net = am[am.length-1].v; res.found.net = true; }
+    });
+
+    /* מע"מ */
+    var expectedVat = res.total ? res.total - res.total / (1 + vatRate()) : 0;
+    var vatCands = [];
+    lines.forEach(function(l){
+      if (!/מע"?מ|vat/i.test(l) || /לפני|ללא|כולל|חייב|פטור|עוסק|מורשה/.test(l)) return;
+      invAmounts(l).forEach(function(a){
+        if (a.v <= 0 || (res.total && a.v >= res.total)) return;
+        if (!a.dec && a.v <= 20) return;        /* שיעור המע"מ ולא סכום */
+        vatCands.push(a.v);
+      });
+    });
+    if (vatCands.length){
+      vatCands.sort(function(a,b){ return Math.abs(a - expectedVat) - Math.abs(b - expectedVat); });
+      res.vat = vatCands[0]; res.found.vat = true;
+    }
+
+    /* השלמות והצלבה */
+    if (res.total && res.found.net && !res.found.vat) res.vat = r2(res.total - res.net);
+    else if (res.total && res.found.vat && !res.found.net) res.net = r2(res.total - res.vat);
+    else if (!res.total && res.found.net && res.found.vat) res.total = r2(res.net + res.vat);
+    else if (res.total && !res.found.net && !res.found.vat){
+      res.net = r2(res.total / (1 + vatRate())); res.vat = r2(res.total - res.net); res.vatEstimated = true;
+    }
+    if (/פטור|עוסק פטור|קבלה בלבד/.test(clean) && !res.found.vat){ res.vat = 0; res.net = res.total; res.vatEstimated = false; res.exempt = true; }
+
+    /* ע.מ / ח.פ */
+    var flat = clean.replace(/(\d)[\- ](?=\d)/g, "$1");
+    var tm = flat.match(/(?:ע\.?\s?מ|עוסק מורשה|ח\.?\s?פ|ח"פ|ע"מ|מס'? עוסק|vat\s*no|ת\.?\s?ז)\D{0,14}(\d{9})(?!\d)/i);
+    if (tm) res.taxId = tm[1];
+    else { var t9 = flat.match(/(?:^|\D)(5\d{8})(?!\d)/); if (t9) res.taxId = t9[1]; }
+
+    /* מספר חשבונית */
+    lines.some(function(l){
+      if (!/חשבונית|קבלה|מסמך|invoice|מס'|מספר/i.test(l)) return false;
+      var nums = (l.replace(/\d{1,2}[.\/\-]\d{1,2}[.\/\-]\d{2,4}/g, " ").match(/\d{3,10}/g) || [])
+        .filter(function(n){ return n !== res.taxId && n.length !== 9; });
+      if (nums.length){ res.invoiceNo = nums[0]; return true; }
+      return false;
+    });
+
+    res.date = invDate(clean);
+
+    /* שם הספק: השורה הראשונה שנראית כמו שם */
+    var skip = /חשבונית|קבלה|תאריך|עוסק|ח\.?\s?פ\b|ח"פ|(?:^|\s)ע\.?"?מ\s*:?\s*\d|טל|פקס|נייד|כתובת|רח'|רחוב|ת\.ד|מיקוד|מקור|העתק|לכבוד|לקוח|דף|www|@|מס'/i;
+    lines.slice(0, 8).some(function(l){
+      var letters = (l.match(/[A-Za-zא-ת]/g) || []).length;
+      if (letters < 2 || skip.test(l) || l.length > 45) return false;
+      if (letters / l.replace(/\s/g, "").length < 0.55) return false;
+      res.supplier = l.replace(/[|_*~^]+/g, "").trim(); return true;
+    });
+
+    res.category = invGuessCategory(res.supplier + "\n" + clean);
+    res.review = !res.found.total || !res.date || !res.supplier || res.vatEstimated ||
+      (res.net && res.vat && res.total && Math.abs(res.net + res.vat - res.total) > 1.5);
+    return res;
+  }
+
+  function invGuessCategory(text){
+    for (var i = 0; i < INV_CAT_RULES.length; i++) if (INV_CAT_RULES[i][0].test(text)) return INV_CAT_RULES[i][1];
+    return "אחר";
+  }
+
+  /* PDF מחולץ לפעמים בסדר הפוך לעברית. אם לא נמצא סכום, מנסים לקרוא את השורות הפוך */
+  function parseWithFallback(text){
+    var a = parseInvoiceText(text);
+    if (a.found.total) return a;
+    var rev = text.split("\n").map(function(l){ return l.split("").reverse().join(""); }).join("\n");
+    var b = parseInvoiceText(rev);
+    return b.found.total ? b : a;
+  }
+
+  /* ---------- קריאת קבצים ---------- */
+
+  var invThumbs = {};     /* תמונות מוקטנות לתצוגה, רק בזיכרון של הדפדפן */
+  var invRaw = {};        /* הטקסט שזוהה, רק בזיכרון */
+  var invOcrWorker = null;
+  var invOcrProgress = null;   /* הקובץ שנקרא עכשיו מקבל את עדכוני ההתקדמות */
+
+  function invOcr(source, onProgress){
+    return loadScript(INV_LIBS.tesseract).then(function(){
+      if (!invOcrWorker){
+        invOcrWorker = window.Tesseract.createWorker(["heb", "eng"], 1, {
+          logger: function(m){ if (invOcrProgress && m.status === "recognizing text") invOcrProgress(m.progress); }
+        });
+      }
+      invOcrProgress = onProgress || null;
+      return invOcrWorker;
+    }).then(function(w){ return w.recognize(source); })
+      .then(function(r){ return r.data.text || ""; });
+  }
+
+  function imageToCanvas(file){
+    return new Promise(function(resolve, reject){
+      var url = URL.createObjectURL(file);
+      var img = new Image();
+      img.onload = function(){
+        var maxSide = 2400, sc = Math.min(1, maxSide / Math.max(img.naturalWidth, img.naturalHeight));
+        var c = document.createElement("canvas");
+        c.width = Math.round(img.naturalWidth * sc); c.height = Math.round(img.naturalHeight * sc);
+        var ctx = c.getContext("2d");
+        ctx.filter = "grayscale(1) contrast(1.25)";
+        ctx.drawImage(img, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(url);
+        resolve(c);
+      };
+      img.onerror = function(){ URL.revokeObjectURL(url); reject(new Error("הדפדפן לא מצליח לפתוח את התמונה. אם זה קובץ HEIC מאייפון, שמור אותה כ-JPG.")); };
+      img.src = url;
+    });
+  }
+
+  function thumbFromCanvas(c){
+    var t = document.createElement("canvas");
+    var sc = 160 / Math.max(c.width, c.height);
+    t.width = Math.round(c.width * sc); t.height = Math.round(c.height * sc);
+    t.getContext("2d").drawImage(c, 0, 0, t.width, t.height);
+    return t.toDataURL("image/jpeg", 0.7);
+  }
+
+  function readPdf(file, onProgress){
+    return loadScript(INV_LIBS.pdf).then(function(){
+      var lib = window.pdfjsLib;
+      lib.GlobalWorkerOptions.workerSrc = INV_LIBS.pdfWorker;
+      return file.arrayBuffer().then(function(buf){ return lib.getDocument({ data: buf }).promise; });
+    }).then(function(doc){
+      var pages = Math.min(doc.numPages, 3);
+      var chain = Promise.resolve(""), firstCanvas = null;
+      for (var i = 1; i <= pages; i++) (function(n){
+        chain = chain.then(function(acc){
+          return doc.getPage(n).then(function(page){
+            return page.getTextContent().then(function(tc){
+              /* מקבצים לפי גובה השורה, כדי לשחזר שורות */
+              var rows = {};
+              tc.items.forEach(function(it){
+                var y = Math.round(it.transform[5] / 3);
+                (rows[y] = rows[y] || []).push(it);
+              });
+              var text = Object.keys(rows).sort(function(a,b){ return b - a; }).map(function(y){
+                return rows[y].sort(function(a,b){ return b.transform[4] - a.transform[4]; })
+                  .map(function(it){ return it.str; }).join(" ");
+              }).join("\n");
+              if (n === 1){
+                var vp = page.getViewport({ scale: 2 });
+                var c = document.createElement("canvas"); c.width = vp.width; c.height = vp.height;
+                return page.render({ canvasContext: c.getContext("2d"), viewport: vp }).promise.then(function(){
+                  firstCanvas = c; return acc + text + "\n";
+                });
+              }
+              return acc + text + "\n";
+            });
+          });
+        });
+      })(i);
+      return chain.then(function(text){
+        /* PDF סרוק, בלי טקסט: מריצים זיהוי על הדף הראשון */
+        if (text.replace(/\s/g, "").length < 40 && firstCanvas){
+          return invOcr(firstCanvas, onProgress).then(function(t){ return { text: t, canvas: firstCanvas, ocr: true }; });
+        }
+        return { text: text, canvas: firstCanvas, ocr: false };
+      });
+    });
+  }
+
+  function processInvoiceFile(file, onProgress){
+    var isPdf = /pdf$/i.test(file.type) || /\.pdf$/i.test(file.name);
+    var p = isPdf ? readPdf(file, onProgress)
+      : imageToCanvas(file).then(function(c){
+          return invOcr(c, onProgress).then(function(t){ return { text: t, canvas: c, ocr: true }; }); });
+    return p.then(function(out){
+      var parsed = isPdf && !out.ocr ? parseWithFallback(out.text) : parseInvoiceText(out.text);
+      return { parsed: parsed, text: out.text, thumb: out.canvas ? thumbFromCanvas(out.canvas) : null };
+    });
+  }
+
+  function mkInvoiceRecord(file, parsed){
+    var month = parsed.date ? parsed.date.slice(0, 7) : (invUi.month !== "all" ? invUi.month : todayMonthKey());
+    return {
+      id: uid(), file: file.name, addedAt: new Date().toISOString(),
+      date: parsed.date || "", month: month,
+      supplier: parsed.supplier || "", taxId: parsed.taxId || "", invoiceNo: parsed.invoiceNo || "",
+      category: parsed.category || "אחר", projectId: "",
+      net: parsed.net ? r2(parsed.net) : "", vat: parsed.vat || parsed.vat === 0 ? r2(parsed.vat) : "",
+      total: parsed.total ? r2(parsed.total) : "",
+      review: !!parsed.review, vatEstimated: !!parsed.vatEstimated, note: "", ledger: null
+    };
+  }
+
+  function invDuplicateOf(rec){
+    var f = state.invoices.items.filter(function(o){
+      if (o === rec) return false;
+      if (rec.invoiceNo && o.invoiceNo === rec.invoiceNo && (o.taxId === rec.taxId || o.supplier === rec.supplier)) return true;
+      return rec.total && num(o.total) === num(rec.total) && o.date === rec.date && o.supplier === rec.supplier;
+    });
+    return f.length ? f[0] : null;
+  }
+
+  /* ---------- מסך ---------- */
+
+  var invUi = { month: todayMonthKey(), queue: [], busy: false };
+
+  function invFiltered(){
+    return state.invoices.items.filter(function(r){ return invUi.month === "all" || r.month === invUi.month; })
+      .sort(function(a,b){ return String(a.date).localeCompare(String(b.date)); });
+  }
+
+  function addInvoiceFiles(files){
+    Array.prototype.forEach.call(files, function(f){
+      if (!/^image\//.test(f.type) && !/pdf/i.test(f.type) && !/\.(pdf|jpe?g|png|webp|heic)$/i.test(f.name)) return;
+      invUi.queue.push({ file: f, status:"ממתין", progress:0 });
+    });
+    renderInvoicesView();
+    runInvoiceQueue();
+  }
+
+  function runInvoiceQueue(){
+    if (invUi.busy) return;
+    var next = invUi.queue.filter(function(q){ return q.status === "ממתין"; })[0];
+    if (!next){
+      if (invOcrWorker){ invOcrWorker.then(function(w){ w.terminate(); }); invOcrWorker = null; }
+      invUi.queue = invUi.queue.filter(function(q){ return q.status === "שגיאה"; });
+      renderInvoicesView();
+      return;
+    }
+    invUi.busy = true;
+    next.status = "קורא...";
+    paintQueue();
+    processInvoiceFile(next.file, function(p){ next.progress = p; paintQueue(); }).then(function(out){
+      var rec = mkInvoiceRecord(next.file, out.parsed);
+      if (out.thumb) invThumbs[rec.id] = out.thumb;
+      invRaw[rec.id] = out.text;
+      state.invoices.items.push(rec);
+      scheduleSave();
+      next.status = "הושלם";
+    }, function(err){
+      next.status = "שגיאה"; next.error = err && err.message ? err.message : String(err);
+    }).then(function(){
+      invUi.busy = false;
+      renderInvoicesView();
+      runInvoiceQueue();
+    });
+  }
+
+  var invQueueHost = null;
+  function paintQueue(){
+    if (!invQueueHost) return;
+    invQueueHost.innerHTML = "";
+    invUi.queue.forEach(function(q){
+      invQueueHost.appendChild(el("div", { className:"inv-progress" + (q.status === "שגיאה" ? " warn-line" : "") }, [
+        el("strong", { textContent: q.file.name }), " · ", q.status,
+        q.status === "קורא..." && q.progress ? " " + Math.round(q.progress * 100) + "%" : "",
+        q.error ? el("div", { className:"small", textContent: q.error }) : null
+      ]));
+    });
+  }
+
+  function invField(label, rec, key, opts){
+    opts = opts || {};
+    var inp;
+    if (opts.options){
+      inp = el("select", {});
+      opts.options.forEach(function(o){ inp.appendChild(el("option", { value: o.value, textContent: o.label })); });
+      inp.value = rec[key] || "";
+      inp.addEventListener("change", function(e){ rec[key] = e.target.value; scheduleSave(); if (opts.after) opts.after(); });
+    } else {
+      inp = el("input", { type: opts.type || "text", className: opts.num ? "num" : "" });
+      if (opts.num) inp.setAttribute("inputmode", "decimal");
+      inp.value = rec[key] === undefined || rec[key] === null ? "" : rec[key];
+      inp.addEventListener("input", function(e){
+        var v = e.target.value;
+        if (opts.num){ v = sanitizeDecimal(v); if (e.target.value !== v) e.target.value = v; }
+        rec[key] = v;
+        if (key === "date" && isDateKey(v)) rec.month = v.slice(0, 7);
+        scheduleSave();
+      });
+      inp.addEventListener("change", function(){ if (opts.after) opts.after(); });
+    }
+    return el("div", { className:"f" + (opts.wide ? " wide2" : "") }, [ el("label", { textContent: label }), inp ]);
+  }
+
+  function openInvoicePreview(rec){
+    var body = el("div", {});
+    if (invThumbs[rec.id]) body.appendChild(el("img", { src: invThumbs[rec.id], style:"max-width:100%; border-radius:10px; border:1px solid var(--border);" }));
+    else body.appendChild(el("p", { className:"small muted", textContent:"התמונה לא נשמרת אחרי רענון הדף, רק הנתונים." }));
+    if (invRaw[rec.id]) body.appendChild(el("details", { style:"margin-top:10px;" }, [
+      el("summary", { textContent:"הטקסט שזוהה", style:"cursor:pointer; font-weight:700; font-size:0.85rem;" }),
+      el("pre", { style:"white-space:pre-wrap; font-size:0.75rem; background:#fff; padding:10px; border-radius:8px; border:1px solid var(--border);", textContent: invRaw[rec.id] })
+    ]));
+    openModal({ title: rec.supplier || rec.file, subtitle: rec.file, body: body });
+  }
+
+  function invoicesToLedger(list){
+    var added = 0, skipped = 0;
+    list.forEach(function(rec){
+      var dup = invDuplicateOf(rec);
+      if (rec.ledger || !(num(rec.total) > 0) || (dup && dup.ledger)){ skipped++; return; }
+      var name = (rec.supplier || "חשבונית") + (rec.invoiceNo ? " · חש' " + rec.invoiceNo : "");
+      var p = rec.projectId ? projectById(rec.projectId) : null;
+      if (p) name = (p.name || "פרויקט") + " · " + name;
+      var item = mkItem(name, r2(num(rec.total)));
+      item.invoiceId = rec.id;
+      if (p) item.projectId = p.id;
+      if (state.vat.enabled){
+        if (num(rec.vat) > 0) item.vatInc = true; else item.noVat = true;
+      }
+      var mk = isMonthKey(rec.month) ? rec.month : currentMonthKey;
+      ensureMonth(mk).oneTimeExpenses.push(item);
+      rec.ledger = { month: mk, itemId: item.id };
+      added++;
+    });
+    scheduleSave(); renderLedger();
+    return { added: added, skipped: skipped };
+  }
+
+  /* אם השורה נמחקה מהיומן, החשבונית חוזרת להיות "לא נרשמה" */
+  function invSyncLedger(){
+    state.invoices.items.forEach(function(rec){
+      if (!rec.ledger) return;
+      var m = state.months[rec.ledger.month];
+      var ok = m && (m.oneTimeExpenses||[]).some(function(i){ return i.id === rec.ledger.itemId; });
+      if (!ok) rec.ledger = null;
+    });
+  }
+
+  function exportInvoicesExcel(list, label){
+    if (!list.length){ toast("אין חשבוניות לייצוא."); return; }
+    toast("מכין קובץ אקסל...");
+    loadScript(INV_LIBS.xlsx).then(function(){
+      var X = window.XLSX;
+      var head = ["#","תאריך","ספק","ע.מ / ח.פ","מס' חשבונית","קטגוריה","פרויקט","לפני מע\"מ","מע\"מ","סה\"כ","סטטוס","ביומן","קובץ","הערות"];
+      var aoa = [head];
+      list.forEach(function(r, i){
+        var p = r.projectId ? projectById(r.projectId) : null;
+        aoa.push([ i + 1, isDateKey(r.date) ? new Date(r.date + "T12:00:00") : (r.date || ""), r.supplier, r.taxId, r.invoiceNo,
+          r.category, p ? (p.name || "פרויקט") : "", num(r.net), num(r.vat), num(r.total),
+          r.review ? "לבדיקה" : "נבדק", r.ledger ? "נרשם" : "", r.file, r.note || "" ]);
+      });
+      var n = list.length, last = n + 1;
+      var ws = X.utils.aoa_to_sheet(aoa, { cellDates: true });
+      var totRow = last + 1;
+      X.utils.sheet_add_aoa(ws, [[ "", "", "סה\"כ", "", "", "", "" ]], { origin: "A" + totRow });
+      ["H","I","J"].forEach(function(col, k){
+        var v = sum(list.map(function(r){ return num([r.net, r.vat, r.total][k]); }));
+        ws[col + totRow] = { t:"n", v: r2(v), f: "SUM(" + col + "2:" + col + last + ")", z:"#,##0.00" };
+      });
+      for (var i = 2; i <= last; i++){
+        ["H","I","J"].forEach(function(col){ if (ws[col + i]) ws[col + i].z = "#,##0.00"; });
+        if (ws["B" + i] && ws["B" + i].t === "d") ws["B" + i].z = "dd/mm/yyyy";
+      }
+      ws["!ref"] = "A1:N" + totRow;
+      ws["!cols"] = [4,11,26,12,12,14,18,12,10,12,9,8,24,24].map(function(w){ return { wch: w }; });
+      ws["!autofilter"] = { ref: "A1:N" + last };
+
+      function summarySheet(keyName, keyCol, keys){
+        var rows = [[keyName, "מספר חשבוניות", "לפני מע\"מ", "מע\"מ", "סה\"כ"]];
+        keys.forEach(function(k){
+          var sub = list.filter(function(r){ return (keyCol === "F" ? r.category : r.supplier || "ללא שם") === k; });
+          rows.push([k, sub.length, r2(sum(sub.map(function(r){ return num(r.net); }))),
+            r2(sum(sub.map(function(r){ return num(r.vat); }))), r2(sum(sub.map(function(r){ return num(r.total); })))]);
+        });
+        var s = X.utils.aoa_to_sheet(rows);
+        for (var i = 2; i <= keys.length + 1; i++){
+          var crit = "'חשבוניות'!" + keyCol + "$2:" + keyCol + "$" + last;
+          s["B" + i].f = "COUNTIF(" + crit + ",A" + i + ")";
+          ["C","D","E"].forEach(function(col, k){
+            s[col + i].f = "SUMIF(" + crit + ",A" + i + ",'חשבוניות'!" + ["H","I","J"][k] + "$2:" + ["H","I","J"][k] + "$" + last + ")";
+            s[col + i].z = "#,##0.00";
+          });
+        }
+        var tr = keys.length + 2;
+        X.utils.sheet_add_aoa(s, [["סה\"כ"]], { origin: "A" + tr });
+        ["B","C","D","E"].forEach(function(col){
+          var v = sum(rows.slice(1).map(function(r){ return r[" BCDE".indexOf(col)]; }));
+          s[col + tr] = { t:"n", v: v, f: "SUM(" + col + "2:" + col + (tr - 1) + ")", z: col === "B" ? "0" : "#,##0.00" };
+        });
+        s["!ref"] = "A1:E" + tr;
+        s["!cols"] = [{ wch:26 },{ wch:14 },{ wch:14 },{ wch:12 },{ wch:14 }];
+        return s;
+      }
+      var cats = [], sups = [];
+      list.forEach(function(r){
+        if (cats.indexOf(r.category) === -1) cats.push(r.category);
+        var sp = r.supplier || "ללא שם";
+        if (sups.indexOf(sp) === -1) sups.push(sp);
+      });
+      var wb = X.utils.book_new();
+      wb.Workbook = { Views: [{ RTL: true }] };
+      X.utils.book_append_sheet(wb, ws, "חשבוניות");
+      X.utils.book_append_sheet(wb, summarySheet("קטגוריה", "F", cats), "לפי קטגוריה");
+      X.utils.book_append_sheet(wb, summarySheet("ספק", "C", sups), "לפי ספק");
+      X.writeFile(wb, "חשבוניות-" + label + ".xlsx");
+      toast("קובץ האקסל ירד.");
+    }, function(err){ toast(err.message); });
+  }
+
+  function renderInvoicesView(){
+    var host = document.getElementById("invoices-content");
+    if (!host) return;
+    host.innerHTML = "";
+    invSyncLedger();
+
+    /* --- קליטה --- */
+    var panel = el("div", { className:"panel" });
+    panel.appendChild(el("div", { className:"panel-head" }, [
+      el("div", {}, [
+        el("h4", { textContent:"קליטת חשבוניות" }),
+        el("div", { className:"panel-sub", textContent:"גרור לכאן צילומי חשבוניות או קובצי PDF מהמייל. המערכת מזהה ספק, תאריך, מספר חשבונית וסכומים, ואתה מאשר" })
+      ])
+    ]));
+    var fileIn = el("input", { type:"file", multiple:"multiple", accept:"image/*,application/pdf", style:"display:none;" });
+    fileIn.addEventListener("change", function(e){ addInvoiceFiles(e.target.files); e.target.value = ""; });
+    var zone = el("div", { className:"drop-zone", style:"margin-top:12px;", onclick: function(){ fileIn.click(); } }, [
+      el("div", { className:"big-ico", textContent:"🧾" }),
+      el("div", { className:"strong", textContent:"גרור קבצים לכאן, או לחץ לבחירה" }),
+      el("div", { className:"small muted", style:"margin-top:4px;", textContent:"בטלפון אפשר לצלם ישר מהמצלמה. תמונות JPG/PNG וקובצי PDF, כמה בבת אחת" })
+    ]);
+    ["dragenter","dragover"].forEach(function(ev){ zone.addEventListener(ev, function(e){ e.preventDefault(); zone.classList.add("over"); }); });
+    ["dragleave","drop"].forEach(function(ev){ zone.addEventListener(ev, function(e){ e.preventDefault(); zone.classList.remove("over"); }); });
+    zone.addEventListener("drop", function(e){ if (e.dataTransfer && e.dataTransfer.files) addInvoiceFiles(e.dataTransfer.files); });
+    panel.appendChild(zone);
+    panel.appendChild(fileIn);
+    panel.appendChild(el("div", { className:"small muted", style:"margin-top:8px;", textContent:
+      "הזיהוי רץ בדפדפן שלך, והקבצים לא נשלחים לשום מקום. בשימוש הראשון יורדות ספריות הזיהוי, וזה דורש אינטרנט ולוקח כמה שניות. צילום ישר, מואר וקרוב משפר מאוד את הזיהוי." }));
+    invQueueHost = el("div", {});
+    panel.appendChild(invQueueHost);
+    paintQueue();
+    host.appendChild(panel);
+
+    /* --- רשימה --- */
+    var months = {};
+    months[todayMonthKey()] = true;
+    state.invoices.items.forEach(function(r){ if (isMonthKey(r.month)) months[r.month] = true; });
+    var monthOpts = Object.keys(months).sort().reverse().map(function(k){ return { value:k, label: monthKeyLabel(k) }; })
+      .concat([{ value:"all", label:"כל החודשים" }]);
+    var list = invFiltered();
+    var label = invUi.month === "all" ? "הכל" : invUi.month;
+
+    var lp = el("div", { className:"panel" });
+    var sel = el("select", { className:"row-select" });
+    monthOpts.forEach(function(o){ sel.appendChild(el("option", { value:o.value, textContent:o.label })); });
+    sel.value = invUi.month;
+    sel.addEventListener("change", function(e){ invUi.month = e.target.value; renderInvoicesView(); });
+    lp.appendChild(el("div", { className:"panel-head" }, [
+      el("div", {}, [ el("h4", { textContent:"חשבוניות " + (invUi.month === "all" ? "בכל החודשים" : "של " + monthKeyLabel(invUi.month)) }),
+        el("div", { className:"panel-sub", textContent:"כל שדה ניתן לעריכה. שורה עם פס צהוב צריכה בדיקה, אדום = נראית כפולה" }) ]),
+      sel
+    ]));
+
+    var totals = { net: sum(list.map(function(r){ return num(r.net); })), vat: sum(list.map(function(r){ return num(r.vat); })),
+                   total: sum(list.map(function(r){ return num(r.total); })) };
+    lp.appendChild(el("div", { className:"stat-strip" }, [
+      el("div", { className:"stat" }, [ el("div", { className:"k", textContent:"חשבוניות" }), el("div", { className:"v", textContent: list.length }) ]),
+      el("div", { className:"stat" }, [ el("div", { className:"k", textContent:"לפני מע\"מ" }), el("div", { className:"v", textContent: formatCurrency(totals.net) }) ]),
+      el("div", { className:"stat" }, [ el("div", { className:"k", textContent:"מע\"מ תשומות" }), el("div", { className:"v", textContent: formatCurrency(totals.vat) }) ]),
+      el("div", { className:"stat" }, [ el("div", { className:"k", textContent:"סה\"כ ששולם" }), el("div", { className:"v", textContent: formatCurrency(totals.total) }) ])
+    ]));
+
+    if (!list.length) lp.appendChild(el("p", { className:"empty-note", textContent:"אין חשבוניות בחודש הזה. גרור קבצים לאזור הקליטה למעלה." }));
+
+    var projOpts = [{ value:"", label:"הוצאה כללית של העסק" }].concat((state.projects||[])
+      .filter(function(p){ return p.status === "active" || p.status === "sent" || p.status === "draft"; })
+      .map(function(p){ return { value:p.id, label:"פרויקט: " + (p.name || "ללא שם") }; }));
+
+    list.forEach(function(rec){
+      var dup = invDuplicateOf(rec);
+      var rerender = function(){ renderInvoicesView(); };
+      var thumb = invThumbs[rec.id]
+        ? el("img", { className:"inv-thumb", src: invThumbs[rec.id], alt:"", onclick: function(){ openInvoicePreview(rec); } })
+        : el("div", { className:"inv-thumb", textContent:"📄", onclick: function(){ openInvoicePreview(rec); } });
+      var calcBtn = el("button", { className:"link-btn", type:"button", textContent:"חישוב מע\"מ מהסה\"כ", onclick: function(){
+        rec.net = r2(num(rec.total) / (1 + vatRate())); rec.vat = r2(num(rec.total) - rec.net); scheduleSave(); rerender(); } });
+      var mismatch = num(rec.net) && num(rec.total) && Math.abs(num(rec.net) + num(rec.vat) - num(rec.total)) > 1.5;
+      var fields = el("div", { className:"inv-fields" }, [
+        invField("ספק", rec, "supplier", { wide:true }),
+        invField("תאריך", rec, "date", { type:"date", after: rerender }),
+        invField("מס' חשבונית", rec, "invoiceNo"),
+        invField("ע.מ / ח.פ", rec, "taxId"),
+        invField("קטגוריה", rec, "category", { options: INV_CATEGORIES.map(function(c){ return { value:c, label:c }; }) }),
+        projOpts.length > 1 ? invField("שיוך", rec, "projectId", { options: projOpts, wide:true }) : null,
+        invField("לפני מע\"מ", rec, "net", { num:true, after: rerender }),
+        invField("מע\"מ", rec, "vat", { num:true, after: rerender }),
+        invField("סה\"כ", rec, "total", { num:true, after: rerender }),
+        invField("הערה", rec, "note", { wide: projOpts.length <= 1 }),
+        el("div", { className:"inv-flags" }, [
+          rec.ledger ? el("span", { className:"badge badge-pine", textContent:"נרשם ביומן · " + monthKeyLabel(rec.ledger.month) }) : el("span", { className:"badge badge-soft", textContent:"עוד לא ביומן" }),
+          rec.review ? el("button", { className:"badge", type:"button", style:"border:none; cursor:pointer;", title:"לחץ לסימון כנבדק",
+            textContent:"⚠ לבדיקה · סמן כנבדק", onclick: function(){ rec.review = false; scheduleSave(); rerender(); } }) : el("span", { className:"small muted", textContent:"✓ נבדק" }),
+          rec.vatEstimated ? el("span", { className:"small muted", textContent:"המע\"מ חושב מהסה\"כ, לא נמצא בחשבונית" }) : null,
+          mismatch ? el("span", { className:"small", style:"color:var(--rust);", textContent:"לפני מע\"מ + מע\"מ לא שווה לסה\"כ" }) : null,
+          mismatch || !num(rec.net) ? calcBtn : null,
+          dup ? el("span", { className:"small", style:"color:var(--rust);", textContent:"נראית כפולה של " + (dup.file || "חשבונית אחרת") }) : null,
+          el("span", { className:"small muted", textContent: rec.file }),
+          el("button", { className:"del-btn", type:"button", title:"מחיקת החשבונית מהרשימה", onclick: function(){
+            confirmAction("להסיר את החשבונית מהרשימה?" + (rec.ledger ? " השורה שנרשמה ביומן תישאר ביומן." : ""), function(){
+              state.invoices.items.splice(state.invoices.items.indexOf(rec), 1); scheduleSave(); rerender(); }); } }, [trashIcon()])
+        ])
+      ]);
+      lp.appendChild(el("div", { className:"inv-card" + (dup ? " dup" : rec.review ? " review" : "") }, [ thumb, fields ]));
+    });
+
+    var notInLedger = list.filter(function(r){ return !r.ledger; });
+    var toLedgerBtn = el("button", { className:"btn btn-primary", type:"button", textContent:"📒 רישום " + notInLedger.length + " חשבוניות כהוצאות ביומן",
+        onclick: function(){
+          var rv = notInLedger.filter(function(r){ return r.review; }).length;
+          confirmAction("לרשום " + notInLedger.length + " חשבוניות כהוצאות חד-פעמיות ביומן, כל אחת בחודש של התאריך שלה?" +
+            (rv ? " " + rv + " מהן עדיין מסומנות לבדיקה." : "") +
+            " חשבוניות של הוצאה קבועה (שכירות, חשמל) שכבר מופיעה בהוצאות הקבועות לא כדאי לרשום שוב.", function(){
+            var res = invoicesToLedger(notInLedger);
+            renderInvoicesView();
+            toast("נרשמו " + res.added + " חשבוניות ביומן" + (res.skipped ? ", " + res.skipped + " דולגו (כפולות או בלי סכום)" : "") + ".");
+          });
+        } });
+    if (!notInLedger.length) toLedgerBtn.disabled = true;
+    lp.appendChild(el("div", { style:"display:flex; gap:8px; flex-wrap:wrap; margin-top:12px;" }, [
+      el("button", { className:"btn btn-brass", type:"button", textContent:"⬇ ייצוא לאקסל", onclick: function(){ exportInvoicesExcel(list, label); } }),
+      toLedgerBtn
+    ]));
+    lp.appendChild(el("div", { className:"small muted", style:"margin-top:8px;", textContent:
+      "חשבונית ששויכה לפרויקט נרשמת ביומן עם תגית הפרויקט ומופיעה בהשוואה בין ההוצאות בפועל להערכה. התקורה בתמחור מחושבת רק מההוצאות הקבועות, ולכן היא לא נספרת פעמיים." }));
+    host.appendChild(lp);
+  }
+
+  window.workshopInvoices = { parse: function(t){ return parseInvoiceText(t); } };
 
   /* ============================================================ */
   /* Export / import                                               */
