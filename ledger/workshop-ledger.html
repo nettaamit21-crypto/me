@@ -976,6 +976,7 @@
     if (!s.growth) s.growth = defaultGrowth();
     if (!Array.isArray(s.growth.goals)) s.growth.goals = [];
     if (!s.invoices || !Array.isArray(s.invoices.items)) s.invoices = { items: [] };
+    if (!s.invoices.suppliers || typeof s.invoices.suppliers !== "object") s.invoices.suppliers = {};
     if (!Array.isArray(s.pricing.saved)) s.pricing.saved = [];
     if (s.pricing.settings) delete s.pricing.settings;
     var p = s.pricing.product;
@@ -8000,7 +8001,8 @@
     tesseract: "https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js",
     pdf:       "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js",
     pdfWorker: "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js",
-    xlsx:      "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"
+    xlsx:      "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js",
+    heic:      "https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"
   };
   var INV_CATEGORIES = ["חומרי גלם","פרזול","חומרי גמר","כלים וציוד","דלק ורכב","חשמל ומים","תקשורת",
     "ביטוח","שכירות","הנהלת חשבונות","מנויים ותוכנות","הובלה","קבלני משנה","אחר"];
@@ -8062,7 +8064,7 @@
   }
 
   function parseInvoiceText(text){
-    var clean = String(text || "").replace(/[“”״]/g, '"').replace(/[׳’`]/g, "'").replace(/[ \t]+/g, " ");
+    var clean = String(text || "").replace(/[\u200e\u200f\u202a-\u202e\u2066-\u2069\u0591-\u05bd\u05bf\u05c1-\u05c2\u05c4-\u05c7]/g, "").replace(/[“”״]/g, '"').replace(/[׳’`]/g, "'").replace(/[ \t]+/g, " ");
     var lines = clean.split("\n").map(function(l){ return l.trim(); }).filter(Boolean);
     var res = { supplier:"", taxId:"", invoiceNo:"", date:"", net:0, vat:0, total:0, vatEstimated:false, found:{} };
 
@@ -8099,7 +8101,7 @@
     lines.forEach(function(l){
       if (!/מע"?מ|vat/i.test(l) || /לפני|ללא|כולל|חייב|פטור|עוסק|מורשה/.test(l)) return;
       invAmounts(l).forEach(function(a){
-        if (a.v <= 0 || (res.total && a.v >= res.total)) return;
+        if (a.v <= 0 || (res.total && a.v > res.total * 0.22 + 0.5)) return;   /* מע"מ לא יכול להיות יותר מ-18% מהסה"כ */
         if (!a.dec && a.v <= 20) return;        /* שיעור המע"מ ולא סכום */
         vatCands.push(a.v);
       });
@@ -8109,7 +8111,9 @@
       res.vat = vatCands[0]; res.found.vat = true;
     }
 
-    /* השלמות והצלבה */
+    /* השלמות והצלבה. אם לפני מע"מ וסה"כ זוהו, הם קובעים את המע"מ */
+    if (res.total && res.found.net && res.found.vat && res.net < res.total &&
+        Math.abs(res.net + res.vat - res.total) > 1.5) res.vat = r2(res.total - res.net);
     if (res.total && res.found.net && !res.found.vat) res.vat = r2(res.total - res.net);
     else if (res.total && res.found.vat && !res.found.net) res.net = r2(res.total - res.vat);
     else if (!res.total && res.found.net && res.found.vat) res.total = r2(res.net + res.vat);
@@ -8141,7 +8145,7 @@
       var letters = (l.match(/[A-Za-zא-ת]/g) || []).length;
       if (letters < 2 || skip.test(l) || l.length > 45) return false;
       if (letters / l.replace(/\s/g, "").length < 0.55) return false;
-      res.supplier = l.replace(/[|_*~^]+/g, "").trim(); return true;
+      res.supplier = l.replace(/[|_*~^{}\[\]<>=]+/g, "").replace(/\s{2,}/g, " ").replace(/^[\s.,:;'"-]+|[\s.,:;-]+$/g, "").trim(); return true;
     });
 
     res.category = invGuessCategory(res.supplier + "\n" + clean);
@@ -8171,7 +8175,7 @@
   var invOcrWorker = null;
   var invOcrProgress = null;   /* הקובץ שנקרא עכשיו מקבל את עדכוני ההתקדמות */
 
-  function invOcr(source, onProgress){
+  function invOcr(source, onProgress, psm){
     return loadScript(INV_LIBS.tesseract).then(function(){
       if (!invOcrWorker){
         invOcrWorker = window.Tesseract.createWorker(["heb", "eng"], 1, {
@@ -8180,27 +8184,222 @@
       }
       invOcrProgress = onProgress || null;
       return invOcrWorker;
-    }).then(function(w){ return w.recognize(source); })
-      .then(function(r){ return r.data.text || ""; });
+    }).then(function(w){
+      return w.setParameters({ tessedit_pageseg_mode: String(psm || 3), preserve_interword_spaces: "1" })
+        .then(function(){ return w.recognize(source); });
+    }).then(function(r){ return r.data.text || ""; });
+  }
+
+  /* ---------- פתיחת תמונות, כולל HEIC מאייפון ---------- */
+
+  function loadImageEl(blob){
+    return new Promise(function(resolve, reject){
+      var url = URL.createObjectURL(blob);
+      var img = new Image();
+      img.onload = function(){ URL.revokeObjectURL(url); resolve(img); };
+      img.onerror = function(){ URL.revokeObjectURL(url); reject(new Error("decode")); };
+      img.src = url;
+    });
+  }
+
+  function looksLikeHeic(file){
+    if (/hei[cf]/i.test(file.type) || /\.hei[cf]$/i.test(file.name)) return Promise.resolve(true);
+    return file.slice(4, 12).arrayBuffer().then(function(b){
+      var s = String.fromCharCode.apply(null, new Uint8Array(b));
+      return /^ftyp(hei|hev|mif|msf|avi)/.test(s);
+    }, function(){ return false; });
+  }
+
+  /* ספארי פותח HEIC לבד. בכרום ובשאר הדפדפנים ממירים ל-JPG בתוך הדפדפן */
+  function decodeImageFile(file){
+    return loadImageEl(file).catch(function(){
+      return looksLikeHeic(file).then(function(isHeic){
+        if (!isHeic) throw new Error("הדפדפן לא מצליח לפתוח את הקובץ הזה כתמונה.");
+        return loadScript(INV_LIBS.heic).then(function(){
+          return window.heic2any({ blob: file, toType: "image/jpeg", quality: 0.92 });
+        }).then(function(out){ return loadImageEl(Array.isArray(out) ? out[0] : out); });
+      });
+    });
   }
 
   function imageToCanvas(file){
-    return new Promise(function(resolve, reject){
-      var url = URL.createObjectURL(file);
-      var img = new Image();
-      img.onload = function(){
-        var maxSide = 2400, sc = Math.min(1, maxSide / Math.max(img.naturalWidth, img.naturalHeight));
-        var c = document.createElement("canvas");
-        c.width = Math.round(img.naturalWidth * sc); c.height = Math.round(img.naturalHeight * sc);
-        var ctx = c.getContext("2d");
-        ctx.filter = "grayscale(1) contrast(1.25)";
-        ctx.drawImage(img, 0, 0, c.width, c.height);
-        URL.revokeObjectURL(url);
-        resolve(c);
-      };
-      img.onerror = function(){ URL.revokeObjectURL(url); reject(new Error("הדפדפן לא מצליח לפתוח את התמונה. אם זה קובץ HEIC מאייפון, שמור אותה כ-JPG.")); };
-      img.src = url;
+    return decodeImageFile(file).then(function(img){
+      var maxSide = 3000, sc = Math.min(1, maxSide / Math.max(img.naturalWidth, img.naturalHeight));
+      var c = document.createElement("canvas");
+      c.width = Math.round(img.naturalWidth * sc); c.height = Math.round(img.naturalHeight * sc);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      return c;
     });
+  }
+
+  /* ---------- הכנת צילום לזיהוי ---------- */
+  /* צילום טלפון של חשבונית מגיע עם שולחן ברקע, צל, הטיה ותאורה לא אחידה.
+     מנוע הזיהוי מצפה לדף ישר, לבן, עם טקסט שחור. לכן:
+     1. חותכים לגבולות הנייר
+     2. מנטרלים צל ותאורה (מחלקים כל פיקסל בממוצע הסביבה שלו)
+     3. מיישרים את ההטיה
+     4. מגדילים כשהטקסט קטן מדי */
+
+  function grayOf(c){
+    var d = c.getContext("2d").getImageData(0, 0, c.width, c.height).data;
+    var g = new Float32Array(c.width * c.height);
+    for (var i = 0, j = 0; i < g.length; i++, j += 4) g[i] = 0.299*d[j] + 0.587*d[j+1] + 0.114*d[j+2];
+    return g;
+  }
+
+  function boxMean(src, w, h, r){
+    var W = w + 1, I = new Float64Array(W * (h + 1)), out = new Float32Array(w * h);
+    for (var y = 0; y < h; y++){
+      var row = 0;
+      for (var x = 0; x < w; x++){ row += src[y*w + x]; I[(y+1)*W + x + 1] = I[y*W + x + 1] + row; }
+    }
+    for (var y2 = 0; y2 < h; y2++){
+      var y0 = Math.max(0, y2 - r), y1 = Math.min(h, y2 + r + 1);
+      for (var x2 = 0; x2 < w; x2++){
+        var x0 = Math.max(0, x2 - r), x1 = Math.min(w, x2 + r + 1);
+        out[y2*w + x2] = (I[y1*W + x1] - I[y0*W + x1] - I[y1*W + x0] + I[y0*W + x0]) / ((y1-y0)*(x1-x0));
+      }
+    }
+    return out;
+  }
+
+  function otsu(g){
+    var hist = new Float64Array(256), n = g.length;
+    for (var i = 0; i < n; i++) hist[Math.max(0, Math.min(255, g[i] | 0))]++;
+    var total = 0; for (var t = 0; t < 256; t++) total += t * hist[t];
+    var sumB = 0, wB = 0, best = 0, thr = 128;
+    for (var t2 = 0; t2 < 256; t2++){
+      wB += hist[t2]; if (!wB) continue;
+      var wF = n - wB; if (!wF) break;
+      sumB += t2 * hist[t2];
+      var mB = sumB / wB, mF = (total - sumB) / wF, v = wB * wF * (mB - mF) * (mB - mF);
+      if (v > best){ best = v; thr = t2; }
+    }
+    return thr;
+  }
+
+  function scaledCanvas(src, maxSide){
+    var sc = Math.min(1, maxSide / Math.max(src.width, src.height));
+    var c = document.createElement("canvas");
+    c.width = Math.max(1, Math.round(src.width * sc)); c.height = Math.max(1, Math.round(src.height * sc));
+    c.getContext("2d").drawImage(src, 0, 0, c.width, c.height);
+    return { canvas: c, scale: sc };
+  }
+
+  /* הנייר הוא האזור הבהיר הגדול ביותר בתמונה */
+  function findPaper(src){
+    var s = scaledCanvas(src, 500), c = s.canvas, w = c.width, h = c.height;
+    var g = grayOf(c), thr = otsu(g);
+    var seen = new Uint8Array(w * h), best = null, stack = new Int32Array(w * h);
+    for (var start = 0; start < w * h; start++){
+      if (seen[start] || g[start] <= thr) continue;
+      var sp = 0, area = 0, minX = w, minY = h, maxX = 0, maxY = 0;
+      stack[sp++] = start; seen[start] = 1;
+      while (sp){
+        var p = stack[--sp], x = p % w, y = (p / w) | 0;
+        area++;
+        if (x < minX) minX = x; if (x > maxX) maxX = x; if (y < minY) minY = y; if (y > maxY) maxY = y;
+        var nb = [p - 1, p + 1, p - w, p + w];
+        for (var k = 0; k < 4; k++){
+          var q = nb[k];
+          if (q < 0 || q >= w * h || seen[q] || g[q] <= thr) continue;
+          if ((k === 0 && x === 0) || (k === 1 && x === w - 1)) continue;
+          seen[q] = 1; stack[sp++] = q;
+        }
+      }
+      if (!best || area > best.area) best = { area: area, minX: minX, minY: minY, maxX: maxX, maxY: maxY };
+    }
+    if (!best) return null;
+    var frac = best.area / (w * h);
+    var boxFrac = (best.maxX - best.minX + 1) * (best.maxY - best.minY + 1) / (w * h);
+    if (frac < 0.08 || boxFrac > 0.92) return null;   /* כנראה הדף ממלא את כל התמונה */
+    var pad = 0.015 * Math.max(w, h), inv = 1 / s.scale;
+    var x0 = Math.max(0, (best.minX - pad) * inv), y0 = Math.max(0, (best.minY - pad) * inv);
+    var x1 = Math.min(src.width, (best.maxX + 1 + pad) * inv), y1 = Math.min(src.height, (best.maxY + 1 + pad) * inv);
+    return { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
+  }
+
+  /* זווית ההטיה: הזווית שבה שורות הטקסט הכי "חדות" בהיטל אופקי */
+  function findSkew(norm, w, h){
+    var step = Math.max(1, Math.round(Math.max(w, h) / 900));
+    var pts = [];
+    for (var y = 0; y < h; y += step) for (var x = 0; x < w; x += step) if (norm[y*w + x] < 150) pts.push(x, y);
+    if (pts.length < 200) return 0;
+    var bins = Math.ceil((w + h) / step) + 4;
+    function score(deg){
+      var a = deg * Math.PI / 180, ca = Math.cos(a), sa = Math.sin(a), hist = new Float64Array(bins * 2);
+      for (var i = 0; i < pts.length; i += 2){
+        var b = Math.round((pts[i+1] * ca - pts[i] * sa) / step) + bins;
+        if (b >= 0 && b < hist.length) hist[b]++;
+      }
+      var s2 = 0; for (var j = 1; j < hist.length; j++){ var d = hist[j] - hist[j-1]; s2 += d * d; }
+      return s2;
+    }
+    var best = 0, bestS = -1;
+    for (var dg = -15; dg <= 15; dg += 1){ var sc = score(dg); if (sc > bestS){ bestS = sc; best = dg; } }
+    var fine = best;
+    for (var df = best - 1; df <= best + 1; df += 0.2){ var sf = score(df); if (sf > bestS){ bestS = sf; fine = df; } }
+    return fine;
+  }
+
+  function prepareForOcr(src){
+    /* 1. חיתוך לנייר */
+    var box = findPaper(src);
+    var work = document.createElement("canvas");
+    if (box){
+      work.width = Math.round(box.w); work.height = Math.round(box.h);
+      work.getContext("2d").drawImage(src, box.x, box.y, box.w, box.h, 0, 0, work.width, work.height);
+    } else { work.width = src.width; work.height = src.height; work.getContext("2d").drawImage(src, 0, 0); }
+
+    /* 2. מגדילים טקסט קטן, מקטינים תמונות ענקיות */
+    var target = Math.max(work.width, work.height) < 1600 ? 1600 / Math.max(work.width, work.height) :
+                 Math.max(work.width, work.height) > 2600 ? 2600 / Math.max(work.width, work.height) : 1;
+    if (target !== 1){
+      var r = document.createElement("canvas");
+      r.width = Math.round(work.width * target); r.height = Math.round(work.height * target);
+      var rx = r.getContext("2d"); rx.imageSmoothingQuality = "high";
+      rx.drawImage(work, 0, 0, r.width, r.height);
+      work = r;
+    }
+
+    /* 3. נטרול צל ותאורה */
+    var w = work.width, h = work.height;
+    var g = grayOf(work);
+    var bg = boxMean(g, w, h, Math.max(12, Math.round(Math.max(w, h) / 40)));
+    var norm = new Float32Array(w * h);
+    for (var i = 0; i < norm.length; i++){
+      var v = bg[i] > 1 ? g[i] / bg[i] * 235 : 255;
+      norm[i] = v > 255 ? 255 : v;
+    }
+    /* מתיחת ניגודיות: הכהה ביותר לשחור */
+    var thr = otsu(norm);
+    var lo = Math.max(0, thr - 90);
+    var outGray = document.createElement("canvas"); outGray.width = w; outGray.height = h;
+    var outBin = document.createElement("canvas"); outBin.width = w; outBin.height = h;
+    var gd = outGray.getContext("2d").createImageData(w, h), bd = outBin.getContext("2d").createImageData(w, h);
+    for (var k = 0, j = 0; k < norm.length; k++, j += 4){
+      var s = (norm[k] - lo) / (255 - lo) * 255; s = s < 0 ? 0 : s > 255 ? 255 : s;
+      gd.data[j] = gd.data[j+1] = gd.data[j+2] = s; gd.data[j+3] = 255;
+      var bv = norm[k] < thr ? 0 : 255;
+      bd.data[j] = bd.data[j+1] = bd.data[j+2] = bv; bd.data[j+3] = 255;
+    }
+    outGray.getContext("2d").putImageData(gd, 0, 0);
+    outBin.getContext("2d").putImageData(bd, 0, 0);
+
+    /* 4. יישור ההטיה */
+    var angle = findSkew(norm, w, h);
+    function rotate(c){
+      if (Math.abs(angle) < 0.3) return c;
+      var a = angle * Math.PI / 180, cw = Math.abs(Math.cos(a)), sw = Math.abs(Math.sin(a));
+      var o = document.createElement("canvas");
+      o.width = Math.round(w * cw + h * sw); o.height = Math.round(w * sw + h * cw);
+      var ox = o.getContext("2d");
+      ox.fillStyle = "#fff"; ox.fillRect(0, 0, o.width, o.height);
+      ox.translate(o.width / 2, o.height / 2); ox.rotate(-a);
+      ox.drawImage(c, -w / 2, -h / 2);
+      return o;
+    }
+    return { gray: rotate(outGray), bin: rotate(outBin), angle: angle, cropped: !!box };
   }
 
   function thumbFromCanvas(c){
@@ -8248,9 +8447,49 @@
       return chain.then(function(text){
         /* PDF סרוק, בלי טקסט: מריצים זיהוי על הדף הראשון */
         if (text.replace(/\s/g, "").length < 40 && firstCanvas){
-          return invOcr(firstCanvas, onProgress).then(function(t){ return { text: t, canvas: firstCanvas, ocr: true }; });
+          return ocrPhoto(firstCanvas, onProgress).then(function(o){ return { text: o.text, parsed: o.parsed, canvas: firstCanvas, ocr: true }; });
         }
         return { text: text, canvas: firstCanvas, ocr: false };
+      });
+    });
+  }
+
+  /* כמה שדות חשובים זוהו, כדי לבחור בין שתי קריאות */
+  function parseScore(r){
+    var s = 0;
+    if (r.found.total) s += 3;
+    if (r.date) s += 2;
+    if (r.found.vat || r.found.net) s += 1;
+    if (r.net && r.vat && r.total && Math.abs(r.net + r.vat - r.total) <= 1.5) s += 2;
+    if (r.supplier) s += 1;
+    if (r.taxId) s += 1;
+    if (r.invoiceNo) s += 1;
+    return s;
+  }
+
+  /* משלימים שדות חסרים בקריאה הטובה מתוך הקריאה השנייה */
+  function mergeParsed(a, b){
+    var best = parseScore(b) > parseScore(a) ? b : a, other = best === a ? b : a;
+    ["date","taxId","invoiceNo","supplier"].forEach(function(k){ if (!best[k] && other[k]) best[k] = other[k]; });
+    if (!best.found.total && other.found.total){
+      best.total = other.total; best.net = other.net; best.vat = other.vat;
+      best.found = other.found; best.vatEstimated = other.vatEstimated;
+    }
+    if (best.category === "אחר" && other.category !== "אחר") best.category = other.category;
+    best.review = !best.found.total || !best.date || !best.supplier || best.vatEstimated ||
+      (best.net && best.vat && best.total && Math.abs(best.net + best.vat - best.total) > 1.5);
+    return best;
+  }
+
+  /* קריאה ראשונה על התמונה המעובדת. אם חסרים שדות, קריאה שנייה בשיטה אחרת */
+  function ocrPhoto(canvas, onProgress){
+    var prep = prepareForOcr(canvas);
+    return invOcr(prep.gray, onProgress, 3).then(function(t1){
+      var p1 = parseInvoiceText(t1);
+      if (parseScore(p1) >= 9) return { text: t1, parsed: p1 };
+      return invOcr(prep.bin, onProgress, 6).then(function(t2){
+        var p2 = parseInvoiceText(t2);
+        return { text: t1 + "\n\n----- קריאה שנייה -----\n" + t2, parsed: mergeParsed(p1, p2) };
       });
     });
   }
@@ -8259,24 +8498,44 @@
     var isPdf = /pdf$/i.test(file.type) || /\.pdf$/i.test(file.name);
     var p = isPdf ? readPdf(file, onProgress)
       : imageToCanvas(file).then(function(c){
-          return invOcr(c, onProgress).then(function(t){ return { text: t, canvas: c, ocr: true }; }); });
+          return ocrPhoto(c, onProgress).then(function(o){ return { text: o.text, parsed: o.parsed, canvas: c, ocr: true }; }); });
     return p.then(function(out){
-      var parsed = isPdf && !out.ocr ? parseWithFallback(out.text) : parseInvoiceText(out.text);
+      var parsed = out.parsed || (isPdf && !out.ocr ? parseWithFallback(out.text) : parseInvoiceText(out.text));
       return { parsed: parsed, text: out.text, thumb: out.canvas ? thumbFromCanvas(out.canvas) : null };
     });
   }
 
+  function fileDateKey(file){
+    if (!file.lastModified) return "";
+    var d = new Date(file.lastModified);
+    var k = d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate());
+    return k <= todayDateKey() ? k : "";
+  }
+
   function mkInvoiceRecord(file, parsed){
-    var month = parsed.date ? parsed.date.slice(0, 7) : (invUi.month !== "all" ? invUi.month : todayMonthKey());
+    /* ספק שכבר תוקן פעם אחת מזוהה לפי מספר העוסק שלו */
+    var known = parsed.taxId ? state.invoices.suppliers[parsed.taxId] : null;
+    var date = parsed.date || "", dateGuessed = false;
+    if (!date){ date = fileDateKey(file); dateGuessed = !!date; }
+    var month = date ? date.slice(0, 7) : (invUi.month !== "all" ? invUi.month : todayMonthKey());
     return {
       id: uid(), file: file.name, addedAt: new Date().toISOString(),
-      date: parsed.date || "", month: month,
-      supplier: parsed.supplier || "", taxId: parsed.taxId || "", invoiceNo: parsed.invoiceNo || "",
-      category: parsed.category || "אחר", projectId: "",
+      date: date, month: month, dateGuessed: dateGuessed,
+      supplier: known ? known.name : (parsed.supplier || ""), knownSupplier: !!known,
+      taxId: parsed.taxId || "", invoiceNo: parsed.invoiceNo || "",
+      category: known && known.category ? known.category : (parsed.category || "אחר"), projectId: "",
       net: parsed.net ? r2(parsed.net) : "", vat: parsed.vat || parsed.vat === 0 ? r2(parsed.vat) : "",
       total: parsed.total ? r2(parsed.total) : "",
-      review: !!parsed.review, vatEstimated: !!parsed.vatEstimated, note: "", ledger: null
+      review: !!parsed.review || dateGuessed, vatEstimated: !!parsed.vatEstimated, note: "", ledger: null
     };
+  }
+
+  /* תיקון ידני של שם ספק נזכר לפי מספר העוסק, ומוחל על חשבוניות הבאות שלו */
+  function rememberSupplier(rec){
+    var id = String(rec.taxId || "").replace(/\D/g, "");
+    if (id.length !== 9 || !rec.supplier) return;
+    state.invoices.suppliers[id] = { name: rec.supplier, category: rec.category };
+    scheduleSave();
   }
 
   function invDuplicateOf(rec){
@@ -8299,7 +8558,10 @@
 
   function addInvoiceFiles(files){
     Array.prototype.forEach.call(files, function(f){
-      if (!/^image\//.test(f.type) && !/pdf/i.test(f.type) && !/\.(pdf|jpe?g|png|webp|heic)$/i.test(f.name)) return;
+      if (!/^image\//.test(f.type) && !/pdf/i.test(f.type) && !/\.(pdf|jpe?g|png|webp|hei[cf]|gif|bmp|tiff?)$/i.test(f.name)){
+        invUi.queue.push({ file: f, status:"שגיאה", progress:0, error:"סוג קובץ לא נתמך. אפשר תמונות (כולל HEIC) או PDF." });
+        return;
+      }
       invUi.queue.push({ file: f, status:"ממתין", progress:0 });
     });
     renderInvoicesView();
@@ -8338,11 +8600,20 @@
   function paintQueue(){
     if (!invQueueHost) return;
     invQueueHost.innerHTML = "";
+    var waiting = invUi.queue.filter(function(q){ return q.status === "ממתין" || q.status === "קורא..."; }).length;
+    if (waiting) invQueueHost.appendChild(el("div", { className:"small strong", style:"margin-top:10px;", textContent:
+      "נשארו " + waiting + " קבצים לקריאה. כל צילום לוקח כמה שניות." }));
     invUi.queue.forEach(function(q){
       invQueueHost.appendChild(el("div", { className:"inv-progress" + (q.status === "שגיאה" ? " warn-line" : "") }, [
         el("strong", { textContent: q.file.name }), " · ", q.status,
         q.status === "קורא..." && q.progress ? " " + Math.round(q.progress * 100) + "%" : "",
-        q.error ? el("div", { className:"small", textContent: q.error }) : null
+        q.error ? el("div", { className:"small", textContent: q.error }) : null,
+        q.status === "שגיאה" ? el("div", { style:"margin-top:4px; display:flex; gap:6px;" }, [
+          el("button", { className:"btn btn-sm", type:"button", textContent:"ניסיון נוסף", onclick: function(){
+            q.status = "ממתין"; q.error = null; paintQueue(); runInvoiceQueue(); } }),
+          el("button", { className:"btn btn-sm", type:"button", textContent:"הסרה", onclick: function(){
+            invUi.queue.splice(invUi.queue.indexOf(q), 1); paintQueue(); } })
+        ]) : null
       ]));
     });
   }
@@ -8363,7 +8634,7 @@
         var v = e.target.value;
         if (opts.num){ v = sanitizeDecimal(v); if (e.target.value !== v) e.target.value = v; }
         rec[key] = v;
-        if (key === "date" && isDateKey(v)) rec.month = v.slice(0, 7);
+        if (key === "date" && isDateKey(v)){ rec.month = v.slice(0, 7); rec.dateGuessed = false; }
         scheduleSave();
       });
       inp.addEventListener("change", function(){ if (opts.after) opts.after(); });
@@ -8486,6 +8757,14 @@
     }, function(err){ toast(err.message); });
   }
 
+  /* קובץ שנגרר ונופל מחוץ לאזור הקליטה לא ייפתח בדפדפן במקום האפליקציה, אלא ייקלט */
+  window.addEventListener("dragover", function(e){ if (currentView === "invoices") e.preventDefault(); });
+  window.addEventListener("drop", function(e){
+    if (currentView !== "invoices") return;
+    e.preventDefault();
+    if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) addInvoiceFiles(e.dataTransfer.files);
+  });
+
   function renderInvoicesView(){
     var host = document.getElementById("invoices-content");
     if (!host) return;
@@ -8500,16 +8779,16 @@
         el("div", { className:"panel-sub", textContent:"גרור לכאן צילומי חשבוניות או קובצי PDF מהמייל. המערכת מזהה ספק, תאריך, מספר חשבונית וסכומים, ואתה מאשר" })
       ])
     ]));
-    var fileIn = el("input", { type:"file", multiple:"multiple", accept:"image/*,application/pdf", style:"display:none;" });
+    var fileIn = el("input", { type:"file", multiple:"multiple", accept:"image/*,.heic,.heif,application/pdf", style:"display:none;" });
     fileIn.addEventListener("change", function(e){ addInvoiceFiles(e.target.files); e.target.value = ""; });
     var zone = el("div", { className:"drop-zone", style:"margin-top:12px;", onclick: function(){ fileIn.click(); } }, [
       el("div", { className:"big-ico", textContent:"🧾" }),
       el("div", { className:"strong", textContent:"גרור קבצים לכאן, או לחץ לבחירה" }),
-      el("div", { className:"small muted", style:"margin-top:4px;", textContent:"בטלפון אפשר לצלם ישר מהמצלמה. תמונות JPG/PNG וקובצי PDF, כמה בבת אחת" })
+      el("div", { className:"small muted", style:"margin-top:4px;", textContent:"תמונות מהטלפון כמו שהן (כולל HEIC מאייפון) וקובצי PDF, כמה שרוצים בבת אחת" })
     ]);
     ["dragenter","dragover"].forEach(function(ev){ zone.addEventListener(ev, function(e){ e.preventDefault(); zone.classList.add("over"); }); });
     ["dragleave","drop"].forEach(function(ev){ zone.addEventListener(ev, function(e){ e.preventDefault(); zone.classList.remove("over"); }); });
-    zone.addEventListener("drop", function(e){ if (e.dataTransfer && e.dataTransfer.files) addInvoiceFiles(e.dataTransfer.files); });
+    zone.addEventListener("drop", function(e){ e.stopPropagation(); if (e.dataTransfer && e.dataTransfer.files) addInvoiceFiles(e.dataTransfer.files); });
     panel.appendChild(zone);
     panel.appendChild(fileIn);
     panel.appendChild(el("div", { className:"small muted", style:"margin-top:8px;", textContent:
@@ -8564,11 +8843,11 @@
         rec.net = r2(num(rec.total) / (1 + vatRate())); rec.vat = r2(num(rec.total) - rec.net); scheduleSave(); rerender(); } });
       var mismatch = num(rec.net) && num(rec.total) && Math.abs(num(rec.net) + num(rec.vat) - num(rec.total)) > 1.5;
       var fields = el("div", { className:"inv-fields" }, [
-        invField("ספק", rec, "supplier", { wide:true }),
+        invField("ספק", rec, "supplier", { wide:true, after: function(){ rememberSupplier(rec); } }),
         invField("תאריך", rec, "date", { type:"date", after: rerender }),
         invField("מס' חשבונית", rec, "invoiceNo"),
-        invField("ע.מ / ח.פ", rec, "taxId"),
-        invField("קטגוריה", rec, "category", { options: INV_CATEGORIES.map(function(c){ return { value:c, label:c }; }) }),
+        invField("ע.מ / ח.פ", rec, "taxId", { after: function(){ rememberSupplier(rec); } }),
+        invField("קטגוריה", rec, "category", { options: INV_CATEGORIES.map(function(c){ return { value:c, label:c }; }), after: function(){ rememberSupplier(rec); } }),
         projOpts.length > 1 ? invField("שיוך", rec, "projectId", { options: projOpts, wide:true }) : null,
         invField("לפני מע\"מ", rec, "net", { num:true, after: rerender }),
         invField("מע\"מ", rec, "vat", { num:true, after: rerender }),
@@ -8579,6 +8858,8 @@
           rec.review ? el("button", { className:"badge", type:"button", style:"border:none; cursor:pointer;", title:"לחץ לסימון כנבדק",
             textContent:"⚠ לבדיקה · סמן כנבדק", onclick: function(){ rec.review = false; scheduleSave(); rerender(); } }) : el("span", { className:"small muted", textContent:"✓ נבדק" }),
           rec.vatEstimated ? el("span", { className:"small muted", textContent:"המע\"מ חושב מהסה\"כ, לא נמצא בחשבונית" }) : null,
+          rec.dateGuessed ? el("span", { className:"small muted", textContent:"התאריך לא זוהה, נלקח מתאריך הצילום" }) : null,
+          rec.knownSupplier ? el("span", { className:"small muted", textContent:"✓ ספק מוכר" }) : null,
           mismatch ? el("span", { className:"small", style:"color:var(--rust);", textContent:"לפני מע\"מ + מע\"מ לא שווה לסה\"כ" }) : null,
           mismatch || !num(rec.net) ? calcBtn : null,
           dup ? el("span", { className:"small", style:"color:var(--rust);", textContent:"נראית כפולה של " + (dup.file || "חשבונית אחרת") }) : null,
