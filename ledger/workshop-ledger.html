@@ -465,6 +465,19 @@
     .inv-thumb{ width:48px; height:62px; }
   }
 
+
+  /* ---------- Banners & schedule ---------- */
+  #banners:empty{ display:none; }
+  .banner{ background:#fff; border:2px solid var(--pine); border-radius:16px; padding:14px 16px; margin-bottom:14px; box-shadow:0 4px 14px rgba(36,27,20,.08); }
+  .banner.store{ border-color:var(--brass); }
+  .banner.thin{ border-width:1px; border-color:var(--border); padding:9px 14px; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; font-size:0.86rem; box-shadow:none; }
+  .banner-head{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-bottom:8px; }
+  .banner-title{ font-weight:700; font-size:1rem; font-family:Georgia,serif; }
+  .guide{ margin:12px 0; font-size:0.84rem; background:var(--card); border:1px solid var(--border); border-radius:10px; padding:8px 12px; }
+  .guide summary{ cursor:pointer; font-weight:700; color:var(--brass-dark); }
+  .guide ol{ margin:8px 0; padding-inline-start:20px; line-height:1.6; }
+  input.num.mini{ width:64px; border:1px solid var(--border); border-radius:8px; padding:5px 6px; font-size:0.9rem; direction:ltr; text-align:right; font-family:"Courier New",Consolas,monospace; background:#fff; }
+
   @media print{
     body > *{ display:none !important; }
     body > .modal-backdrop{ display:block !important; position:static; background:none; padding:0; overflow:visible; }
@@ -486,7 +499,7 @@
       <div class="brand-badge">🔨</div>
       <div>
         <h1>פנקס בית המלאכה</h1>
-        <p>כספים · תמחור · חיתוך · הצעות מחיר · חשבוניות</p>
+        <p>כספים · תמחור · חיתוך · הצעות מחיר · חשבוניות · יומן</p>
       </div>
     </div>
     <div class="header-actions">
@@ -504,12 +517,14 @@
     <button class="viewtab" data-view="hourly" type="button">⏱ תעריף שעה</button>
     <button class="viewtab" data-view="cutting" type="button">🪚 חיתוך פלטות</button>
     <button class="viewtab" data-view="clients" type="button">👥 לקוחות והצעות</button>
+    <button class="viewtab" data-view="schedule" type="button">📅 יומן וחנות</button>
     <button class="viewtab" data-view="invoices" type="button">🧾 חשבוניות</button>
     <button class="viewtab" data-view="capture" type="button">📲 קליטה מהטלפון</button>
   </nav>
 </header>
 
 <main>
+  <div id="banners"></div>
 
   <!-- ============ LEDGER ============ -->
   <section class="view active" id="view-ledger">
@@ -684,6 +699,11 @@
       <div id="cutting-form" style="margin-top:14px;"></div>
     </div>
     <div id="cutting-results"></div>
+  </section>
+
+  <!-- ============ SCHEDULE ============ -->
+  <section class="view" id="view-schedule">
+    <div id="schedule-content"></div>
   </section>
 
   <!-- ============ INVOICES ============ -->
@@ -977,6 +997,12 @@
     if (!Array.isArray(s.growth.goals)) s.growth.goals = [];
     if (!s.invoices || !Array.isArray(s.invoices.items)) s.invoices = { items: [] };
     if (!s.invoices.suppliers || typeof s.invoices.suppliers !== "object") s.invoices.suppliers = {};
+    if (!s.calendar) s.calendar = defaultCalendar();
+    var dc = defaultCalendar();
+    Object.keys(dc).forEach(function(k){ if (s.calendar[k] === undefined) s.calendar[k] = dc[k]; });
+    if (!s.store) s.store = defaultStore();
+    if (!Array.isArray(s.store.products)) s.store.products = [];
+    if (!s.store.weeks) s.store.weeks = {};
     if (!Array.isArray(s.pricing.saved)) s.pricing.saved = [];
     if (s.pricing.settings) delete s.pricing.settings;
     var p = s.pricing.product;
@@ -7973,7 +7999,7 @@
 
   function switchView(view){
     currentView = view;
-    ["ledger","cashflow","pricing","hourly","cutting","clients","invoices","capture"].forEach(function(v){
+    ["ledger","cashflow","pricing","hourly","cutting","clients","schedule","invoices","capture"].forEach(function(v){
       var sec = document.getElementById("view-" + v);
       if (sec) sec.className = "view" + (v === view ? " active" : "");
     });
@@ -7987,6 +8013,8 @@
     if (view === "hourly") renderHourlyView();
     if (view === "capture") renderCaptureView();
     if (view === "invoices") renderInvoicesView();
+    if (view === "schedule") renderScheduleView();
+    renderBanners();
     window.scrollTo(0,0);
   }
 
@@ -8897,6 +8925,606 @@
   window.workshopInvoices = { parse: function(t){ return parseInvoiceText(t); } };
 
   /* ============================================================ */
+  /* Calendar & store — סנכרון עם יומן גוגל, סדנאות וחנות          */
+  /* ============================================================ */
+  /* היומן הוא מקור האמת לזמנים. האפליקציה רק קוראת ממנו סדנאות,     */
+  /* ובסוף כל סדנה מבקשת שני מספרים: כמה הגיעו ומה השכר. אם רוצים,  */
+  /* היא גם יוצרת ביומן תזכורת קטנה בשעת הסיום, שמגיעה כהתראה לטלפון */
+  /* ופותחת ישר את הטופס.                                            */
+
+  var GCAL_SCOPES = "https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar.calendarlist.readonly";
+  var GCAL_API = "https://www.googleapis.com/calendar/v3";
+  var GIS_URL = "https://accounts.google.com/gsi/client";
+  var GCAL = { token: null, expires: 0, busy: false, error: "", calendars: null };
+
+  function defaultCalendar(){
+    return { clientId:"", calendarId:"primary", keywords:"סדנה, סדנת", followUps:true,
+             connected:false, lastSync:null, events:{}, reports:{}, snooze:{} };
+  }
+  function defaultStore(){ return { products: [], weeks: {} }; }
+
+  function appUrl(){
+    return /^https?:$/.test(location.protocol) ? location.origin + location.pathname : "";
+  }
+
+  /* ---------- התחברות לגוגל ---------- */
+
+  try{
+    var cachedTok = JSON.parse(sessionStorage.getItem("gcalToken") || "null");
+    if (cachedTok && cachedTok.expires > Date.now() + 60000){ GCAL.token = cachedTok.token; GCAL.expires = cachedTok.expires; }
+  }catch(e){}
+
+  function gcalToken(interactive){
+    if (GCAL.token && Date.now() < GCAL.expires - 60000) return Promise.resolve(GCAL.token);
+    var cid = String(state.calendar.clientId || "").trim();
+    if (!cid) return Promise.reject(new Error("לא הוגדר Client ID"));
+    if (!appUrl()) return Promise.reject(new Error("החיבור לגוגל עובד רק כשהאפליקציה פתוחה מהכתובת באינטרנט"));
+    return loadScript(GIS_URL).then(function(){
+      return new Promise(function(resolve, reject){
+        var tc = window.google.accounts.oauth2.initTokenClient({
+          client_id: cid, scope: GCAL_SCOPES,
+          callback: function(r){
+            if (r.error){ reject(new Error(r.error_description || r.error)); return; }
+            GCAL.token = r.access_token;
+            GCAL.expires = Date.now() + (num(r.expires_in) || 3600) * 1000;
+            try{ sessionStorage.setItem("gcalToken", JSON.stringify({ token: GCAL.token, expires: GCAL.expires })); }catch(e){}
+            resolve(GCAL.token);
+          },
+          error_callback: function(e){ reject(new Error(e && e.type === "popup_closed" ? "החלון נסגר לפני האישור" : "צריך ללחוץ על \"סנכרון\" כדי להתחבר")); }
+        });
+        tc.requestAccessToken({ prompt: interactive ? "" : "none" });
+      });
+    });
+  }
+
+  function gapi(method, path, body){
+    return gcalToken(false).then(function(tok){
+      return fetch(GCAL_API + path, {
+        method: method,
+        headers: { "Authorization": "Bearer " + tok, "Content-Type": "application/json" },
+        body: body ? JSON.stringify(body) : undefined
+      });
+    }).then(function(r){
+      if (r.status === 401){ GCAL.token = null; try{ sessionStorage.removeItem("gcalToken"); }catch(e){} throw new Error("ההתחברות לגוגל פגה, צריך לסנכרן שוב"); }
+      if (!r.ok) return r.text().then(function(t){ throw new Error("Google " + r.status + ": " + t.slice(0, 160)); });
+      return r.status === 204 ? null : r.json();
+    });
+  }
+
+  function isWorkshopTitle(title){
+    var t = String(title || "");
+    return String(state.calendar.keywords || "").split(/[,،]/).map(function(k){ return k.trim(); })
+      .filter(Boolean).some(function(k){ return t.indexOf(k) !== -1; });
+  }
+
+  function listEvents(calId, timeMin, timeMax){
+    var out = [];
+    function page(token){
+      var q = "?singleEvents=true&orderBy=startTime&maxResults=250&timeMin=" + encodeURIComponent(timeMin) +
+              "&timeMax=" + encodeURIComponent(timeMax) + (token ? "&pageToken=" + encodeURIComponent(token) : "");
+      return gapi("GET", "/calendars/" + encodeURIComponent(calId) + "/events" + q).then(function(r){
+        out = out.concat(r.items || []);
+        return r.nextPageToken ? page(r.nextPageToken) : out;
+      });
+    }
+    return page(null);
+  }
+
+  function followUpBody(ev){
+    var end = new Date(ev.end);
+    var url = appUrl();
+    return {
+      summary: "📝 עדכון: " + ev.title,
+      description: "הסדנה הסתיימה. כמה הגיעו ומה השכר?\n" + (url ? url + "#workshop=" + encodeURIComponent(ev.id) : "פתח את פנקס בית המלאכה"),
+      start: { dateTime: end.toISOString() },
+      end: { dateTime: new Date(end.getTime() + 10 * 60000).toISOString() },
+      reminders: { useDefault: false, overrides: [{ method: "popup", minutes: 0 }] },
+      transparency: "transparent",
+      extendedProperties: { "private": { ledgerFor: ev.id } }
+    };
+  }
+
+  /* מושך סדנאות מ-30 יום אחורה ועד 60 יום קדימה, ומסנכרן את התזכורות */
+  function gcalSync(interactive){
+    var c = state.calendar;
+    if (GCAL.busy) return Promise.resolve();
+    GCAL.busy = true; GCAL.error = "";
+    renderScheduleBits();
+    var now = Date.now();
+    var timeMin = new Date(now - 30 * 864e5).toISOString(), timeMax = new Date(now + 60 * 864e5).toISOString();
+    var calId = c.calendarId || "primary";
+    var stats = { found: 0, created: 0, moved: 0, removed: 0 };
+    return gcalToken(!!interactive).then(function(){
+      return listEvents(calId, timeMin, timeMax);
+    }).then(function(items){
+      var follows = {}, seen = {};
+      items.forEach(function(it){
+        var priv = it.extendedProperties && it.extendedProperties["private"];
+        if (priv && priv.ledgerFor){ follows[priv.ledgerFor] = it; return; }
+        if (it.status === "cancelled" || !it.start || !it.start.dateTime || !isWorkshopTitle(it.summary)) return;
+        seen[it.id] = true; stats.found++;
+        c.events[it.id] = { id: it.id, title: it.summary || "סדנה", start: it.start.dateTime, end: it.end.dateTime,
+                            location: it.location || "", link: it.htmlLink || "" };
+      });
+      /* סדנה שנמחקה ביומן ועוד לא דווחה יוצאת מהרשימה */
+      Object.keys(c.events).forEach(function(id){
+        var ev = c.events[id], t = new Date(ev.start).getTime();
+        if (!seen[id] && t >= now - 30 * 864e5 && t <= now + 60 * 864e5 && !c.reports[id]) delete c.events[id];
+      });
+      c.connected = true;
+      c.lastSync = new Date().toISOString();
+      scheduleSave();
+      if (!c.followUps) return null;
+      var ops = [];
+      Object.keys(c.events).forEach(function(id){
+        var ev = c.events[id], f = follows[id];
+        if (new Date(ev.end).getTime() <= now || c.reports[id]) return;
+        if (!f){ ops.push(function(){ stats.created++; return gapi("POST", "/calendars/" + encodeURIComponent(calId) + "/events", followUpBody(ev)); }); }
+        else if (new Date(f.start.dateTime).getTime() !== new Date(ev.end).getTime() || f.summary !== "📝 עדכון: " + ev.title){
+          ops.push(function(){ stats.moved++; return gapi("PATCH", "/calendars/" + encodeURIComponent(calId) + "/events/" + encodeURIComponent(f.id), followUpBody(ev)); });
+        }
+      });
+      Object.keys(follows).forEach(function(wid){
+        var f = follows[wid];
+        if (!c.events[wid] && new Date(f.start.dateTime).getTime() > now){
+          ops.push(function(){ stats.removed++; return gapi("DELETE", "/calendars/" + encodeURIComponent(calId) + "/events/" + encodeURIComponent(f.id)); });
+        }
+      });
+      return ops.reduce(function(p, op){ return p.then(op); }, Promise.resolve());
+    }).then(function(){
+      GCAL.busy = false;
+      renderScheduleBits();
+      if (interactive) toast("היומן סונכרן: " + stats.found + " סדנאות" + (stats.created ? ", נוספו " + stats.created + " תזכורות עדכון" : "") + ".");
+    }, function(err){
+      GCAL.busy = false; GCAL.error = err.message || String(err);
+      renderScheduleBits();
+      if (interactive) toast(GCAL.error);
+    });
+  }
+
+  function loadCalendarList(){
+    return gapi("GET", "/users/me/calendarList?minAccessRole=writer").then(function(r){
+      GCAL.calendars = (r.items || []).map(function(c){ return { id: c.id, name: c.summaryOverride || c.summary, primary: !!c.primary }; });
+      renderScheduleView();
+    });
+  }
+
+  /* ---------- סדנאות שהסתיימו ---------- */
+
+  function titleKey(t){ return String(t || "").replace(/\s+/g, " ").trim(); }
+  function lastReportFor(title){
+    var c = state.calendar, best = null;
+    Object.keys(c.reports).forEach(function(id){
+      var r = c.reports[id];
+      if (r.skipped || titleKey(r.title) !== titleKey(title)) return;
+      if (!best || String(r.date) > String(best.date)) best = r;
+    });
+    return best;
+  }
+
+  function pendingWorkshops(){
+    var c = state.calendar, now = Date.now();
+    return Object.keys(c.events).map(function(id){ return c.events[id]; }).filter(function(ev){
+      var end = new Date(ev.end).getTime();
+      if (c.reports[ev.id] || end > now || end < now - 45 * 864e5) return false;
+      if (c.snooze[ev.id] && c.snooze[ev.id] > now) return false;
+      return true;
+    }).sort(function(a, b){ return String(a.end).localeCompare(String(b.end)); });
+  }
+
+  function evDateKey(ev){ var d = new Date(ev.start); return d.getFullYear() + "-" + pad2(d.getMonth()+1) + "-" + pad2(d.getDate()); }
+  function evTimeLabel(iso){ var d = new Date(iso); return pad2(d.getHours()) + ":" + pad2(d.getMinutes()); }
+  /* טווחים מספריים עטופים בכיוון שמאל-לימין, אחרת בתוך טקסט עברי הם מתהפכים */
+  function ltr(t){ return "\u2066" + t + "\u2069"; }
+  function evWhen(ev){ return dateLabel(evDateKey(ev)) + " · " + ltr(evTimeLabel(ev.start) + "–" + evTimeLabel(ev.end)); }
+
+  function saveWorkshopReport(ev, draft){
+    var c = state.calendar;
+    var prev = c.reports[ev.id];
+    var rep = { title: ev.title, date: evDateKey(ev), participants: num(draft.participants), fee: num(draft.fee),
+                at: new Date().toISOString(), income: prev && prev.income ? prev.income : null };
+    /* עדכון דיווח קיים: מעדכנים את שורת ההכנסה שנרשמה, לא מוסיפים עוד אחת */
+    var mk = rep.date.slice(0, 7);
+    if (rep.income){
+      var m = state.months[rep.income.month];
+      var row = m && (m.oneTimeIncome || []).filter(function(i){ return i.id === rep.income.itemId; })[0];
+      if (row){ row.amount = r2(rep.fee); row.unitPrice = r2(rep.fee); }
+      else rep.income = null;
+    }
+    if (!rep.income && draft.record && rep.fee > 0){
+      var item = mkIncomeItem(ev.title + " · " + dateLabel(rep.date).slice(0, 5), 1, r2(rep.fee));
+      item.workshopEventId = ev.id;
+      ensureMonth(mk).oneTimeIncome.push(item);
+      rep.income = { month: mk, itemId: item.id };
+    }
+    c.reports[ev.id] = rep;
+    delete c.snooze[ev.id];
+    scheduleSave();
+    renderLedger();
+    toast("נשמר: " + rep.participants + " משתתפים" + (rep.income ? ", השכר נרשם כהכנסה ב" + monthKeyLabel(rep.income.month) : "") + ".");
+  }
+
+  function workshopForm(ev, opts){
+    opts = opts || {};
+    var last = lastReportFor(ev.title), cur = state.calendar.reports[ev.id];
+    var draft = {
+      participants: cur ? String(cur.participants) : last ? String(last.participants) : "",
+      fee: cur ? String(cur.fee) : last ? String(last.fee) : "",
+      record: cur ? !!cur.income : true
+    };
+    var cb = el("input", { type:"checkbox" }); cb.checked = draft.record;
+    cb.addEventListener("change", function(e){ draft.record = e.target.checked; });
+    var box = el("div", {}, [
+      grid([
+        fieldNum("כמה משתתפים הגיעו", draft, "participants", null, { hint: last && !cur ? "בפעם הקודמת: " + last.participants : "" }),
+        fieldNum("השכר שנקבע לסדנה ₪", draft, "fee", null, { hint: last && !cur ? "בפעם הקודמת: " + formatCurrency(last.fee) : "" })
+      ]),
+      cur && cur.income ? el("div", { className:"small muted", style:"margin-top:6px;", textContent:"השכר כבר נרשם ביומן. שינוי כאן יעדכן את אותה שורה." }) :
+        el("label", { className:"check", style:"margin-top:6px;" }, [ cb, " לרשום את השכר כהכנסה ביומן של " + monthKeyLabel(evDateKey(ev).slice(0, 7)) ])
+    ]);
+    var actions = el("div", { style:"display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;" }, [
+      el("button", { className:"btn btn-primary", type:"button", textContent:"שמירה", onclick: function(){
+        if (draft.participants === "" ){ toast("כמה הגיעו? אפשר לרשום 0."); return; }
+        saveWorkshopReport(ev, draft);
+        if (opts.onDone) opts.onDone();
+      } }),
+      opts.compact ? null : el("button", { className:"btn", type:"button", textContent:"הסדנה לא התקיימה", onclick: function(){
+        state.calendar.reports[ev.id] = { title: ev.title, date: evDateKey(ev), skipped: true, at: new Date().toISOString() };
+        scheduleSave(); if (opts.onDone) opts.onDone(); } }),
+      opts.compact ? null : el("button", { className:"link-btn", type:"button", textContent:"תזכיר לי בעוד שעתיים", onclick: function(){
+        state.calendar.snooze[ev.id] = Date.now() + 2 * 3600000; scheduleSave(); if (opts.onDone) opts.onDone(); } })
+    ]);
+    box.appendChild(actions);
+    return box;
+  }
+
+  /* ---------- חנות: שבוע מתחיל ביום ראשון ---------- */
+
+  function weekStartKey(d){
+    var x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    x.setDate(x.getDate() - x.getDay());
+    return x.getFullYear() + "-" + pad2(x.getMonth()+1) + "-" + pad2(x.getDate());
+  }
+  function lastWeekKey(){ var d = new Date(); d.setDate(d.getDate() - 7); return weekStartKey(d); }
+  function weekLabel(key){
+    var end = addDays(key, 6);
+    return ltr(dateLabel(key).slice(0, 5) + "–" + dateLabel(end).slice(0, 5));
+  }
+  function activeProducts(){ return (state.store.products || []).filter(function(p){ return !p.archived; }); }
+  function storeDue(){
+    if (!activeProducts().length) return null;
+    var k = lastWeekKey();
+    if (state.store.weeks[k]) return null;
+    if (state.store.snoozeUntil && state.store.snoozeUntil > Date.now()) return null;
+    return k;
+  }
+
+  function saveStoreWeek(key, draft){
+    var weekEnd = addDays(key, 6), mk = weekEnd.slice(0, 7);
+    var rec = { sales: {}, added: {}, at: new Date().toISOString(), income: [] };
+    activeProducts().forEach(function(p){
+      var sold = Math.max(0, Math.round(num(draft.sold[p.id])));
+      var added = Math.max(0, Math.round(num(draft.added[p.id])));
+      if (sold){
+        rec.sales[p.id] = sold;
+        var item = mkIncomeItem(p.name || "מוצר", sold, r2(sold * num(p.price)));
+        item.storeWeek = key;
+        ensureMonth(mk).oneTimeIncome.push(item);
+        rec.income.push({ month: mk, itemId: item.id });
+      }
+      if (added) rec.added[p.id] = added;
+      p.inStore = Math.max(0, num(p.inStore) - sold + added);
+    });
+    state.store.weeks[key] = rec;
+    delete state.store.snoozeUntil;
+    scheduleSave(); renderLedger();
+    var units = sum(Object.keys(rec.sales).map(function(k){ return rec.sales[k]; }));
+    toast(units ? "נרשמו " + units + " מכירות כהכנסה ב" + monthKeyLabel(mk) + "." : "נשמר: שבוע בלי מכירות.");
+  }
+
+  function storeForm(key, onDone){
+    var draft = { sold: {}, added: {} };
+    var wrap = el("div", {});
+    var t = el("table", { className:"rep" });
+    t.appendChild(el("thead", {}, [ el("tr", {}, [
+      el("th", { textContent:"מוצר" }), el("th", { textContent:"בחנות" }), el("th", { textContent:"נמכרו" }), el("th", { textContent:"הוספתי לחנות" })
+    ]) ]));
+    var tb = el("tbody", {});
+    activeProducts().forEach(function(p){
+      draft.sold[p.id] = ""; draft.added[p.id] = "";
+      var s = numInput(draft.sold, p.id, null); s.className = "num mini"; s.placeholder = "0";
+      var a = numInput(draft.added, p.id, null); a.className = "num mini"; a.placeholder = "0";
+      tb.appendChild(el("tr", {}, [
+        el("td", {}, [ p.name || "מוצר", el("div", { className:"small muted", textContent: formatCurrency(num(p.price)) }) ]),
+        el("td", { className:"n", textContent: String(num(p.inStore)) }),
+        el("td", {}, [ s ]), el("td", {}, [ a ])
+      ]));
+    });
+    t.appendChild(tb);
+    wrap.appendChild(t);
+    wrap.appendChild(el("div", { style:"display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;" }, [
+      el("button", { className:"btn btn-primary", type:"button", textContent:"שמירה", onclick: function(){ saveStoreWeek(key, draft); onDone(); } }),
+      el("button", { className:"btn", type:"button", textContent:"לא נמכר כלום", onclick: function(){ saveStoreWeek(key, { sold:{}, added:{} }); onDone(); } }),
+      el("button", { className:"link-btn", type:"button", textContent:"תזכיר לי מחר", onclick: function(){
+        state.store.snoozeUntil = Date.now() + 20 * 3600000; scheduleSave(); onDone(); } })
+    ]));
+    return wrap;
+  }
+
+  /* ---------- באנרים בראש המסך ---------- */
+
+  var focusWorkshopId = null;
+
+  function renderBanners(){
+    var host = document.getElementById("banners");
+    if (!host) return;
+    host.innerHTML = "";
+    var pend = pendingWorkshops();
+    if (focusWorkshopId){
+      var fe = state.calendar.events[focusWorkshopId];
+      if (fe && !state.calendar.reports[focusWorkshopId]){
+        pend = [fe].concat(pend.filter(function(e){ return e.id !== fe.id; }));
+      }
+    }
+    if (pend.length){
+      var ev = pend[0];
+      host.appendChild(el("div", { className:"banner" }, [
+        el("div", { className:"banner-head" }, [
+          el("div", {}, [
+            el("div", { className:"banner-title", textContent:"🪵 " + ev.title + " הסתיימה" }),
+            el("div", { className:"small muted", textContent: evWhen(ev) + (ev.location ? " · " + ev.location : "") +
+              (pend.length > 1 ? " · ועוד " + (pend.length - 1) + " סדנאות ממתינות לעדכון" : "") })
+          ])
+        ]),
+        workshopForm(ev, { onDone: function(){ focusWorkshopId = null; renderBanners(); renderScheduleBits(); } })
+      ]));
+    }
+    var wk = storeDue();
+    if (wk){
+      var open = !!state.store.bannerOpen;
+      host.appendChild(el("div", { className:"banner store" }, [
+        el("div", { className:"banner-head" }, [
+          el("div", {}, [
+            el("div", { className:"banner-title", textContent:"🏪 מה נמכר בחנות השבוע? (" + weekLabel(wk) + ")" }),
+            el("div", { className:"small muted", textContent: activeProducts().length + " מוצרים בחנות · " +
+              sum(activeProducts().map(function(p){ return num(p.inStore); })) + " יחידות על המדף" })
+          ]),
+          open ? null : el("button", { className:"btn btn-sm", type:"button", textContent:"עדכון", onclick: function(){ state.store.bannerOpen = true; renderBanners(); } })
+        ]),
+        open ? storeForm(wk, function(){ state.store.bannerOpen = false; renderBanners(); renderScheduleBits(); }) : null
+      ]));
+    }
+    var c = state.calendar;
+    if (c.connected && c.clientId && appUrl() && (!c.lastSync || Date.now() - new Date(c.lastSync).getTime() > 12 * 3600000) && !GCAL.token){
+      host.appendChild(el("div", { className:"banner thin" }, [
+        el("span", { textContent:"📅 היומן לא סונכרן מאז " + (c.lastSync ? dateLabel(c.lastSync.slice(0, 10)) : "אף פעם") + "." }),
+        el("button", { className:"btn btn-sm", type:"button", textContent: GCAL.busy ? "מסנכרן..." : "סנכרון עכשיו", onclick: function(){ gcalSync(true); } })
+      ]));
+    }
+  }
+
+  /* בדיקה כל חצי דקה: סדנה שהסתיימה עכשיו מקפיצה באנר והתראה */
+  var lastPendingIds = "";
+  function scheduleTick(){
+    var ids = pendingWorkshops().map(function(e){ return e.id; }).join(",");
+    if (ids !== lastPendingIds){
+      var fresh = pendingWorkshops().filter(function(e){ return lastPendingIds.split(",").indexOf(e.id) === -1; });
+      lastPendingIds = ids;
+      renderBanners();
+      if (fresh.length && document.hidden && window.Notification && Notification.permission === "granted"){
+        try{ new Notification(fresh[0].title + " הסתיימה", { body: "כמה הגיעו ומה השכר? לחץ לעדכון.", tag: fresh[0].id }); }catch(e){}
+      }
+    }
+  }
+
+  function handleHash(){
+    var m = String(location.hash || "").match(/workshop=([^&]+)/);
+    if (!m) return;
+    focusWorkshopId = decodeURIComponent(m[1]);
+    history.replaceState(null, "", location.pathname + location.search);
+    if (!state.calendar.events[focusWorkshopId] && state.calendar.clientId) gcalSync(false).then(renderBanners);
+    renderBanners();
+    window.scrollTo(0, 0);
+  }
+
+  /* ---------- מסך יומן וחנות ---------- */
+
+  function renderScheduleBits(){
+    renderBanners();
+    if (currentView === "schedule") renderScheduleView();
+  }
+
+  function setupGuide(){
+    var origin = appUrl() ? location.origin : "https://nettaamit21-crypto.github.io";
+    var steps = [
+      "נכנסים ל-console.cloud.google.com עם חשבון הגוגל שלך, ויוצרים פרויקט חדש (למשל \"פנקס נגרייה\").",
+      "בתפריט APIs & Services ← Library מחפשים Google Calendar API ולוחצים Enable.",
+      "ב-OAuth consent screen בוחרים External, ממלאים שם אפליקציה ומייל, ובשלב Test users מוסיפים את המייל שלך.",
+      "ב-Credentials ← Create credentials ← OAuth client ID בוחרים Web application.",
+      "תחת Authorized JavaScript origins מוסיפים בדיוק: " + origin,
+      "מעתיקים את ה-Client ID שנוצר (נגמר ב-apps.googleusercontent.com) ומדביקים אותו כאן למטה."
+    ];
+    return el("details", { className:"guide" }, [
+      el("summary", { textContent:"איך מקבלים Client ID? (הגדרה חד-פעמית, כ-10 דקות)" }),
+      el("ol", {}, steps.map(function(s){ return el("li", { textContent: s }); })),
+      el("div", { className:"small muted", textContent:"ה-Client ID אינו סיסמה ואין בעיה שהוא שמור באפליקציה. גוגל תציג בהתחברות הראשונה אזהרה שהאפליקציה לא אומתה. זה תקין לאפליקציה פרטית: לוחצים Continue." })
+    ]);
+  }
+
+  function renderScheduleView(){
+    var host = document.getElementById("schedule-content");
+    if (!host) return;
+    host.innerHTML = "";
+    var c = state.calendar;
+
+    /* --- חיבור ליומן --- */
+    var p = el("div", { className:"panel" });
+    p.appendChild(el("div", { className:"panel-head" }, [
+      el("div", {}, [
+        el("h4", { textContent:"📅 יומן גוגל" }),
+        el("div", { className:"panel-sub", textContent:"האפליקציה מזהה סדנאות לפי מילה בכותרת. בסוף כל סדנה קופץ באנר לעדכון כמה הגיעו ומה השכר" })
+      ]),
+      el("span", { className:"badge " + (c.connected && !GCAL.error ? "badge-pine" : "badge-soft"),
+        textContent: c.connected && !GCAL.error ? "מחובר" : "לא מחובר" })
+    ]));
+    if (!appUrl()){
+      p.appendChild(el("div", { className:"warn-line" }, [ el("span", { textContent:
+        "הקובץ פתוח מהמחשב. גוגל מאפשרת חיבור רק מכתובת אינטרנט, ולכן החיבור יעבוד כשתפתח את האפליקציה מהכתובת שלה (ראה הסבר בקובץ README)." }) ]));
+    }
+    p.appendChild(setupGuide());
+    var calOpts = (GCAL.calendars || [{ id: c.calendarId || "primary", name: c.calendarId === "primary" || !c.calendarId ? "היומן הראשי" : c.calendarId }])
+      .map(function(x){ return { value: x.id, label: x.name + (x.primary ? " (ראשי)" : "") }; });
+    if (GCAL.calendars && !GCAL.calendars.some(function(x){ return x.id === c.calendarId; })) calOpts.unshift({ value: c.calendarId, label: c.calendarId });
+    var fu = { v: c.followUps ? "yes" : "no" };
+    p.appendChild(grid([
+      fieldText("Client ID של גוגל", c, "clientId", function(){ GCAL.token = null; scheduleSave(); }, { placeholder:"xxxx.apps.googleusercontent.com", wide:true }),
+      withTip(fieldText("מילים שמזהות סדנה בכותרת", c, "keywords", function(){ scheduleSave(); }, { hint:"מופרדות בפסיק" }),
+        "כל אירוע ביומן שהכותרת שלו מכילה אחת המילים נחשב סדנה. \"סדנה, סדנת\" תופס גם \"סדנת חוסן\" וגם \"סדנה לבני נוער\"."),
+      fieldSelect("איזה יומן", c, "calendarId", calOpts, function(){ scheduleSave(); }),
+      withTip(fieldSelect("תזכורת ביומן בשעת הסיום", fu, "v", [
+        { value:"yes", label:"כן, ליצור תזכורת \"📝 עדכון\"" }, { value:"no", label:"לא" }
+      ], function(){ c.followUps = fu.v === "yes"; scheduleSave(); }),
+        "לכל סדנה עתידית נוצר ביומן אירוע קטן בשעת הסיום, עם התראה. ההתראה מגיעה לטלפון גם כשהאפליקציה סגורה, והקישור שבה פותח ישר את טופס העדכון. אם הסדנה זזה, גם התזכורת זזה.")
+    ]));
+    if (GCAL.error) p.appendChild(el("div", { className:"warn-line" }, [ el("span", { textContent: GCAL.error }) ]));
+    p.appendChild(el("div", { style:"display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; align-items:center;" }, [
+      el("button", { className:"btn btn-primary", type:"button", textContent: GCAL.busy ? "מסנכרן..." : (c.connected ? "🔄 סנכרון עכשיו" : "התחברות לגוגל וסנכרון"),
+        onclick: function(){ if (!String(c.clientId).trim()){ toast("קודם מדביקים Client ID."); return; } gcalSync(true); } }),
+      c.connected ? el("button", { className:"btn", type:"button", textContent:"טעינת רשימת היומנים", onclick: function(){
+        loadCalendarList().catch(function(e){ toast(e.message); }); } }) : null,
+      window.Notification && Notification.permission === "default" ? el("button", { className:"btn", type:"button", textContent:"🔔 התראות כשהאפליקציה פתוחה ברקע",
+        onclick: function(){ Notification.requestPermission().then(renderScheduleView); } }) : null,
+      c.lastSync ? el("span", { className:"small muted", textContent:"סונכרן לאחרונה: " + dateLabel(c.lastSync.slice(0, 10)) + " " + evTimeLabel(c.lastSync) }) : null
+    ]));
+    host.appendChild(p);
+
+    /* --- סדנאות --- */
+    var all = Object.keys(c.events).map(function(id){ return c.events[id]; })
+      .sort(function(a, b){ return String(a.start).localeCompare(String(b.start)); });
+    var now = Date.now();
+    var upcoming = all.filter(function(e){ return new Date(e.end).getTime() > now; });
+    var w = el("div", { className:"panel" });
+    w.appendChild(el("div", { className:"panel-head" }, [ el("div", {}, [
+      el("h4", { textContent:"🪵 סדנאות" }),
+      el("div", { className:"panel-sub", textContent:"מה מתוכנן, ומה דווח על מה שכבר התקיים" }) ]) ]));
+    w.appendChild(sectionTitle("בקרוב"));
+    if (!upcoming.length) w.appendChild(el("p", { className:"small muted", textContent: c.connected ? "אין סדנאות ב-60 הימים הקרובים ביומן." : "אחרי החיבור ליומן, הסדנאות יופיעו כאן." }));
+    upcoming.slice(0, 12).forEach(function(e){
+      var last = lastReportFor(e.title);
+      w.appendChild(el("div", { className:"pending-row" }, [
+        el("div", { className:"nm" }, [ el("strong", { textContent: e.title }), el("div", { className:"small muted", textContent: evWhen(e) + (e.location ? " · " + e.location : "") }) ]),
+        last ? el("div", { className:"small muted", textContent:"בפעם הקודמת: " + last.participants + " משתתפים · " + formatCurrency(last.fee) }) : null
+      ]));
+    });
+
+    var reps = Object.keys(c.reports).map(function(id){ var r = c.reports[id]; return { id: id, r: r }; })
+      .filter(function(x){ return !x.r.skipped; })
+      .sort(function(a, b){ return String(b.r.date).localeCompare(String(a.r.date)); });
+    w.appendChild(sectionTitle("סיכום לפי סוג סדנה"));
+    var byTitle = {};
+    reps.forEach(function(x){
+      var k = titleKey(x.r.title);
+      if (!byTitle[k]) byTitle[k] = { title: x.r.title, n: 0, people: 0, fee: 0 };
+      byTitle[k].n++; byTitle[k].people += num(x.r.participants); byTitle[k].fee += num(x.r.fee);
+    });
+    var keys = Object.keys(byTitle);
+    if (!keys.length) w.appendChild(el("p", { className:"small muted", textContent:"עוד אין דיווחים. הם מצטברים כאן אחרי כל סדנה." }));
+    else {
+      var t = el("table", { className:"rep" });
+      t.appendChild(el("thead", {}, [ el("tr", {}, [ el("th", { textContent:"סדנה" }), el("th", { textContent:"פעמים" }),
+        el("th", { textContent:"ממוצע משתתפים" }), el("th", { textContent:"שכר ממוצע" }), el("th", { className:"hide-sm", textContent:"סה\"כ שכר" }), el("th", { textContent:"" }) ]) ]));
+      var tb = el("tbody", {});
+      keys.forEach(function(k){
+        var s = byTitle[k], avgP = s.people / s.n, avgF = s.fee / s.n;
+        tb.appendChild(el("tr", {}, [
+          el("td", { textContent: s.title }), el("td", { className:"n", textContent: s.n }),
+          el("td", { className:"n", textContent: avgP.toFixed(1) }), el("td", { className:"n", textContent: formatCurrency(avgF) }),
+          el("td", { className:"n hide-sm", textContent: formatCurrency(s.fee) }),
+          el("td", {}, [ el("button", { className:"link-btn", type:"button", textContent:"לתמחור", title:"פתיחה בתמחור סדנאות עם ממוצע המשתתפים",
+            onclick: function(){
+              var ws = state.pricing.workshop;
+              ws.quoteName = s.title; ws.participants = String(Math.max(1, Math.round(avgP)));
+              scheduleSave(); switchView("pricing"); pricingSelectTab("workshop");
+              toast("נפתח תמחור עם " + ws.participants + " משתתפים, הממוצע בפועל.");
+            } }) ])
+        ]));
+      });
+      t.appendChild(tb); w.appendChild(t);
+    }
+    if (reps.length){
+      w.appendChild(sectionTitle("דיווחים אחרונים"));
+      reps.slice(0, 10).forEach(function(x){
+        var ev = c.events[x.id] || { id: x.id, title: x.r.title, start: x.r.date + "T00:00:00", end: x.r.date + "T00:00:00" };
+        w.appendChild(el("div", { className:"pending-row" }, [
+          el("div", { className:"nm" }, [ el("strong", { textContent: x.r.title }), el("span", { className:"small muted", textContent:" · " + dateLabel(x.r.date) }) ]),
+          el("div", { className:"small", textContent: x.r.participants + " משתתפים · " + formatCurrency(x.r.fee) + (x.r.income ? " · ✓ ביומן" : "") }),
+          el("button", { className:"link-btn", type:"button", textContent:"עריכה", onclick: function(){
+            var m = openModal({ title: x.r.title + " · " + dateLabel(x.r.date), body: workshopForm(ev, { compact:true, onDone: function(){ m.close(); renderScheduleView(); } }) });
+          } })
+        ]));
+      });
+    }
+    host.appendChild(w);
+
+    /* --- חנות --- */
+    var s = el("div", { className:"panel" });
+    s.appendChild(el("div", { className:"panel-head" }, [ el("div", {}, [
+      el("h4", { textContent:"🏪 מוצרים בחנות" }),
+      el("div", { className:"panel-sub", textContent:"פעם בשבוע, ביום ראשון, קופץ באנר: כמה נמכר מכל מוצר. המכירות נרשמות כהכנסה והמלאי מתעדכן" }) ]) ]));
+    var prods = state.store.products;
+    prods.filter(function(p){ return !p.archived; }).forEach(function(prod){
+      s.appendChild(el("div", { className:"subrow" }, [
+        textInput(prod, "name", function(){ scheduleSave(); }, "nm", "שם המוצר: מעמד לצמחים..."),
+        el("span", { className:"cap", textContent:"מחיר ₪" }), numInput(prod, "price", function(){ scheduleSave(); }),
+        el("span", { className:"cap", textContent:"בחנות" }), numInput(prod, "inStore", function(){ scheduleSave(); }),
+        el("button", { className:"del-btn", type:"button", title:"הוצאה מהרשימה", onclick: function(){
+          confirmAction("להוציא את \"" + (prod.name || "מוצר") + "\" מרשימת החנות? המכירות שכבר נרשמו יישארו.", function(){
+            prod.archived = true; scheduleSave(); renderScheduleBits(); }); } }, [trashIcon()])
+      ]));
+    });
+    s.appendChild(el("button", { className:"btn-add", type:"button", textContent:"+ הוספת מוצר לחנות", onclick: function(){
+      prods.push({ id: uid(), name:"", price:0, inStore:0 }); scheduleSave(); renderScheduleView();
+      var ins = s.querySelectorAll("input.nm"); if (ins.length) ins[ins.length - 1].focus(); } }));
+    var wkKeys = Object.keys(state.store.weeks).sort().reverse().slice(0, 8);
+    if (wkKeys.length){
+      s.appendChild(sectionTitle("מכירות בשבועות האחרונים"));
+      var maxRev = 1, rows = wkKeys.map(function(k){
+        var wk = state.store.weeks[k], units = 0, rev = 0;
+        Object.keys(wk.sales || {}).forEach(function(pid){
+          var pr = prods.filter(function(p){ return p.id === pid; })[0];
+          units += wk.sales[pid]; rev += wk.sales[pid] * (pr ? num(pr.price) : 0);
+        });
+        maxRev = Math.max(maxRev, rev);
+        return { k: k, units: units, rev: rev };
+      });
+      var t2 = el("table", { className:"rep" });
+      t2.appendChild(el("thead", {}, [ el("tr", {}, [ el("th", { textContent:"שבוע" }), el("th", { textContent:"יחידות" }), el("th", { textContent:"הכנסה" }) ]) ]));
+      var tb2 = el("tbody", {});
+      rows.forEach(function(r){
+        tb2.appendChild(el("tr", {}, [ el("td", { textContent: weekLabel(r.k) }), el("td", { className:"n", textContent: r.units }),
+          el("td", {}, [ el("div", { className:"n", textContent: formatCurrency(r.rev) }), miniBar(r.rev, maxRev, "var(--pine)") ]) ]));
+      });
+      t2.appendChild(tb2); s.appendChild(t2);
+    }
+    var due = storeDue();
+    if (!due && activeProducts().length && !state.store.weeks[weekStartKey(new Date())]){
+      s.appendChild(el("button", { className:"link-btn", type:"button", style:"margin-top:8px;", textContent:"עדכון מכירות של השבוע הנוכחי עכשיו", onclick: function(){
+        var k = weekStartKey(new Date());
+        var m = openModal({ title:"מכירות בחנות · " + weekLabel(k), body: storeForm(k, function(){ m.close(); renderScheduleBits(); }) });
+      } }));
+    }
+    host.appendChild(s);
+  }
+
+  /* מנוע היומן חשוף לבדיקות */
+  window.workshopSchedule = {
+    pending: function(){ return pendingWorkshops(); },
+    storeDue: function(){ return storeDue(); },
+    weekStart: function(d){ return weekStartKey(new Date(d)); },
+    sync: function(){ return gcalSync(false); }
+  };
+
+  /* ============================================================ */
   /* Export / import                                               */
   /* ============================================================ */
 
@@ -8984,6 +9612,14 @@
 
     state.meta.lastSeenMonthKey = todayMonthKey();
     saveNow();
+
+    /* יומן וחנות: באנרים, קישור מתזכורת ביומן, בדיקה כל חצי דקה */
+    renderBanners();
+    handleHash();
+    window.addEventListener("hashchange", handleHash);
+    lastPendingIds = pendingWorkshops().map(function(e){ return e.id; }).join(",");
+    setInterval(scheduleTick, 30000);
+    if (state.calendar.connected && GCAL.token) gcalSync(false);
 
     if (pending){
       ensureMonth(pending.monthKey);
