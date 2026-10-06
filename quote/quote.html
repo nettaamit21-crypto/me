@@ -22,7 +22,7 @@
   .to span { border-bottom: 1px solid var(--sand); padding: 0 1mm 0.5mm; min-width: 55mm; display: inline-block; }
   h2 { font-family: 'Frank Ruhl Libre', serif; font-size: 14pt; font-weight: 700; color: var(--oak); margin: 0 0 2.2mm; display: flex; align-items: center; gap: 3mm; }
   h2::before { content: ""; width: 6mm; height: 2px; background: var(--bronze); }
-  section { margin-bottom: 4.5mm; }
+  section { margin-bottom: 4mm; }
   .cards { display: grid; grid-template-columns: 1.15fr 1fr; gap: 5mm; }
   .card { background: var(--cream); border-radius: 3mm; padding: 3.5mm 5mm; }
   .card h3 { font-size: 11pt; font-weight: 700; margin-bottom: 2mm; }
@@ -48,7 +48,7 @@
   .term p { font-size: 9.6pt; color: #4a3b2e; }
   .term.alert { border-color: #a5432a; }
   .term.alert h4 { color: #a5432a; }
-  .sign { display: flex; gap: 12mm; margin-top: 9mm; }
+  .sign { display: flex; gap: 12mm; margin-top: 6mm; }
   .sign div { flex: 1; border-top: 1px solid var(--walnut); padding-top: 1.5mm; font-size: 9pt; color: var(--muted); }
   footer { position: absolute; bottom: 0; left: 0; right: 0; background: var(--cream); padding: 4mm 16mm; font-size: 8.5pt; color: var(--muted); display: flex; justify-content: space-between; }
 </style>
@@ -85,8 +85,9 @@
           <div class="row"><span class="lbl">תדירות</span><b>מפגש אחד בשבוע</b></div>
           <div class="row"><span class="lbl">יום</span><b>ימי רביעי</b></div>
           <div class="row"><span class="lbl">מיקום</span><b>הותיקה</b></div>
-          <div class="row"><span class="lbl">קבוצה</span><b>עד 6 משתתפים</b></div>
+          <div class="row"><span class="lbl">קבוצה</span><b>עד 7 משתתפים</b></div>
           <div class="big" style="margin-top:2mm">1,300 ₪ <small>+ 100 ₪ למשתתף, למפגש</small></div>
+          <div class="note" style="margin-top:0">המחירים אינם כוללים מע״מ</div>
         </div>
       </div>
     </section>
@@ -100,19 +101,20 @@
           <tr><td>עלות אחזקה<span class="d">· שכירות, חשמל, ביטוח וכו׳</span></td><td>150 ₪</td></tr>
           <tr><td>בלאי ציוד<span class="d">· מסורית גקסון, ניירות שיוף, ברגים וכו׳</span></td><td>150 ₪</td></tr>
           <tr><td>תקציב עץ<span class="d">· לכל משתתף; פרויקטים גדולים יתומחרו בנפרד לפי מחיר עלות החומרים</span></td><td>100 ₪ × משתתף</td></tr>
-          <tr class="total"><td>סה״כ למפגש עם 6 משתתפים<span class="d">· 1,300 ₪ + 6 × 100 ₪</span></td><td>1,900 ₪</td></tr>
+          <tr class="total"><td>סה״כ למפגש עם 7 משתתפים<span class="d">· 1,300 ₪ + 7 × 100 ₪</span></td><td>2,000 ₪</td></tr>
         </tbody>
       </table>
+      <p class="note">* כל המחירים אינם כוללים מע״מ.</p>
     </section>
 
     <section>
       <h2>תנאי ביטול ותנאים כלליים</h2>
       <div class="terms">
         <div class="term"><h4>ביטול מלא של הסדנא</h4><p>ביטול עד 48 שעות לפני מועד הסדנא – ללא חיוב.</p></div>
-        <div class="term alert"><h4>ביטול מאוחר ללא הודעה</h4><p>ביטול בפחות מ־24 שעות לפני מועד הסדנא ללא הודעה – יחויב בעלות של 600 ₪.</p></div>
-        <div class="term"><h4>מספר המשתתפים</h4><p>הסדנא מתוכננת ומוכנה מראש בהתאם למספר המשתתפים שסוכם, עד 6 משתתפים.</p></div>
+        <div class="term alert"><h4>ביטול בפחות מ־48 שעות</h4><p>ביטול בפחות מ־48 שעות לפני מועד הסדנא – יחויב בעלות של 600 ₪.</p></div>
+        <div class="term"><h4>מספר המשתתפים</h4><p>הסדנא מתוכננת ומוכנה מראש בהתאם למספר המשתתפים שסוכם, עד 7 משתתפים.</p></div>
         <div class="term"><h4>הפחתת מספר המשתתפים</h4><p>יש לעדכן על שינוי במספר המשתתפים עד 24 שעות לפני הסדנא.</p></div>
-        <div class="term" style="grid-column:1/-1"><h4>אי הגעה ללא עדכון מראש</h4><p>במקרה שבו סוכם על 6 משתתפים ובפועל הגיעו פחות, ללא עדכון של 24 שעות לפני, החיוב יישאר בהתאם למספר המשתתפים שסוכם מראש – וזאת בשל הכנת ורכישת חומרי הגלם מראש.</p></div>
+        <div class="term" style="grid-column:1/-1"><h4>אי הגעה ללא עדכון מראש</h4><p>במקרה שבו סוכם על מספר משתתפים מסוים ובפועל הגיעו פחות, ללא עדכון של 24 שעות לפני, החיוב יישאר בהתאם למספר המשתתפים שסוכם מראש – וזאת בשל הכנת ורכישת חומרי הגלם מראש.</p></div>
       </div>
     </section>
 
