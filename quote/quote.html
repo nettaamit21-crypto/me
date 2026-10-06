@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>הצעת מחיר – סדנת נגרות</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&family=Frank+Ruhl+Libre:wght@500;700;900&display=swap">
+<style>
+  @page { size: A4; margin: 0; }
+  :root { --cream:#F3EDE3; --sand:#E6DAC6; --oak:#9A6535; --bronze:#B8874A; --walnut:#2A1F17; --muted:#6b5a4a; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #fff; }
+  body { font-family: 'Heebo', sans-serif; color: var(--walnut); font-size: 10.5pt; line-height: 1.5; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .page { width: 210mm; height: 297mm; padding: 0 0 0 0; position: relative; overflow: hidden; }
+  header { background: var(--walnut); color: var(--cream); padding: 10mm 16mm 7mm; position: relative; }
+  header .brand { font-family: 'Frank Ruhl Libre', serif; font-weight: 900; font-size: 15pt; color: var(--bronze); letter-spacing: .5px; }
+  header h1 { font-family: 'Frank Ruhl Libre', serif; font-weight: 700; font-size: 23pt; line-height: 1.15; margin-top: 2mm; }
+  header .sub { font-weight: 300; font-size: 11.5pt; opacity: .85; margin-top: 1.5mm; }
+  header .meta { position: absolute; left: 16mm; top: 10mm; text-align: left; font-size: 9.5pt; line-height: 1.7; opacity: .85; }
+  .grain { height: 3mm; background: repeating-linear-gradient(90deg, var(--oak) 0 22mm, var(--bronze) 22mm 30mm, var(--oak) 30mm 55mm, #7d4f28 55mm 60mm); }
+  main { padding: 6mm 16mm 0; }
+  .to { display: flex; gap: 10mm; font-size: 10pt; color: var(--muted); margin-bottom: 4mm; }
+  .to span { border-bottom: 1px solid var(--sand); padding: 0 1mm 0.5mm; min-width: 55mm; display: inline-block; }
+  h2 { font-family: 'Frank Ruhl Libre', serif; font-size: 14pt; font-weight: 700; color: var(--oak); margin: 0 0 2.2mm; display: flex; align-items: center; gap: 3mm; }
+  h2::before { content: ""; width: 6mm; height: 2px; background: var(--bronze); }
+  section { margin-bottom: 4.5mm; }
+  .cards { display: grid; grid-template-columns: 1.15fr 1fr; gap: 5mm; }
+  .card { background: var(--cream); border-radius: 3mm; padding: 3.5mm 5mm; }
+  .card h3 { font-size: 11pt; font-weight: 700; margin-bottom: 2mm; }
+  .hours li { list-style: none; display: flex; justify-content: space-between; padding: 0.8mm 0; border-bottom: 1px dashed #d8c9b0; }
+  .hours li:last-child { border-bottom: 0; }
+  .hours b { font-weight: 500; color: var(--oak); }
+  .big { font-family: 'Frank Ruhl Libre', serif; font-size: 22pt; font-weight: 900; color: var(--walnut); line-height: 1.1; }
+  .big small { font-family: 'Heebo'; font-size: 10pt; font-weight: 400; color: var(--muted); }
+  .when { display: flex; flex-direction: column; gap: 1.8mm; }
+  .when .row { display: flex; gap: 3mm; align-items: baseline; }
+  .when .lbl { color: var(--muted); font-size: 9.5pt; min-width: 18mm; }
+  table { width: 100%; border-collapse: collapse; font-size: 10.5pt; }
+  th { background: var(--sand); text-align: right; font-weight: 700; padding: 1.6mm 3mm; font-size: 9.5pt; }
+  th:last-child, td:last-child { text-align: left; white-space: nowrap; }
+  td { padding: 1.5mm 3mm; border-bottom: 1px solid var(--sand); vertical-align: top; }
+  td .d { display: inline; margin-right: 2mm; color: var(--muted); font-size: 9pt; }
+  tr.total td { background: var(--walnut); color: var(--cream); font-weight: 700; border: 0; font-size: 11.5pt; }
+  tr.total td .d { color: #cdbca3; }
+  .note { font-size: 9pt; color: var(--muted); margin-top: 2mm; }
+  .terms { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5mm 5mm; }
+  .term { border-right: 3px solid var(--bronze); padding: 1mm 3.5mm 1mm 0; }
+  .term h4 { font-size: 10.5pt; font-weight: 700; }
+  .term p { font-size: 9.6pt; color: #4a3b2e; }
+  .term.alert { border-color: #a5432a; }
+  .term.alert h4 { color: #a5432a; }
+  .sign { display: flex; gap: 12mm; margin-top: 9mm; }
+  .sign div { flex: 1; border-top: 1px solid var(--walnut); padding-top: 1.5mm; font-size: 9pt; color: var(--muted); }
+  footer { position: absolute; bottom: 0; left: 0; right: 0; background: var(--cream); padding: 4mm 16mm; font-size: 8.5pt; color: var(--muted); display: flex; justify-content: space-between; }
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <div class="brand">הנגרייה</div>
+    <h1>הצעת מחיר – סדנת נגרות שבועית</h1>
+    <div class="sub">מפגש שבועי קבוצתי, כולל הנחיה, חומרים, ציוד והכנת הסדנא</div>
+    <div class="meta">תאריך: 06.10.2026<br>תוקף ההצעה: 30 יום</div>
+  </header>
+  <div class="grain"></div>
+
+  <main>
+    <div class="to">
+      <div>לכבוד: <span>&nbsp;</span></div>
+      <div>איש/אשת קשר: <span>&nbsp;</span></div>
+    </div>
+
+    <section>
+      <h2>מבנה הסדנא</h2>
+      <div class="cards">
+        <div class="card">
+          <h3>6 שעות עבודה למפגש</h3>
+          <ul class="hours">
+            <li><span>הנחיית הסדנא</span><b>שעתיים</b></li>
+            <li><span>נסיעה לרכישת עצים ומלאי</span><b>שעה</b></li>
+            <li><span>התארגנות לפני וניקיון אחרי</span><b>שעתיים</b></li>
+            <li><span>מפגש צוות שבועי</span><b>שעה</b></li>
+          </ul>
+        </div>
+        <div class="card when">
+          <div class="row"><span class="lbl">תדירות</span><b>מפגש אחד בשבוע</b></div>
+          <div class="row"><span class="lbl">יום</span><b>ימי רביעי</b></div>
+          <div class="row"><span class="lbl">מיקום</span><b>הותיקה</b></div>
+          <div class="row"><span class="lbl">קבוצה</span><b>עד 6 משתתפים</b></div>
+          <div class="big" style="margin-top:2mm">1,300 ₪ <small>+ 100 ₪ למשתתף, למפגש</small></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>פירוט עלויות למפגש</h2>
+      <table>
+        <thead><tr><th>רכיב</th><th>מחיר</th></tr></thead>
+        <tbody>
+          <tr><td>שעות עבודה והנחיה<span class="d">· 6 שעות: הנחיה, רכש, התארגנות, ניקיון ומפגש צוות</span></td><td>1,000 ₪</td></tr>
+          <tr><td>עלות אחזקה<span class="d">· שכירות, חשמל, ביטוח וכו׳</span></td><td>150 ₪</td></tr>
+          <tr><td>בלאי ציוד<span class="d">· מסורית גקסון, ניירות שיוף, ברגים וכו׳</span></td><td>150 ₪</td></tr>
+          <tr><td>תקציב עץ<span class="d">· לכל משתתף; פרויקטים גדולים יתומחרו בנפרד לפי מחיר עלות החומרים</span></td><td>100 ₪ × משתתף</td></tr>
+          <tr class="total"><td>סה״כ למפגש עם 6 משתתפים<span class="d">· 1,300 ₪ + 6 × 100 ₪</span></td><td>1,900 ₪</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>תנאי ביטול ותנאים כלליים</h2>
+      <div class="terms">
+        <div class="term"><h4>ביטול מלא של הסדנא</h4><p>ביטול עד 48 שעות לפני מועד הסדנא – ללא חיוב.</p></div>
+        <div class="term alert"><h4>ביטול מאוחר ללא הודעה</h4><p>ביטול בפחות מ־24 שעות לפני מועד הסדנא ללא הודעה – יחויב בעלות של 600 ₪.</p></div>
+        <div class="term"><h4>מספר המשתתפים</h4><p>הסדנא מתוכננת ומוכנה מראש בהתאם למספר המשתתפים שסוכם, עד 6 משתתפים.</p></div>
+        <div class="term"><h4>הפחתת מספר המשתתפים</h4><p>יש לעדכן על שינוי במספר המשתתפים עד 24 שעות לפני הסדנא.</p></div>
+        <div class="term" style="grid-column:1/-1"><h4>אי הגעה ללא עדכון מראש</h4><p>במקרה שבו סוכם על 6 משתתפים ובפועל הגיעו פחות, ללא עדכון של 24 שעות לפני, החיוב יישאר בהתאם למספר המשתתפים שסוכם מראש – וזאת בשל הכנת ורכישת חומרי הגלם מראש.</p></div>
+      </div>
+    </section>
+
+    <div class="sign">
+      <div>חתימת הלקוח/ה</div>
+      <div>תאריך</div>
+      <div>חתימת הנגרייה</div>
+    </div>
+  </main>
+
+  <footer><span>הנגרייה · nettaamit21@gmail.com</span><span>תודה על ההתעניינות – נשמח ליצור יחד!</span></footer>
+</div>
+</body>
+</html>
