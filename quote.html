@@ -37,6 +37,10 @@
     --bad: #AE3E2A;
     --bad-bg: rgba(174, 62, 42, .10);
     --scrim: rgba(20, 14, 10, .45);
+    --split-cost: #CDB89A;
+    --split-fixed: #A3958A;
+    --split-out: #B8874A;
+    --split-profit: #3D7A4C;
     --shadow: 0 1px 2px rgba(42, 31, 23, .06), 0 10px 28px -16px rgba(42, 31, 23, .30);
 
     --display: "Frank Ruhl Libre", "David Libre", "Times New Roman", serif;
@@ -54,6 +58,7 @@
       --board: #1E1712; --grid: rgba(212, 159, 92, .06); --grid-2: rgba(212, 159, 92, .12);
       --ok: #82C094; --ok-bg: rgba(130, 192, 148, .12); --warn: #E6AE52; --warn-bg: rgba(230, 174, 82, .13);
       --bad: #EE8A72; --bad-bg: rgba(238, 138, 114, .12); --scrim: rgba(0, 0, 0, .6);
+      --split-cost: #5E4D3C; --split-fixed: #75685C; --split-out: #C99561; --split-profit: #82C094;
       --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 10px 28px -14px rgba(0, 0, 0, .6);
       color-scheme: dark;
     }
@@ -67,6 +72,7 @@
     --board: #1E1712; --grid: rgba(212, 159, 92, .06); --grid-2: rgba(212, 159, 92, .12);
     --ok: #82C094; --ok-bg: rgba(130, 192, 148, .12); --warn: #E6AE52; --warn-bg: rgba(230, 174, 82, .13);
     --bad: #EE8A72; --bad-bg: rgba(238, 138, 114, .12); --scrim: rgba(0, 0, 0, .6);
+      --split-cost: #5E4D3C; --split-fixed: #75685C; --split-out: #C99561; --split-profit: #82C094;
     --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 10px 28px -14px rgba(0, 0, 0, .6);
     color-scheme: dark;
   }
@@ -214,6 +220,28 @@
   .seg button:first-child { border-inline-start: 0; }
   .seg button:hover { color: var(--ink); }
   .seg button.on { background: var(--surface-2); color: var(--ink); font-weight: 500; }
+  .board.building { border-color: var(--oak); box-shadow: inset 0 0 0 1px var(--oak); }
+  .board.building .board-canvas { max-height: min(52vh, 480px); }
+  @media (max-width: 900px) {
+    .board.building { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 6; }
+    .board.building .board-canvas { max-height: 36vh; min-height: 190px; }
+  }
+  .v3d-move { position: absolute; top: 10px; inset-inline-end: 10px; background: var(--ink); color: var(--paper); padding: 3px 10px; border-radius: 12px; font-size: .8rem; pointer-events: none; font-variant-numeric: tabular-nums; }
+  .build { border: 1px solid var(--oak); border-radius: var(--radius); background: var(--surface); padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
+  .build-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .build-head b { font-size: .98rem; font-weight: 600; }
+  .build-steps { margin: 0; padding-inline-start: 22px; font-size: .88rem; color: var(--muted); display: flex; flex-direction: column; gap: 5px; }
+  .build-steps b { color: var(--ink); font-weight: 600; }
+  .build-row { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; }
+  .build-row > .lbl { min-width: 54px; }
+  .build-row .f .cell { width: 80px; }
+  .build .state { font-weight: 500; font-size: .88rem; }
+  .pads { display: flex; flex-wrap: wrap; gap: 6px 14px; }
+  .pad { display: inline-flex; gap: 4px; }
+  .pad .btn { min-width: 76px; }
+  .unplaced { display: flex; flex-direction: column; gap: 2px; border-top: 1px solid var(--line); padding-top: 8px; }
+  .unplaced .row { padding: 4px 0; border-bottom: 1px dashed var(--line); font-size: .86rem; }
+  .unplaced .row > span { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
   .dimsline { font-size: .86rem; color: var(--muted); }
   .dimsline b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
 
@@ -230,6 +258,7 @@
   .cell:focus { border-color: var(--oak); outline: none; background: var(--surface); }
   select.cell { padding-block: 0; cursor: pointer; }
   .cell.ltr { direction: ltr; text-align: left; }
+  .cell.derived { background: transparent; border-color: var(--line); color: var(--muted); }
   .w-code { width: 46px; text-align: center !important; }
   .w-name { min-width: 140px; }
   .w-n { width: 62px; }
@@ -310,6 +339,16 @@
   .sum-row.strong { font-weight: 600; border-bottom: 1px solid var(--line-2); }
   .sum-row.total { font-size: 1.15rem; font-weight: 700; border-bottom: 0; padding-top: 10px; }
   .xrow { display: flex; gap: 6px; align-items: center; }
+  .split { margin-top: 12px; padding: 12px; border-radius: 6px; background: var(--surface-2); display: flex; flex-direction: column; gap: 6px; }
+  .split-head { font-size: .82rem; color: var(--muted); }
+  .split-bar { display: flex; height: 12px; border-radius: 6px; overflow: hidden; gap: 2px; margin-bottom: 4px; }
+  .split-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: .86rem; }
+  .split-row > span:first-child { display: inline-flex; align-items: center; gap: 6px; }
+  .split-row .v { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .split-row.strong { font-weight: 600; }
+  .qpct { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; font-size: .86rem; color: var(--muted); }
+  .qpct label { display: inline-flex; align-items: center; gap: 6px; }
+  .qpct .pctbox .cell { width: 60px; }
   .xrow .cell { flex: 1; }
   .xrow .pctbox .cell { flex: none; }
 
@@ -431,6 +470,22 @@
     return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
   }
   function roundUp(x, step) { return step > 0 ? Math.ceil(x / step - 1e-9) * step : Math.round(x * 100) / 100; }
+  function fmtNum(v) { var r = Math.round(v * 100) / 100; return String(Object.is(r, -0) ? 0 : r); }
+  /* Shift a size or position formula by a number of cm, keeping it a formula:
+     "12" + 5 → "17", "L-T" + 5 → "L-T+5", "L-T+5" − 5 → "L-T". */
+  function bumpExpr(src, delta) {
+    delta = Math.round(delta * 100) / 100;
+    var s = String(src == null ? '' : src).trim() || '0';
+    if (!delta) return s;
+    if (/^-?\d+(\.\d+)?$/.test(s)) return fmtNum(parseFloat(s) + delta);
+    var head = s, k = 0, m = /^(.*?)\s*([+-])\s*(\d+(?:\.\d+)?)$/.exec(s);
+    if (m && m[1] && !/[-+*/(,]$/.test(m[1].trim()) && (m[1].match(/\(/g) || []).length === (m[1].match(/\)/g) || []).length) {
+      head = m[1].trim(); k = (m[2] === '-' ? -1 : 1) * parseFloat(m[3]);
+    }
+    k = Math.round((k + delta) * 100) / 100;
+    return k === 0 ? head : head + (k > 0 ? '+' : '-') + fmtNum(Math.abs(k));
+  }
+  function wrapExpr(e) { e = String(e).trim(); return /^[A-Za-z_]\w*$|^\d+(\.\d+)?$/.test(e) ? e : '(' + e + ')'; }
   function textOn(hex) {
     var m = /^#?([0-9a-f]{6})$/i.exec(hex || '');
     if (!m) return '#1f1812';
@@ -535,6 +590,7 @@
     return Object.assign({ id: uid('p'), code: 'A', name: '', n: '1', n2: '1', t: '2', w: '10', l: '50', orient: 'X-flat', x: '0', y: '0', z: '0', dx: '0', dy: '0', dz: '0', dx2: '0', dy2: '0', dz2: '0', placed: true, profile: '' }, o);
   }
   var CM = 'ס״מ';
+  var FARM_LABEL = 'תשלום לחווה';
   var HEIGHT_OPTS = [{ v: 10, label: '12 ' + CM }, { v: 15, label: '17 ' + CM }, { v: 20, label: '22 ' + CM }];
   var TEMPLATES = [
     {
@@ -697,7 +753,7 @@
     if (!boxes.length) { draw = layoutBoxes(parts); layout = draw.length > 0; }
     var bb = bboxOf(boxes);
     return {
-      vars: vars, paramErr: paramErr, parts: parts, boxes: draw, layout: layout, unplaced: unplaced,
+      vars: vars, paramErr: paramErr, parts: parts, boxes: draw, placedBoxes: boxes, layout: layout, unplaced: unplaced,
       dims: bb ? { W: bb.max[0] - bb.min[0], D: bb.max[1] - bb.min[1], H: bb.max[2] - bb.min[2] } : null
     };
   }
@@ -723,6 +779,12 @@
       mx[0] = Math.max(mx[0], b.x + b.sx); mx[1] = Math.max(mx[1], b.y + b.sy); mx[2] = Math.max(mx[2], b.z + b.sz);
     });
     return { min: mn, max: mx };
+  }
+  function colorList(list, vivid) { return list.map(function (b) { return Object.assign({}, b, { color: partColor(b.code, b.idx, vivid) }); }); }
+  function boxesSig(list, vivid) {
+    return (vivid ? 'v' : 'w') + list.map(function (b) {
+      return [b.x, b.y, b.z, b.sx, b.sy, b.sz].map(function (v) { return Math.round(v * 10); }).join(',') + b.code + b.pid;
+    }).join(';');
   }
   function coloredBoxes(E, vivid) { return E.boxes.map(function (b) { return Object.assign({}, b, { color: partColor(b.code, b.idx, vivid) }); }); }
   function modelSig(E, vivid) {
@@ -760,6 +822,10 @@
     });
     return { beams: beams, tooLong: tooLong };
   }
+  /* A beam is priced per beam or per meter, whichever was typed last; the other is derived. */
+  function profPPM(p) { var len = num(p.len); return p.basis === 'meter' ? num(p.ppm) : (len > 0 ? num(p.price) / (len / 100) : 0); }
+  function profPrice(p) { return p.basis === 'meter' ? num(p.ppm) * num(p.len) / 100 : num(p.price); }
+  function profNoPrice(p) { return isBlank(p.basis === 'meter' ? p.ppm : p.price); }
   function computeWood(items, evals, prices, vivid) {
     var profs = prices.profiles || [];
     var kerf = Math.max(0, num(prices.kerf)), trim = Math.max(0, num(prices.trim)), waste = Math.max(0, num(prices.waste)) / 100;
@@ -780,8 +846,7 @@
       var totalLen = g.pieces.reduce(function (a, p) { return a + p.len * p.count; }, 0);
       var count = g.pieces.reduce(function (a, p) { return a + p.count; }, 0);
       if (!g.prof) { missingN += count; results.push(Object.assign(g, { missing: true, totalLen: totalLen, count: count, cost: 0 })); return; }
-      var stock = num(g.prof.len), price = num(g.prof.price);
-      var ppm = stock > 0 ? price / (stock / 100) : 0;
+      var stock = num(g.prof.len), price = profPrice(g.prof), ppm = profPPM(g.prof);
       var pack = stock > 0 ? packBeams(g.pieces, stock, kerf, trim) : { beams: [], tooLong: g.pieces.slice() };
       var costBeams = pack.beams.length * price;
       var cutLen = g.pieces.reduce(function (a, p) { return a + (p.len + kerf) * p.count; }, 0);
@@ -791,7 +856,7 @@
       var util = pack.beams.length && stock ? used / (pack.beams.length * stock) : 0;
       g.pieces.forEach(function (p) { if (totalLen > 0) alloc[p.itemId] = (alloc[p.itemId] || 0) + cost * (p.len * p.count) / totalLen; });
       total += cost; buyCost += costBeams; meterCost += costMeters; beamsN += pack.beams.length;
-      results.push(Object.assign(g, { missing: false, stock: stock, price: price, ppm: ppm, pack: pack, costBeams: costBeams, costMeters: costMeters, cost: cost, totalLen: totalLen, count: count, util: util, sample: !!g.prof.sample, noPrice: isBlank(g.prof.price) }));
+      results.push(Object.assign(g, { missing: false, stock: stock, price: price, ppm: ppm, pack: pack, costBeams: costBeams, costMeters: costMeters, cost: cost, totalLen: totalLen, count: count, util: util, sample: !!g.prof.sample, noPrice: profNoPrice(g.prof) }));
     });
     results.sort(function (a, b) { return (a.t - b.t) || (a.w - b.w); });
     var tooLong = 0, noPrice = 0;
@@ -804,6 +869,8 @@
      ========================================================= */
   function computePricing(q, wood, settings) {
     var pr = q.pricing, rateDef = num(settings.rate);
+    // Profit is a share of the price ("margin") or a markup on cost; the percentage lines
+    // (the farm's share and the like) are shares of the price that get paid out.
     var p = num(pr.profit) / 100, margin = pr.profitMode === 'margin';
     var extraP = (pr.extras || []).reduce(function (a, e) { return a + num(e.pct); }, 0) / 100;
     var step = num(pr.round);
@@ -815,8 +882,9 @@
       var hoursU = (item.labor || []).reduce(function (a, l) { return a + num(l.hours); }, 0);
       var laborU = (item.labor || []).reduce(function (a, l) { return a + num(l.hours) * (isBlank(l.rate) ? rateDef : num(l.rate)); }, 0);
       var direct = woodC + (matU + laborU) * Q;
-      var base = margin ? (p < 0.95 ? direct / (1 - p) : direct * 20) : direct * (1 + p);
-      var profit = base - direct, extraAmt = base * extraP, raw = base + extraAmt;
+      var keep = margin ? 1 - p - extraP : 1 - extraP;
+      var raw = keep > 0.05 ? direct * (margin ? 1 : 1 + p) / keep : direct * 20;
+      var profit = margin ? raw * p : direct * p, extraAmt = raw * extraP;
       var unit = Q > 0 ? roundUp(raw / Q, step) : 0;
       var line = unit * Q;
       var o = { id: item.id, name: item.name, Q: Q, wood: woodC, mat: matU * Q, labor: laborU * Q, hours: hoursU * Q, direct: direct, profit: profit, extraAmt: extraAmt, raw: raw, unit: unit, line: line, rounding: line - raw, directUnit: Q ? direct / Q : 0 };
@@ -831,11 +899,15 @@
     var vatRate = pr.vatOn ? num(pr.vat) / 100 : 0;
     var vat = beforeVat * vatRate;
     var direct = sum('direct'), profit = sum('profit'), rounding = sum('rounding');
-    var realProfit = profit + rounding - discount;
+    // What actually leaves the price before VAT: costs, pass-through extras, and each percentage line on the final amount.
+    var paidOut = (pr.extras || []).map(function (e) { return { label: e.label, pct: num(e.pct), amount: beforeVat * num(e.pct) / 100 }; });
+    var paidOutTotal = paidOut.reduce(function (a, x) { return a + x.amount; }, 0);
+    var realProfit = beforeVat - direct - fixed - paidOutTotal;
     return {
       items: items, byId: byId, wood: sum('wood'), mat: sum('mat'), labor: sum('labor'), hours: sum('hours'), direct: direct,
-      profit: profit, extraAmt: sum('extraAmt'), rounding: rounding, fixed: fixed, itemsTotal: itemsTotal, subtotal: subtotal,
-      discount: discount, beforeVat: beforeVat, vatRate: vatRate, vat: vat, total: beforeVat + vat, realProfit: realProfit,
+      profit: profit, extraAmt: sum('extraAmt'), extraP: extraP, rounding: rounding, fixed: fixed, itemsTotal: itemsTotal, subtotal: subtotal,
+      discount: discount, beforeVat: beforeVat, vatRate: vatRate, vat: vat, total: beforeVat + vat,
+      paidOut: paidOut, paidOutTotal: paidOutTotal, realProfit: realProfit,
       marginPct: beforeVat > 0 ? realProfit / beforeVat : 0
     };
   }
@@ -880,7 +952,7 @@
       id: uid('q'), no: no, title: '', date: todayISO(), validDays: String(settings.validDays || '14'),
       customer: { name: '', phone: '', email: '', address: '' },
       items: [], extras: [],
-      pricing: { profit: '30', profitMode: 'markup', extras: [{ id: uid('x'), label: 'אחוזי הכנסה', pct: '0' }], round: '5', discount: '0', vatOn: true, vat: '18' },
+      pricing: { v: 2, profit: '30', profitMode: 'margin', extras: [{ id: uid('x'), label: FARM_LABEL, pct: '0' }], round: '5', discount: '0', vatOn: true, vat: '18' },
       terms: settings.terms || '', updatedAt: 0
     };
   }
@@ -904,6 +976,12 @@
     return obj;
   }
   function fixQuote(q) {
+    if (q && q.pricing && q.pricing.v !== 2) {
+      // v2: profit is taken from the price by default, and the old "income" line is the farm's share.
+      (q.pricing.extras || []).forEach(function (x) { if (x.label === 'אחוזי הכנסה') x.label = FARM_LABEL; });
+      q.pricing.profitMode = 'margin';
+      q.pricing.v = 2;
+    }
     q = defaults(q, newQuote(q && q.no || 1001));
     q.items = (q.items || []).map(function (it) {
       it = defaults(it, itemFromTemplate({ name: 'מוצר', params: [], parts: [] }));
@@ -918,7 +996,7 @@
     if (g === 'current') return fixQuote(data);
     return data;
   }
-  function defaultUI() { return { tab: 'design', sel: null, selPart: null, dims: true, vivid: false, photo: false, place: {}, hideSample: false }; }
+  function defaultUI() { return { tab: 'design', sel: null, selPart: null, dims: true, vivid: false, photo: false, place: {}, hideSample: false, build: false, step: '5' }; }
 
   var S = {
     prices: fixGroup('prices', LS.get('prices')),
@@ -932,7 +1010,7 @@
 
   function groupData(g) { return g === 'prices' ? S.prices : g === 'settings' ? S.settings : g === 'current' ? S.quote : g === 'saved' ? S.saved : g === 'library' ? S.library : null; }
   function setGroup(g, v) { if (g === 'prices') S.prices = v; else if (g === 'settings') S.settings = v; else if (g === 'current') S.quote = v; }
-  function uiSnapshot() { return { tab: S.ui.tab, sel: S.ui.sel, dims: S.ui.dims, vivid: S.ui.vivid, photo: S.ui.photo, place: S.ui.place, hideSample: S.ui.hideSample }; }
+  function uiSnapshot() { return { tab: S.ui.tab, sel: S.ui.sel, dims: S.ui.dims, vivid: S.ui.vivid, photo: S.ui.photo, place: S.ui.place, hideSample: S.ui.hideSample, build: S.ui.build, step: S.ui.step }; }
 
   var FORCE = function () {};
   var dirty = new Set(), saveTimer = null;
@@ -1177,9 +1255,12 @@
     this.edgeMat = new T.LineBasicMaterial({ color: 0x2e2117, transparent: true, opacity: 0.55 });
     this.selEdge = new T.LineBasicMaterial({ color: 0x7a3f0f });
     this.az = -0.62; this.elev = 0.5; this.zoom = 1; this.fitHalf = 50;
-    this.target = new T.Vector3(); this.size = { W: 0, D: 0, H: 0 }; this.R = 50; this.z0 = 0; this.has = false;
+    this.target = new T.Vector3(); this.size = { W: 0, D: 0, H: 0 }; this.R = 50; this.has = false;
+    this.cx = 0; this.cy = 0; this.box3 = null; this.centered = false; this.lockFit = false; this.lastBB = null;
     this.showDims = true; this.labels = []; this.w = 0; this.h = 0; this.sel = null; this.onPick = null;
+    this.buildMode = false; this.boxesModel = []; this.mv = null; this.onMoveEnd = null;
     if (!this.off) {
+      this.tag = document.createElement('div'); this.tag.className = 'v3d-move'; this.tag.hidden = true; this.el.appendChild(this.tag);
       this.bind();
       var self = this;
       if (window.ResizeObserver) { this.ro = new ResizeObserver(function () { self.resize(); }); this.ro.observe(this.el); }
@@ -1198,19 +1279,30 @@
       m.children.forEach(function (c) { c.geometry.dispose(); });
     }
   };
+  /* Centre the view on a bounding box. While building, the centre stays put so parts don't jump as they move. */
+  Viewer.prototype.recenter = function (bb) {
+    this.cx = (bb.min[0] + bb.max[0]) / 2; this.cy = (bb.min[1] + bb.max[1]) / 2;
+    this.target.set(0, (bb.min[2] + bb.max[2]) / 2, 0);
+    this.centered = true;
+  };
   Viewer.prototype.setModel = function (boxes, opts) {
     var T = window.THREE;
     opts = opts || {};
     this.clearModel();
+    this.boxesModel = boxes;
     if (opts.reset) { this.az = -0.62; this.elev = 0.5; this.zoom = 1; }
     this.has = boxes.length > 0;
-    if (!this.has) { this.refresh(); return; }
+    if (!this.has) { this.box3 = null; this.centered = false; this.refresh(); return; }
     var bb = bboxOf(boxes), mn = bb.min, mx = bb.max;
-    var cx = (mn[0] + mx[0]) / 2, cy = (mn[1] + mx[1]) / 2;
+    this.lastBB = bb;
+    var outside = this.lockFit && this.centered && !this.fitsView(bb);
+    var refit = opts.reset || !this.lockFit || !this.centered || outside;
+    if (outside) this.zoom = Math.min(this.zoom, 1);
+    if (refit) this.recenter(bb);
+    var cx = this.cx, cy = this.cy;
     this.size = { W: mx[0] - mn[0], D: mx[1] - mn[1], H: mx[2] - mn[2] };
-    this.z0 = mn[2];
+    this.box3 = { x0: mn[0] - cx, x1: mx[0] - cx, zf: -(mn[1] - cy), zb: -(mx[1] - cy), y0: mn[2], y1: mx[2] };
     this.R = Math.max(this.size.W, this.size.D, this.size.H, 1) / 2;
-    this.target.set(0, (mn[2] + mx[2]) / 2, 0);
     for (var i = 0; i < boxes.length; i++) {
       var b = boxes[i];
       var g = new T.BoxGeometry(Math.max(b.sx, 0.01), Math.max(b.sz, 0.01), Math.max(b.sy, 0.01));
@@ -1221,12 +1313,23 @@
       this.model.add(mesh);
     }
     var R = this.R;
-    this.ground.position.set(0, this.z0 - 0.02, 0); this.ground.scale.set(R * 14, R * 14, 1);
+    this.ground.position.set(0, Math.min(0, mn[2]) - 0.02, 0); this.ground.scale.set(R * 16, R * 16, 1);
     this.sun.position.set(-R * 1.2, this.target.y + R * 3, R * 1.8); this.sun.target.position.copy(this.target);
     var sc = this.sun.shadow.camera;
-    sc.left = -R * 2.4; sc.right = R * 2.4; sc.top = R * 2.4; sc.bottom = -R * 2.4; sc.near = 0.1; sc.far = R * 14; sc.updateProjectionMatrix();
+    sc.left = -R * 2.6; sc.right = R * 2.6; sc.top = R * 2.6; sc.bottom = -R * 2.6; sc.near = 0.1; sc.far = R * 14; sc.updateProjectionMatrix();
     this.applyHighlight();
-    this.fit(); this.refresh();
+    if (refit) this.fit();
+    this.refresh();
+  };
+  /* While building the view stays still, unless a part would end up outside it. */
+  Viewer.prototype.fitsView = function (bb) {
+    if (!this.w || !this.h) return false;
+    var T = window.THREE, v = new T.Vector3(), cx = this.cx, cy = this.cy;
+    for (var a = 0; a < 2; a++) for (var b = 0; b < 2; b++) for (var c = 0; c < 2; c++) {
+      v.set((a ? bb.max[0] : bb.min[0]) - cx, b ? bb.max[2] : bb.min[2], -((c ? bb.max[1] : bb.min[1]) - cy)).project(this.cam);
+      if (Math.abs(v.x) > 0.94 || Math.abs(v.y) > 0.94) return false;
+    }
+    return true;
   };
   Viewer.prototype.dimOff = function () { return Math.max(3, this.R * 0.13); };
   Viewer.prototype.updateCam = function () {
@@ -1239,11 +1342,11 @@
     this.cam.updateProjectionMatrix(); this.cam.updateMatrixWorld();
   };
   Viewer.prototype.fit = function () {
-    var T = window.THREE;
-    if (!this.has) { this.fitHalf = 50; this.updateCam(); return; }
+    var T = window.THREE, B = this.box3;
+    if (!this.has || !B) { this.fitHalf = 50; this.updateCam(); return; }
     this.fitHalf = 1; this.updateCam();
-    var W = this.size.W, D = this.size.D, H = this.size.H, off = this.showDims ? this.dimOff() * 1.5 : 0;
-    var xs = [-W / 2 - off, W / 2 + off], ys = [this.z0, this.z0 + H], zs = [-D / 2 - off, D / 2 + off];
+    var off = this.showDims ? this.dimOff() * 1.5 : 0;
+    var xs = [B.x0 - off, B.x1 + off], ys = [B.y0, B.y1], zs = [B.zb - off, B.zf + off];
     var inv = this.cam.matrixWorldInverse, v = new T.Vector3(), mx = 0, my = 0;
     for (var a = 0; a < 2; a++) for (var b = 0; b < 2; b++) for (var c = 0; c < 2; c++) {
       v.set(xs[a], ys[b], zs[c]).applyMatrix4(inv); mx = Math.max(mx, Math.abs(v.x)); my = Math.max(my, Math.abs(v.y));
@@ -1263,9 +1366,9 @@
     for (var i = 0; i < kids.length; i++) { this.dims.remove(kids[i]); kids[i].geometry.dispose(); kids[i].material.dispose(); }
     this.labels.forEach(function (l) { if (l.el) l.el.remove(); });
     this.labels = [];
-    if (!this.showDims || !this.has) return;
-    var W = this.size.W, D = this.size.D, H = this.size.H, off = this.dimOff(), tick = off * 0.3;
-    var y0 = this.z0 + 0.05, y1 = this.z0 + H, x0 = -W / 2, x1 = W / 2, zf = D / 2, zb = -D / 2;
+    if (!this.showDims || !this.has || !this.box3) return;
+    var B = this.box3, W = this.size.W, D = this.size.D, H = this.size.H, off = this.dimOff(), tick = off * 0.3;
+    var y0 = B.y0 + 0.05, y1 = B.y1, x0 = B.x0, x1 = B.x1, zf = B.zf, zb = B.zb;
     var side = Math.sin(this.az) >= 0 ? 1 : -1, se = Math.sin(this.elev), sa = Math.abs(Math.sin(this.az)), ca = Math.abs(Math.cos(this.az));
     var segs = [];
     function add(a, b) { segs.push(a[0], a[1], a[2], b[0], b[1], b[2]); }
@@ -1273,13 +1376,13 @@
       var z = zf + off;
       add([x0, y0, zf], [x0, y0, z + tick]); add([x1, y0, zf], [x1, y0, z + tick]); add([x0, y0, z], [x1, y0, z]);
       add([x0 - tick, y0, z + tick], [x0 + tick, y0, z - tick]); add([x1 - tick, y0, z + tick], [x1 + tick, y0, z - tick]);
-      this.addLabel([0, y0, z], W);
+      this.addLabel([(x0 + x1) / 2, y0, z], W);
     }
     if (sa > 0.18 || se > 0.3) {
       var xs = side > 0 ? x1 : x0, x = xs + side * off;
       add([xs, y0, zf], [x + side * tick, y0, zf]); add([xs, y0, zb], [x + side * tick, y0, zb]); add([x, y0, zf], [x, y0, zb]);
       add([x - tick, y0, zf - tick], [x + tick, y0, zf + tick]); add([x - tick, y0, zb - tick], [x + tick, y0, zb + tick]);
-      this.addLabel([x, y0, 0], D);
+      this.addLabel([x, y0, (zf + zb) / 2], D);
     }
     if (se < 1.25) {
       var hs = side > 0 ? x0 : x1, hx = hs - side * off;
@@ -1309,9 +1412,23 @@
   Viewer.prototype.setDims = function (on) { if (this.showDims === on) return; this.showDims = on; this.fit(); this.refresh(); };
   Viewer.prototype.setView = function (k) {
     var V = { iso: [-0.62, 0.5], front: [0, 0.0001], side: [-Math.PI / 2, 0.0001], top: [0, 1.5607] }[k] || [-0.62, 0.5];
-    this.az = V[0]; this.elev = V[1]; this.zoom = 1; this.fit(); this.refresh();
+    this.az = V[0]; this.elev = V[1]; this.zoom = 1;
+    this.refit();
   };
-  Viewer.prototype.zoomBy = function (f) { this.zoom = clamp(this.zoom * f, 0.4, 6); this.refresh(); };
+  /* Re-centre and re-frame the current model (view buttons, leaving build mode). */
+  Viewer.prototype.refit = function () {
+    if (this.has && this.lastBB) {
+      var oldCx = this.cx, oldCy = this.cy;
+      this.recenter(this.lastBB);
+      var dx = oldCx - this.cx, dy = oldCy - this.cy;
+      this.model.children.forEach(function (m) { m.position.x += dx; m.position.z -= dy; });
+      var bb = this.lastBB;
+      this.box3 = { x0: bb.min[0] - this.cx, x1: bb.max[0] - this.cx, zf: -(bb.min[1] - this.cy), zb: -(bb.max[1] - this.cy), y0: bb.min[2], y1: bb.max[2] };
+      this.sun.target.position.copy(this.target);
+    }
+    this.fit(); this.refresh();
+  };
+  Viewer.prototype.zoomBy = function (f) { this.zoom = clamp(this.zoom * f, 0.3, 6); this.refresh(); };
   Viewer.prototype.applyHighlight = function () {
     var pid = this.sel, self = this;
     this.model.children.forEach(function (m) {
@@ -1321,12 +1438,78 @@
     });
   };
   Viewer.prototype.highlight = function (pid) { this.sel = pid || null; this.applyHighlight(); this.render(); };
-  Viewer.prototype.pick = function (e) {
+  Viewer.prototype.raycaster = function (e) {
     var T = window.THREE, rect = this.renderer.domElement.getBoundingClientRect();
     var v = new T.Vector2((e.clientX - rect.left) / rect.width * 2 - 1, -(e.clientY - rect.top) / rect.height * 2 + 1);
     var rc = new T.Raycaster(); rc.setFromCamera(v, this.cam);
-    var hit = rc.intersectObjects(this.model.children, false)[0];
+    return rc;
+  };
+  Viewer.prototype.hitAt = function (e) { return this.raycaster(e).intersectObjects(this.model.children, false)[0] || null; };
+  Viewer.prototype.pick = function (e) {
+    var hit = this.hitAt(e);
     if (this.onPick) this.onPick(hit ? hit.object.userData.pid : null);
+  };
+  Viewer.prototype.setBuild = function (on) {
+    this.buildMode = !!on; this.lockFit = !!on;
+    this.renderer.domElement.style.touchAction = on ? 'none' : 'pan-y';
+    if (!on) this.refit();
+  };
+  /* Which plane a drag moves a part in: the floor when looking from above, else the plane facing the camera.
+     Model axes: 0 = length (x), 1 = depth (y), 2 = height (z). */
+  Viewer.prototype.dragAxes = function () {
+    if (this.elev >= 0.35) return [1, 1, 0];
+    return Math.abs(Math.cos(this.az)) >= Math.abs(Math.sin(this.az)) ? [1, 0, 1] : [0, 1, 1];
+  };
+  Viewer.prototype.beginMove = function (e, pid, point) {
+    var T = window.THREE, use = this.dragAxes();
+    var normal = !use[2] ? new T.Vector3(0, 1, 0) : !use[1] ? new T.Vector3(0, 0, 1) : new T.Vector3(1, 0, 0);
+    var mine = this.boxesModel.filter(function (b) { return b.pid === pid; });
+    var meshes = this.model.children.filter(function (m) { return m.userData.pid === pid; });
+    this.mv = {
+      pid: pid, use: use, plane: new T.Plane().setFromNormalAndCoplanarPoint(normal, point), start: point.clone(),
+      meshes: meshes, orig: meshes.map(function (m) { return m.position.clone(); }),
+      mine: bboxOf(mine), others: this.boxesModel.filter(function (b) { return b.pid !== pid; }),
+      d: [0, 0, 0], moved: false, sx: e.clientX, sy: e.clientY
+    };
+  };
+  Viewer.prototype.snapAxis = function (a, raw, mv, thr) {
+    var lo = mv.mine.min[a], hi = mv.mine.max[a], best = null, bestErr = thr;
+    var cands = a === 2 ? [0] : [];
+    mv.others.forEach(function (o) { var s = [o.x, o.y, o.z][a], len = [o.sx, o.sy, o.sz][a]; cands.push(s, s + len); });
+    cands.forEach(function (c) {
+      [c - lo, c - hi].forEach(function (dd) { var err = Math.abs(dd - raw); if (err < bestErr) { bestErr = err; best = dd; } });
+    });
+    return best != null ? Math.round(best * 100) / 100 : Math.round(raw * 2) / 2;
+  };
+  Viewer.prototype.moveTo = function (e) {
+    var T = window.THREE, mv = this.mv;
+    if (!mv.moved && Math.abs(e.clientX - mv.sx) + Math.abs(e.clientY - mv.sy) < 4) return;
+    mv.moved = true;
+    var p = new T.Vector3();
+    if (!this.raycaster(e).ray.intersectPlane(mv.plane, p)) return;
+    var w = p.sub(mv.start), d = [w.x, -w.z, w.y];
+    var thr = Math.max(0.75, 10 * (2 * this.fitHalf / this.zoom) / Math.max(this.h, 1));
+    for (var a = 0; a < 3; a++) d[a] = mv.use[a] ? this.snapAxis(a, d[a], mv, thr) : 0;
+    if (mv.mine.min[2] + d[2] < 0) d[2] = -mv.mine.min[2];
+    mv.d = d;
+    mv.meshes.forEach(function (m, i) { var o = mv.orig[i]; m.position.set(o.x + d[0], o.y + d[2], o.z - d[1]); });
+    var names = ['אורך', 'עומק', 'גובה'], txt = [];
+    for (var k = 0; k < 3; k++) if (mv.use[k]) txt.push(names[k] + ' ' + (d[k] > 0 ? '+' : d[k] < 0 ? '−' : '') + fmtDim(Math.abs(d[k])));
+    this.tag.textContent = txt.join(' · ') + ' ' + CM;
+    this.tag.hidden = false;
+    this.render();
+  };
+  Viewer.prototype.endMove = function () {
+    var mv = this.mv;
+    this.mv = null;
+    if (this.tag) this.tag.hidden = true;
+    if (mv && mv.moved && (mv.d[0] || mv.d[1] || mv.d[2]) && this.onMoveEnd) this.onMoveEnd(mv.pid, mv.d);
+  };
+  Viewer.prototype.cancelMove = function () {
+    var mv = this.mv;
+    if (!mv) return;
+    mv.meshes.forEach(function (m, i) { m.position.copy(mv.orig[i]); });
+    this.mv = null; if (this.tag) this.tag.hidden = true; this.render();
   };
   Viewer.prototype.bind = function () {
     var self = this, c = this.renderer.domElement, pts = new Map(), drag = null, pinch = null;
@@ -1334,10 +1517,21 @@
     c.addEventListener('pointerdown', function (e) {
       pts.set(e.pointerId, [e.clientX, e.clientY]);
       if (pts.size === 1) {
-        drag = { x: e.clientX, y: e.clientY, az: self.az, el: self.elev, moved: false };
         try { c.setPointerCapture(e.pointerId); } catch (err) { /* capture not supported */ }
+        if (self.buildMode && (e.button === 0 || e.pointerType !== 'mouse')) {
+          var hit = self.hitAt(e);
+          if (hit) {
+            var pid = hit.object.userData.pid;
+            if (pid !== self.sel && self.onPick) self.onPick(pid);
+            self.beginMove(e, pid, hit.point);
+            drag = null; c.style.cursor = 'move';
+            return;
+          }
+        }
+        drag = { x: e.clientX, y: e.clientY, az: self.az, el: self.elev, moved: false };
         c.style.cursor = 'grabbing';
       } else if (pts.size === 2) {
+        self.cancelMove();
         var p = Array.from(pts.values());
         pinch = { d: Math.hypot(p[0][0] - p[1][0], p[0][1] - p[1][1]), z: self.zoom }; drag = null;
       }
@@ -1345,9 +1539,10 @@
     c.addEventListener('pointermove', function (e) {
       if (!pts.has(e.pointerId)) return;
       pts.set(e.pointerId, [e.clientX, e.clientY]);
+      if (self.mv) { self.moveTo(e); return; }
       if (pinch && pts.size === 2) {
         var p = Array.from(pts.values()), d = Math.hypot(p[0][0] - p[1][0], p[0][1] - p[1][1]);
-        self.zoom = clamp(pinch.z * d / Math.max(pinch.d, 1), 0.4, 6); self.refresh(); return;
+        self.zoom = clamp(pinch.z * d / Math.max(pinch.d, 1), 0.3, 6); self.refresh(); return;
       }
       if (!drag) return;
       var dx = e.clientX - drag.x, dy = e.clientY - drag.y;
@@ -1358,6 +1553,7 @@
     function end(e) {
       var tap = drag && !drag.moved && e.type === 'pointerup';
       pts.delete(e.pointerId);
+      if (self.mv) { if (e.type === 'pointerup') self.endMove(); else self.cancelMove(); }
       if (pts.size < 2) pinch = null;
       if (tap) self.pick(e);
       if (pts.size === 0) { drag = null; c.style.cursor = 'grab'; }
@@ -1365,9 +1561,9 @@
     c.addEventListener('pointerup', end); c.addEventListener('pointercancel', end);
     c.addEventListener('wheel', function (e) {
       if (!e.ctrlKey && !e.metaKey) return;
-      e.preventDefault(); self.zoom = clamp(self.zoom * Math.exp(-e.deltaY * 0.004), 0.4, 6); self.refresh();
+      e.preventDefault(); self.zoom = clamp(self.zoom * Math.exp(-e.deltaY * 0.004), 0.3, 6); self.refresh();
     }, { passive: false });
-    c.addEventListener('dblclick', function () { self.setView('iso'); });
+    c.addEventListener('dblclick', function () { if (!self.buildMode) self.setView('iso'); });
   };
   Viewer.prototype.toImage = function () {
     this.updateCam(); this.buildDims(); this.renderer.render(this.scene, this.cam);
@@ -1539,6 +1735,7 @@
   function selectItem(id) { S.ui.sel = id; S.ui.selPart = null; commit('ui'); }
   function addItemFromTemplate(t) {
     var it = itemFromTemplate(t);
+    if (t.id === 'blank') S.ui.build = true;
     S.quote.items.push(it); S.ui.sel = it.id; S.ui.selPart = null; S.ui.tab = 'design';
     commit('current', 'ui');
     return it;
@@ -1565,22 +1762,146 @@
     S.library.unshift(t); commit('library'); pushListItem('templates', t);
     toast('נשמר בתבניות שלי');
   }
-  function addPart(item) {
+  /* ---------- building the piece: every action can be undone ---------- */
+  var UNDO = {};
+  function pushUndo(item) {
+    var st = UNDO[item.id] || (UNDO[item.id] = []);
+    st.push(clone(item.parts));
+    if (st.length > 40) st.shift();
+  }
+  function undoBuild(item) {
+    var st = UNDO[item.id];
+    if (!st || !st.length) return;
+    item.parts = st.pop();
+    if (S.ui.selPart && !item.parts.some(function (p) { return p.id === S.ui.selPart; })) S.ui.selPart = null;
+    commit('current');
+  }
+  function nextCode(item) {
+    var used = new Set(item.parts.map(function (p) { return String(p.code || '').toUpperCase(); }));
+    for (var c = 65; c < 91; c++) { if (!used.has(String.fromCharCode(c))) return String.fromCharCode(c); }
+    return 'Z';
+  }
+  function besideModel(E) {
+    var bb = E ? bboxOf(E.placedBoxes) : null;
+    return bb ? { x: fmtNum(Math.ceil(bb.max[0] + 5)), y: fmtNum(Math.floor(bb.min[1])) } : { x: '0', y: '0' };
+  }
+  function addPart(item, E) {
     var last = item.parts[item.parts.length - 1];
-    var used = new Set(item.parts.map(function (p) { return p.code; }));
-    var code = 'A';
-    for (var c = 65; c < 91; c++) { if (!used.has(String.fromCharCode(c))) { code = String.fromCharCode(c); break; } }
-    var p = part({ code: code, name: 'חלק חדש', t: last ? last.t : '2', w: last ? last.w : '10', l: '50', placed: item.parts.some(function (x) { return x.placed !== false; }) ? true : false });
+    var placed = !!S.ui.build || !item.parts.length || item.parts.some(function (x) { return x.placed !== false; });
+    var p = part({ code: nextCode(item), name: 'חלק חדש', t: last ? last.t : '2', w: last ? last.w : '10', l: '50', placed: placed });
+    if (placed) { var at = besideModel(E); p.x = at.x; p.y = at.y; }
+    pushUndo(item);
     item.parts.push(p); S.ui.selPart = p.id; commit('current');
   }
-  function dupPart(item, pt) {
+  function partBoxes(E, pid) { return E ? E.placedBoxes.filter(function (b) { return b.pid === pid; }) : []; }
+  function dupPart(item, pt, E) {
     var c = clone(pt); c.id = uid('p');
+    var bb = pt.placed !== false ? bboxOf(partBoxes(E, pt.id)) : null;
+    if (bb) {
+      var sx = bb.max[0] - bb.min[0], sy = bb.max[1] - bb.min[1];
+      if (sy <= sx) c.y = bumpExpr(c.y, sy); else c.x = bumpExpr(c.x, sx);
+    }
+    pushUndo(item);
     item.parts.splice(item.parts.indexOf(pt) + 1, 0, c); S.ui.selPart = c.id; commit('current');
   }
   function delPart(item, pt) {
+    pushUndo(item);
     item.parts.splice(item.parts.indexOf(pt), 1);
     if (S.ui.selPart === pt.id) S.ui.selPart = null;
     commit('current');
+  }
+  function movePart(item, pid, d) {
+    var pt = item.parts.find(function (p) { return p.id === pid; });
+    if (!pt) return;
+    pushUndo(item);
+    pt.x = bumpExpr(pt.x, d[0]); pt.y = bumpExpr(pt.y, d[1]); pt.z = bumpExpr(pt.z, d[2]);
+    commit('current');
+  }
+  var TURN = { 'X-flat': 'Y-flat', 'Y-flat': 'X-flat', 'X-edge': 'Y-edge', 'Y-edge': 'X-edge', 'Z-front': 'Z-side', 'Z-side': 'Z-front' };
+  var STAND = { 'X-flat': 'X-edge', 'X-edge': 'Z-front', 'Z-front': 'X-flat', 'Y-flat': 'Y-edge', 'Y-edge': 'Z-side', 'Z-side': 'Y-flat' };
+  function postureOf(o) { o = ORIENT_MAP[o] ? o : 'X-flat'; return /flat$/.test(o) ? 'flat' : o[0] === 'Z' ? 'stand' : 'edge'; }
+  /* Turn or stand a part up around its middle, keeping its bottom where it is. */
+  function reorient(item, r, next) {
+    var pt = r.pt, o = ORIENT_MAP[pt.orient] ? pt.orient : 'X-flat';
+    var a = orientFn(o)(r.f.t, r.f.w, r.f.l), b = orientFn(next)(r.f.t, r.f.w, r.f.l);
+    pushUndo(item);
+    pt.orient = next;
+    pt.x = bumpExpr(pt.x, (a[0] - b[0]) / 2); pt.y = bumpExpr(pt.y, (a[1] - b[1]) / 2);
+    commit('current');
+  }
+  /* Let a part fall straight down onto whatever is under it (or onto the floor). */
+  function dropPart(item, E, pid, toFloor) {
+    var mine = partBoxes(E, pid);
+    if (!mine.length) return;
+    var others = E.placedBoxes.filter(function (b) { return b.pid !== pid; }), eps = 0.01, delta;
+    if (toFloor) delta = -Math.min.apply(null, mine.map(function (b) { return b.z; }));
+    else {
+      delta = -Infinity;
+      mine.forEach(function (b) {
+        var support = 0;
+        others.forEach(function (o) {
+          var top = o.z + o.sz;
+          if (o.x < b.x + b.sx - eps && o.x + o.sx > b.x + eps && o.y < b.y + b.sy - eps && o.y + o.sy > b.y + eps && top <= b.z + eps) support = Math.max(support, top);
+        });
+        delta = Math.max(delta, support - b.z);
+      });
+    }
+    delta = Math.round(delta * 100) / 100;
+    if (!delta || !isFinite(delta)) { toast(toFloor ? 'החלק כבר על הרצפה' : 'החלק כבר מונח על מה שמתחתיו'); return; }
+    movePart(item, pid, [0, 0, delta]);
+  }
+  var AXES = [{ pos: 'x', step: 'dx', label: 'לאורך', noun: 'האורך', param: 'L' }, { pos: 'y', step: 'dy', label: 'לעומק', noun: 'העומק', param: 'D' }, { pos: 'z', step: 'dz', label: 'לגובה', noun: 'הגובה', param: 'H' }];
+  function copyAxis(pt) {
+    var k = ['dx', 'dy', 'dz'].findIndex(function (k) { var v = String(pt[k] == null ? '' : pt[k]).trim(); return v !== '' && v !== '0'; });
+    return k < 0 ? 0 : k;
+  }
+  function setCopyAxis(item, pt, a) {
+    var cur = copyAxis(pt);
+    if (cur === a) return;
+    var keys = ['dx', 'dy', 'dz'], val = String(pt[keys[cur]] == null ? '' : pt[keys[cur]]).trim();
+    pushUndo(item);
+    keys.forEach(function (k) { pt[k] = '0'; });
+    pt[keys[a]] = val === '' || val === '0' ? '10' : val;
+    commit('current');
+  }
+  /* Spread the copies evenly from one end of the piece to the other, as a formula of the size slider when there is one. */
+  function spreadCopies(item, E, r) {
+    var pt = r.pt, a = copyAxis(pt), ax = AXES[a];
+    var size = wrapExpr(isBlank(pt[orientFn(pt.orient)('t', 'w', 'l')[a]]) ? '0' : pt[orientFn(pt.orient)('t', 'w', 'l')[a]]);
+    var base, start;
+    if (Number.isFinite(E.vars[ax.param])) { base = ax.param; start = '0'; }
+    else {
+      var others = E.placedBoxes.filter(function (b) { return b.pid !== pt.id; });
+      var bb = bboxOf(others.length ? others : E.placedBoxes);
+      if (!bb) return;
+      base = fmtNum(bb.max[a] - bb.min[a]); start = fmtNum(bb.min[a]);
+    }
+    pushUndo(item);
+    if (r.n < 2) pt.n = '2';
+    var nExpr = /^\s*\d+\s*$/.test(String(pt.n)) ? null : wrapExpr(pt.n), n = Math.max(2, r.n);
+    pt[ax.pos] = start;
+    ['dx', 'dy', 'dz'].forEach(function (k) { pt[k] = '0'; });
+    pt[ax.step] = nExpr ? '(' + base + '-' + size + ')/(' + nExpr + '-1)' : (n === 2 ? base + '-' + size : '(' + base + '-' + size + ')/' + (n - 1));
+    commit('current');
+  }
+  function placePart(item, E, r) {
+    var pt = r.pt, at = besideModel(E);
+    pushUndo(item);
+    pt.placed = true;
+    if (!ORIENT_MAP[pt.orient]) pt.orient = 'X-flat';
+    pt.x = at.x; pt.y = at.y; pt.z = '0';
+    if (r.n > 1 && ['dx', 'dy', 'dz'].every(function (k) { return isBlank(pt[k]) || String(pt[k]).trim() === '0'; })) {
+      pt.dy = fmtNum(orientFn(pt.orient)(r.f.t, r.f.w, r.f.l)[1] + 2);
+    }
+    S.ui.selPart = pt.id;
+    commit('current');
+  }
+  function unplacePart(item, pt) { pushUndo(item); pt.placed = false; commit('current'); }
+  function startBuild(pid) {
+    S.ui.build = true;
+    if (pid) S.ui.selPart = pid;
+    commit('ui');
+    setTimeout(function () { var b = document.querySelector('.board'); if (b && b.scrollIntoView) b.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 60);
   }
   function quoteSummary(q) {
     var C = computeFor(q);
@@ -1598,9 +1919,13 @@
   function saveCurrent() { upsertSaved(S.quote); toast('ההצעה נשמרה ברשימת ההצעות'); }
   function startNewQuote() {
     if (!S.quote.sample || num(S.quote.updatedAt) > 0) upsertSaved(S.quote);
-    var no = num(S.settings.nextNo) || 1001;
+    var no = num(S.settings.nextNo) || 1001, prevPricing = clone(S.quote.pricing);
     S.settings.nextNo = no + 1;
     S.quote = newQuote(no, S.settings);
+    // Profit and the farm's share change per project, so a new quote starts from the last ones used.
+    prevPricing.discount = '0';
+    (prevPricing.extras || []).forEach(function (x) { x.id = uid('x'); });
+    S.quote.pricing = Object.assign(S.quote.pricing, prevPricing);
     S.ui.sel = null; S.ui.selPart = null; S.ui.tab = 'design'; S.ui.modal = null;
     commit('current', 'settings', 'ui');
     toast('הצעה חדשה מס׳ ' + no);
@@ -2002,55 +2327,166 @@
   function Viewer3D(props) {
     var item = props.item, E = props.E;
     var host = useRef(null), V = mainViewer();
+    var build = !!S.ui.build;
     var photo = item.photo ? getImage(item.photo) : null;
-    var showPhoto = S.ui.photo && !!photo;
+    var showPhoto = S.ui.photo && !!photo && !build;
+    var list = build ? E.placedBoxes : E.boxes, layout = !build && E.layout;
+    if (V) {
+      V.onPick = function (pid) { S.ui.selPart = pid; FORCE(); };
+      V.onMoveEnd = function (pid, d) { movePart(item, pid, d); };
+    }
     useEffect(function () {
       if (V && host.current) { host.current.appendChild(V.el); V.w = 0; V.resize(); }
       return function () { if (V && V.el.parentNode) V.el.parentNode.removeChild(V.el); };
     }, []);
-    var sig = item.id + '|' + modelSig(E, S.ui.vivid);
+    useEffect(function () { if (V) V.setBuild(build); }, [build]);
+    var sig = item.id + '|' + (build ? 'B' : 'V') + '|' + boxesSig(list, S.ui.vivid);
     useEffect(function () {
       if (!V) return;
-      V.onPick = function (pid) { S.ui.selPart = pid; FORCE(); };
       var reset = V.lastItem !== item.id;
       V.lastItem = item.id;
-      V.showDims = S.ui.dims && !E.layout;
+      V.showDims = S.ui.dims && !layout;
       V.sel = S.ui.selPart;
-      V.setModel(coloredBoxes(E, S.ui.vivid), { reset: reset });
+      V.setModel(colorList(list, S.ui.vivid), { reset: reset });
     }, [sig]);
     useEffect(function () { if (V) V.highlight(S.ui.selPart); }, [S.ui.selPart]);
-    useEffect(function () { if (V) V.setDims(S.ui.dims && !E.layout); }, [S.ui.dims, E.layout]);
+    useEffect(function () { if (V) V.setDims(S.ui.dims && !layout); }, [S.ui.dims, layout]);
     useEffect(function () { if (V && !showPhoto) { V.w = 0; V.resize(); } }, [showPhoto]);
     var selR = E.parts.find(function (r) { return r.pt.id === S.ui.selPart; });
     function tog(k) { S.ui[k] = !S.ui[k]; commit('ui'); }
+    var axes = V ? V.dragAxes() : [1, 1, 0];
+    var dragHint = axes[2] ? (axes[0] ? 'במבט חזית גוררים לאורך ולגובה' : 'במבט צד גוררים לעומק ולגובה') : 'במבט הזה גוררים על הרצפה. ללמעלה ולמטה: מבט חזית או הכפתורים';
     return html`<div class="boardcol">
-      <div class="board">
+      <div class=${'board' + (build ? ' building' : '')}>
         <div class="board-canvas" ref=${host} hidden=${showPhoto || !V}></div>
         ${!V ? html`<div class="board-canvas"><div class="board-empty">השרטוט התלת־ממדי לא נטען בדפדפן הזה. רשימת החיתוכים והמחירים עובדים כרגיל.</div></div>` : null}
         ${showPhoto ? html`<img class="board-photo" src=${photo} alt=${'תמונה של ' + item.name}/>` : null}
-        ${!showPhoto && E.layout ? html`<div class="board-note">לחלקים אין מיקום בהרכבה, לכן הם מוצגים פרוסים כמו רשימת חיתוכים</div>` : null}
-        ${!showPhoto && !E.boxes.length && V ? html`<div class="board-empty">הוסיפו חלקים לרשימה כדי לראות שרטוט</div>` : null}
-        ${!showPhoto && selR ? html`<div class="board-sel">${selR.pt.code} · ${selR.pt.name} · <span class="ltr">${fmtDim(selR.f.t)}×${fmtDim(selR.f.w)}×${fmtDim(selR.f.l)}</span> · ${selR.qty} יח׳</div>` : null}
+        ${!showPhoto && layout ? html`<div class="board-note">לחלקים אין עדיין מיקום, לכן הם מוצגים פרוסים. לחצו "בנייה" כדי להרכיב מהם רהיט.</div>` : null}
+        ${!showPhoto && build && list.length ? html`<div class="board-note">מצב בנייה · גוררים חלק כדי להזיז אותו · ${dragHint}</div>` : null}
+        ${!showPhoto && !list.length && V ? html`<div class="board-empty">${build ? 'עוד אין חלקים בשרטוט. לחצו "+ חלק חדש" או "להוסיף לשרטוט" ליד חלק מהרשימה.' : 'הוסיפו חלקים לרשימה כדי לראות שרטוט'}</div>` : null}
+        ${!showPhoto && selR && !build ? html`<div class="board-sel">${selR.pt.code} · ${selR.pt.name} · <span class="ltr">${fmtDim(selR.f.t)}×${fmtDim(selR.f.w)}×${fmtDim(selR.f.l)}</span> · ${selR.qty} יח׳</div>` : null}
       </div>
       <div class="board-tools">
+        <button type="button" class=${'btn sm' + (build ? '' : ' primary')} aria-pressed=${build} onClick=${function () { if (build) { S.ui.build = false; commit('ui'); } else startBuild(null); }}>${build ? 'סיום בנייה' : 'בנייה והזזת חלקים'}</button>
         <div class="seg" role="group" aria-label="זווית מבט">
           ${[['iso', 'תלת־ממד'], ['front', 'חזית'], ['side', 'צד'], ['top', 'מלמעלה']].map(function (v) {
-            return html`<button type="button" onClick=${function () { if (S.ui.photo) { S.ui.photo = false; commit('ui'); } if (V) V.setView(v[0]); }}>${v[1]}</button>`;
+            return html`<button type="button" onClick=${function () { if (S.ui.photo) { S.ui.photo = false; commit('ui'); } if (V) { V.setView(v[0]); FORCE(); } }}>${v[1]}</button>`;
           })}
         </div>
         <div class="seg" role="group" aria-label="תצוגה">
           <button type="button" class=${S.ui.dims ? 'on' : ''} aria-pressed=${S.ui.dims} onClick=${function () { tog('dims'); }}>מידות</button>
           <button type="button" class=${S.ui.vivid ? 'on' : ''} aria-pressed=${S.ui.vivid} onClick=${function () { tog('vivid'); }}>צבע לכל חלק</button>
-          ${photo ? html`<button type="button" class=${S.ui.photo ? 'on' : ''} aria-pressed=${S.ui.photo} onClick=${function () { tog('photo'); }}>תמונה</button>` : null}
+          ${photo && !build ? html`<button type="button" class=${S.ui.photo ? 'on' : ''} aria-pressed=${S.ui.photo} onClick=${function () { tog('photo'); }}>תמונה</button>` : null}
           <button type="button" aria-label="הגדלה" onClick=${function () { if (V) V.zoomBy(1.25); }}>+</button>
           <button type="button" aria-label="הקטנה" onClick=${function () { if (V) V.zoomBy(0.8); }}>−</button>
         </div>
       </div>
-      <div class="row">
+      ${build ? html`<${BuildPanel} item=${item} E=${E}/>` : html`<div class="row">
         ${E.dims ? html`<span class="dimsline">מידות כוללות <b class="ltr">${dimsText(E)}</b> ${CM} <span class="hint">(אורך × עומק × גובה)</span></span>` : html`<span class="dimsline">אין עדיין מידות כוללות</span>`}
         <span class="hint">גררו לסיבוב · לחיצה על חלק מסמנת אותו בטבלה</span>
+      </div>`}
+    </div>`;
+  }
+
+  /* The building panel: pick a part, then move, turn, stand up, drop and copy it. */
+  function BuildPanel(props) {
+    var item = props.item, E = props.E;
+    var r = E.parts.find(function (x) { return x.pt.id === S.ui.selPart; }) || null;
+    var unplaced = E.parts.filter(function (x) { return x.ok && x.qty > 0 && x.pt.placed === false; });
+    var step = num(S.ui.step) || 5;
+    var canUndo = !!(UNDO[item.id] && UNDO[item.id].length);
+    var head = html`<div class="build-head">
+      <b>${r ? 'החלק שנבחר' : 'בונים את הרהיט'}</b>
+      <div class="actions">
+        <button type="button" class="btn sm" disabled=${!canUndo} onClick=${function () { undoBuild(item); }}>ביטול פעולה</button>
+        <button type="button" class="btn sm" onClick=${function () { addPart(item, E); }}>+ חלק חדש</button>
       </div>
     </div>`;
+    var unplacedList = unplaced.length ? html`<div class="unplaced">
+      <span class="lbl">חלקים מהרשימה שעוד לא בשרטוט</span>
+      ${unplaced.map(function (x) {
+        return html`<div key=${x.pt.id} class="row">
+          <span><span class="sw" style=${'background:' + partColor(x.pt.code, x.idx, S.ui.vivid)}></span> ${x.pt.code} · ${x.pt.name} · <span class="ltr">${fmtDim(x.f.t)}×${fmtDim(x.f.w)}×${fmtDim(x.f.l)}</span> · ${x.qty} יח׳</span>
+          <button type="button" class="btn sm" onClick=${function () { placePart(item, E, x); }}>להוסיף לשרטוט</button>
+        </div>`;
+      })}
+    </div>` : null;
+    if (!r) {
+      return html`<section class="build">
+        ${head}
+        <ol class="build-steps">
+          <li><b>בוחרים חלק:</b> לוחצים עליו בשרטוט או בטבלה, או מוסיפים "+ חלק חדש" ומכניסים לו מידות.</li>
+          <li><b>גוררים אותו בשרטוט</b> למקום. הוא נצמד לקצוות של חלקים אחרים, כדי שיהיה קל ליישר.</li>
+          <li><b>מכוונים בכפתורים</b> שיופיעו כאן: הזזה בסנטימטרים, סיבוב, העמדה, הנחה על מה שמתחת ועותקים.</li>
+        </ol>
+        ${unplacedList}
+      </section>`;
+    }
+    var pt = r.pt, o = ORIENT_MAP[pt.orient] ? pt.orient : 'X-flat', posture = postureOf(o);
+    var standLabel = posture === 'flat' ? 'להעמיד על הצד' : posture === 'edge' ? 'להעמיד זקוף' : 'להשכיב';
+    var ca = copyAxis(pt), nLiteral = /^\s*\d+\s*$/.test(String(pt.n == null ? '' : pt.n));
+    function set(k) { return function (v) { pt[k] = v; commit('current'); }; }
+    function mv(a, sgn) { return function () { var d = [0, 0, 0]; d[a] = sgn * step; movePart(item, pt.id, d); }; }
+    return html`<section class="build">
+      ${head}
+      <div class="build-row">
+        <span class="sw" style=${'background:' + partColor(pt.code, r.idx, S.ui.vivid)}></span>
+        <input class="cell w-code" value=${pt.code} maxlength="3" aria-label="קוד החלק" onInput=${function (e) { pt.code = e.target.value.toUpperCase(); commit('current'); }}/>
+        <input class="cell" style="flex:1;min-width:120px" value=${pt.name} aria-label="שם החלק" onInput=${function (e) { pt.name = e.target.value; commit('current'); }}/>
+        <button type="button" class="ibtn" aria-label="ביטול הבחירה" title="ביטול הבחירה" onClick=${function () { S.ui.selPart = null; FORCE(); }}>${Ico.close()}</button>
+      </div>
+      ${pt.placed === false ? html`<div class="okbox row"><span>החלק הזה עוד לא בשרטוט.</span><button type="button" class="btn sm primary" onClick=${function () { placePart(item, E, r); }}>להוסיף לשרטוט</button></div>` : html`
+      <div class="build-row">
+        <span class="lbl">מידות</span>
+        <label class="f">עובי<${Expr} v=${pt.t} val=${r.f.t} err=${r.errs.t} on=${set('t')} label="עובי"/></label>
+        <label class="f">רוחב<${Expr} v=${pt.w} val=${r.f.w} err=${r.errs.w} on=${set('w')} label="רוחב"/></label>
+        <label class="f">אורך<${Expr} v=${pt.l} val=${r.f.l} err=${r.errs.l} on=${set('l')} label="אורך"/></label>
+      </div>
+      <div class="build-row">
+        <span class="lbl">מצב</span>
+        <span class="state">${ORIENT_MAP[o][1]}</span>
+        <button type="button" class="btn sm" onClick=${function () { reorient(item, r, TURN[o]); }}>סיבוב 90°</button>
+        <button type="button" class="btn sm" onClick=${function () { reorient(item, r, STAND[o]); }}>${standLabel}</button>
+      </div>
+      <div class="build-row">
+        <span class="lbl">הזזה</span>
+        <span class="chips">${['1', '5', '10'].map(function (s) { var on = String(step) === s; return html`<button key=${s} type="button" class=${'chip' + (on ? ' on' : '')} aria-pressed=${on} onClick=${function () { S.ui.step = s; commit('ui'); }}>${s} ${CM}</button>`; })}</span>
+      </div>
+      <div class="pads">
+        <span class="pad"><button type="button" class="btn sm" onClick=${mv(0, 1)}>→ ימינה</button><button type="button" class="btn sm" onClick=${mv(0, -1)}>שמאלה ←</button></span>
+        <span class="pad"><button type="button" class="btn sm" onClick=${mv(1, -1)}>קדימה</button><button type="button" class="btn sm" onClick=${mv(1, 1)}>אחורה</button></span>
+        <span class="pad"><button type="button" class="btn sm" onClick=${mv(2, 1)}>↑ למעלה</button><button type="button" class="btn sm" onClick=${mv(2, -1)}>↓ למטה</button></span>
+      </div>
+      <div class="build-row">
+        <button type="button" class="btn sm" onClick=${function () { dropPart(item, E, pt.id, false); }}>להניח על מה שמתחת</button>
+        <button type="button" class="btn sm" onClick=${function () { dropPart(item, E, pt.id, true); }}>להוריד לרצפה</button>
+      </div>
+      <div class="build-row">
+        <span class="lbl">עותקים</span>
+        ${nLiteral ? html`<${Stepper} id=${'bn-' + pt.id} label="מספר עותקים" min=${1} value=${pt.n} onChange=${function (v) { pt.n = String(Math.max(1, Math.round(num(v)) || 1)); commit('current'); }}/>`
+          : html`<${Expr} v=${pt.n} val=${r.f.n} err=${r.errs.n} on=${set('n')} cls="w-n" label="מספר עותקים"/>`}
+        ${r.n > 1 ? html`
+          <label class="f">בכיוון
+            <select class="cell" value=${String(ca)} onChange=${function (e) { setCopyAxis(item, pt, +e.target.value); }}>
+              ${AXES.map(function (x, i) { return html`<option value=${String(i)}>${x.label}</option>`; })}
+            </select></label>
+          <label class="f">מרחק מתחילת עותק לבא<${Expr} v=${pt[AXES[ca].step]} val=${r.f[AXES[ca].step]} err=${r.errs[AXES[ca].step]} on=${set(AXES[ca].step)} label="מרחק בין עותקים"/></label>
+          <button type="button" class="btn sm" onClick=${function () { spreadCopies(item, E, r); }}>לפרוס על כל ${AXES[ca].noun}</button>` : null}
+      </div>
+      <div class="build-row">
+        <button type="button" class="btn sm" onClick=${function () { dupPart(item, pt, E); }}>שכפול לידו</button>
+        <button type="button" class="btn sm" onClick=${function () { unplacePart(item, pt); }}>הוצאה מהשרטוט</button>
+        <button type="button" class="btn sm danger" onClick=${function () { delPart(item, pt); }}>מחיקה</button>
+      </div>
+      <div class="row">
+        <span class="hint">פינה שמאלית־קדמית־תחתונה: אורך ${fmtDim(r.f.x)} · עומק ${fmtDim(r.f.y)} · גובה ${fmtDim(r.f.z)} ${CM}</span>
+        <button type="button" class="linkbtn" onClick=${function () {
+          S.ui.place[pt.id] = true; commit('ui');
+          setTimeout(function () { var row = document.getElementById('pr-' + pt.id); if (row && row.scrollIntoView) row.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 60);
+        }}>עריכה מדויקת בטבלה</button>
+      </div>`}
+      ${unplacedList}
+    </section>`;
   }
 
   function Expr(props) {
@@ -2087,8 +2523,8 @@
       </td>
       <td class="c-num">${r.qty * Q}</td>
       <td><div class="rowbtns">
-        <button type="button" class=${'ibtn' + (open ? ' on' : '')} title="מיקום בשרטוט" aria-label="מיקום בשרטוט" aria-expanded=${open} onClick=${function () { S.ui.place[pt.id] = !open; commit('ui'); }}>${Ico.move()}</button>
-        <button type="button" class="ibtn" title="שכפול" aria-label="שכפול החלק" onClick=${function () { dupPart(item, pt); }}>${Ico.copy()}</button>
+        <button type="button" class=${'ibtn' + (S.ui.build && sel ? ' on' : '')} title="להזיז בשרטוט" aria-label="להזיז את החלק בשרטוט" onClick=${function () { startBuild(pt.id); }}>${Ico.move()}</button>
+        <button type="button" class="ibtn" title="שכפול" aria-label="שכפול החלק" onClick=${function () { dupPart(item, pt, props.E); }}>${Ico.copy()}</button>
         <button type="button" class="ibtn del" title="מחיקה" aria-label="מחיקת החלק" onClick=${function () { delPart(item, pt); }}>${Ico.trash()}</button>
       </div></td>
     </tr>`];
@@ -2103,6 +2539,7 @@
         <fieldset><legend>מיקום הפינה השמאלית־קדמית־תחתונה</legend>${ex('x', 'X אורך')}${ex('y', 'Y עומק')}${ex('z', 'Z גובה')}</fieldset>
         <fieldset><legend>מרחק בין עותקים</legend>${ex('dx', 'X')}${ex('dy', 'Y')}${ex('dz', 'Z')}</fieldset>
         <fieldset><legend>שורה נוספת של עותקים</legend>${ex('n2', 'כמה שורות')}${ex('dx2', 'X')}${ex('dy2', 'Y')}${ex('dz2', 'Z')}</fieldset>
+        <button type="button" class="linkbtn" onClick=${function () { S.ui.place[pt.id] = false; commit('ui'); }}>סגירה</button>
       </div></td></tr>`);
     }
     return rows;
@@ -2115,14 +2552,14 @@
       <div class="panel-head">
         <div><h3 class="h-sec">רשימת חלקים וחיתוכים</h3><p class="sub">מידות בס״מ: עובי × רוחב × אורך. אפשר להקליד מספר או נוסחה, למשל <span class="var">L-10</span>.</p></div>
         <div class="actions">
-          <button type="button" class="btn sm" onClick=${function () { addPart(item); }}>+ חלק</button>
+          <button type="button" class="btn sm" onClick=${function () { addPart(item, E); }}>+ חלק</button>
           <button type="button" class="btn sm" onClick=${function () { openModal({ type: 'paste', itemId: item.id }); }}>הדבקת רשימת חיתוכים</button>
         </div>
       </div>
-      ${E.unplaced > 0 && !E.layout ? html`<p class="note" style="margin-bottom:8px">${E.unplaced === 1 ? 'חלק אחד' : E.unplaced + ' חלקים'} ללא מיקום בשרטוט. הם נכנסים לחישוב העץ אבל לא מצוירים. לחצו על ${Ico.move()} כדי למקם.</p>` : null}
+      ${E.unplaced > 0 && !E.layout ? html`<p class="note" style="margin-bottom:8px">${E.unplaced === 1 ? 'חלק אחד' : E.unplaced + ' חלקים'} ללא מיקום בשרטוט. הם נכנסים לחישוב העץ אבל לא מצוירים. <button type="button" class="linkbtn" onClick=${function () { startBuild(null); }}>למקם אותם בשרטוט</button></p>` : null}
       ${item.parts.length ? html`<div class="tscroll"><table class="grid">
         <thead><tr><th>קוד</th><th>שם החלק</th><th>כמות</th><th>עובי</th><th>רוחב</th><th>אורך</th><th>קורה מהמחירון</th><th>להזמנה</th><th aria-label="פעולות"></th></tr></thead>
-        <tbody>${E.parts.map(function (r) { return html`<${PartRow} key=${r.pt.id} r=${r} item=${item} Q=${Q}/>`; })}</tbody>
+        <tbody>${E.parts.map(function (r) { return html`<${PartRow} key=${r.pt.id} r=${r} item=${item} Q=${Q} E=${E}/>`; })}</tbody>
       </table></div>` : html`<div class="okbox">אין עדיין חלקים. הוסיפו חלק, או הדביקו רשימת חיתוכים כמו בדף העבודה (למשל <span class="ltr">2-A רגל ספסל 5X15X35</span>).</div>`}
       <div class="vars"><span>פרמטרים לנוסחאות:</span>
         ${vars.map(function (p) { return html`<span title=${p.label}><span class="var">${p.key} = ${fmtDim(E.vars[p.key])}</span> ${p.label}</span>`; })}
@@ -2234,6 +2671,16 @@
     </div>`;
   }
 
+  /* The two numbers that change per project, next to the quote title. */
+  function QuickPercents() {
+    var pr = S.quote.pricing, farm = (pr.extras || [])[0];
+    return html`<div class="qpct" role="group" aria-label="אחוזים להצעה">
+      <label>רווח <span class="pctbox"><input class="cell" inputmode="decimal" value=${pr.profit} aria-label="אחוז רווח" onInput=${function (e) { pr.profit = e.target.value; commit('current'); }}/>%</span>${pr.profitMode === 'margin' ? 'מהמחיר' : 'על העלות'}</label>
+      ${farm ? html`<label>${farm.label || 'אחוז נוסף'} <span class="pctbox"><input class="cell" inputmode="decimal" value=${farm.pct} aria-label=${'אחוז ' + (farm.label || '')} onInput=${function (e) { farm.pct = e.target.value; commit('current'); }}/>%</span></label>` : null}
+      <button type="button" class="linkbtn" onClick=${function () { setTab('costs'); }}>עוד הגדרות</button>
+    </div>`;
+  }
+
   function DesignTab(props) {
     var C = props.C, q = S.quote, item = selItem();
     var E = item ? C.evalById[item.id] : null;
@@ -2245,6 +2692,7 @@
       <div class="qhead">
         <label class="qtitle"><span class="eyebrow">הצעה מס׳ ${q.no}</span>
           <input class="title-in" value=${q.title} placeholder="שם ההצעה, למשל: פינת זולה לגן" onInput=${function (e) { q.title = e.target.value; commit('current'); }}/></label>
+        <${QuickPercents}/>
       </div>
       ${q.items.length ? html`<div class="strip" role="tablist" aria-label="מוצרים בהצעה">
         ${q.items.map(function (it) {
@@ -2268,26 +2716,36 @@
 
   function WoodTab(props) {
     var C = props.C, W = C.wood, pr = S.prices;
-    function setP(p, k) { return function (e) { p[k] = e.target.value; if (k === 'price' || k === 'len' || k === 't' || k === 'w') delete p.sample; commit('prices'); }; }
+    function setP(p, k) {
+      return function (e) {
+        p[k] = e.target.value;
+        if (k === 'price') p.basis = 'beam';
+        if (k === 'ppm') p.basis = 'meter';
+        if (k !== 'note') delete p.sample;
+        commit('prices');
+      };
+    }
     var anySample = pr.profiles.some(function (p) { return p.sample; });
     var missing = W.results.filter(function (r) { return r.missing; });
     var withBeams = W.results.filter(function (r) { return !r.missing; });
     return html`
       <div class="two">
         <section class="panel">
-          <div class="panel-head"><div><h3 class="h-sec">מחירון קורות</h3><p class="sub">המחיר שאתם משלמים לקורה אחת. כל חלק ברשימה מותאם אוטומטית לקורה עם אותו חתך (עובי × רוחב).</p></div>
-            <button type="button" class="btn sm" onClick=${function () { pr.profiles.push({ id: uid('pr'), t: '', w: '', len: '400', price: '', note: '' }); commit('prices'); }}>+ קורה</button></div>
+          <div class="panel-head"><div><h3 class="h-sec">מחירון קורות</h3><p class="sub">מקלידים מחיר לקורה שלמה <b>או</b> מחיר למטר, והשני מחושב לבד. כל חלק ברשימה מותאם אוטומטית לקורה עם אותו חתך (עובי × רוחב).</p></div>
+            <button type="button" class="btn sm" onClick=${function () { pr.profiles.push({ id: uid('pr'), t: '', w: '', len: '400', price: '', ppm: '', basis: 'beam', note: '' }); commit('prices'); }}>+ קורה</button></div>
           ${anySample ? html`<p class="note" style="margin-bottom:8px"><span class="pill">דוגמה</span> מחירים לדוגמה בלבד. מחיר שתעדכנו יאבד את התווית.</p>` : null}
           <div class="tscroll"><table class="grid">
-            <thead><tr><th>עובי</th><th>רוחב</th><th>אורך קורה (${CM})</th><th>מחיר לקורה (₪)</th><th>למטר</th><th>סוג עץ / ספק</th><th></th></tr></thead>
+            <thead><tr><th>עובי</th><th>רוחב</th><th>אורך קורה (${CM})</th><th>מחיר לקורה (₪)</th><th>מחיר למטר (₪)</th><th>סוג עץ / ספק</th><th></th></tr></thead>
             <tbody>${pr.profiles.map(function (p) {
-              var ppm = num(p.len) > 0 ? num(p.price) / (num(p.len) / 100) : 0;
+              var byMeter = p.basis === 'meter';
+              var beamVal = byMeter ? (isBlank(p.ppm) ? '' : fmtNum(profPrice(p))) : p.price;
+              var meterVal = byMeter ? p.ppm : (isBlank(p.price) || !(num(p.len) > 0) ? '' : fmtNum(profPPM(p)));
               return html`<tr key=${p.id}>
                 <td><input class="cell w-n" inputmode="decimal" value=${p.t} aria-label="עובי" onInput=${setP(p, 't')}/></td>
                 <td><input class="cell w-n" inputmode="decimal" value=${p.w} aria-label="רוחב" onInput=${setP(p, 'w')}/></td>
                 <td><input class="cell w-n" inputmode="decimal" value=${p.len} aria-label="אורך קורה" onInput=${setP(p, 'len')}/></td>
-                <td><div class="gap" style="flex-wrap:nowrap"><input class="cell w-money" inputmode="decimal" value=${p.price} aria-label="מחיר לקורה" placeholder="מחיר" onInput=${setP(p, 'price')}/>${p.sample ? html`<span class="pill">דוגמה</span>` : null}</div></td>
-                <td class="c-num">${money(ppm, true)}</td>
+                <td><div class="gap" style="flex-wrap:nowrap"><input class=${'cell w-money' + (byMeter ? ' derived' : '')} inputmode="decimal" value=${beamVal} aria-label="מחיר לקורה" placeholder="לקורה" onInput=${setP(p, 'price')}/>${p.sample ? html`<span class="pill">דוגמה</span>` : null}</div></td>
+                <td><input class=${'cell w-money' + (byMeter ? '' : ' derived')} inputmode="decimal" value=${meterVal} aria-label="מחיר למטר" placeholder="למטר" onInput=${setP(p, 'ppm')}/></td>
                 <td><input class="cell" style="min-width:110px" value=${p.note} aria-label="הערה" onInput=${setP(p, 'note')}/></td>
                 <td><button type="button" class="ibtn del" aria-label="מחיקת קורה" onClick=${function () { pr.profiles = pr.profiles.filter(function (x) { return x !== p; }); commit('prices'); }}>${Ico.trash()}</button></td>
               </tr>`;
@@ -2337,7 +2795,7 @@
     });
     return html`<div class="plan">
       <div class="plan-head">
-        <h4><span class="ltr">${sec(r.t, r.w)}</span> <span class="plan-meta">· קורה ${fmtDim(r.stock)} ${CM} · ${r.noPrice ? 'אין מחיר' : money(r.price, true)}${r.prof.note ? ' · ' + r.prof.note : ''}</span>${r.sample ? html` <span class="pill">מחיר לדוגמה</span>` : null}</h4>
+        <h4><span class="ltr">${sec(r.t, r.w)}</span> <span class="plan-meta">· קורה ${fmtDim(r.stock)} ${CM} · ${r.noPrice ? 'אין מחיר' : money(r.price, true) + ' לקורה, ' + money(r.ppm, true) + ' למטר'}${r.prof.note ? ' · ' + r.prof.note : ''}</span>${r.sample ? html` <span class="pill">מחיר לדוגמה</span>` : null}</h4>
         <span class="plan-meta">${beams.length} ${beams.length === 1 ? 'קורה' : 'קורות'} · ניצול ${Math.round(r.util * 100)}% · ${fmtDim(r.totalLen / 100)} מ׳ חיתוך</span>
       </div>
       <div class="legend">${legend.map(function (x) { return html`<span><span class="sw" style=${'background:' + x.p.color}></span><b>${x.p.code}</b> ${x.names.join(' + ')} · ${fmtDim(x.p.len)} ${CM} × ${x.n}</span>`; })}</div>
@@ -2408,22 +2866,29 @@
         <div class="row" style="justify-content:flex-start">
           <span class="pctbox"><input class="cell" inputmode="decimal" value=${pr.profit} aria-label="אחוז רווח" onInput=${set('profit')}/>%</span>
           <span class="seg" role="group" aria-label="איך מחושב הרווח">
-            <button type="button" class=${pr.profitMode !== 'margin' ? 'on' : ''} onClick=${function () { pr.profitMode = 'markup'; commit('current'); }}>על העלות</button>
             <button type="button" class=${pr.profitMode === 'margin' ? 'on' : ''} onClick=${function () { pr.profitMode = 'margin'; commit('current'); }}>מתוך המחיר</button>
+            <button type="button" class=${pr.profitMode !== 'margin' ? 'on' : ''} onClick=${function () { pr.profitMode = 'markup'; commit('current'); }}>על העלות</button>
           </span>
         </div>
-        <span class="hint">${pr.profitMode === 'margin' ? 'הרווח הוא אחוז ממחיר המכירה (לפני מע״מ). 30% מתוך המחיר = עלות ÷ 0.7.' : 'הרווח מתווסף כאחוז על העלות הישירה. 30% על העלות = עלות × 1.3.'}</span>
+        <span class="hint">${pr.profitMode === 'margin' ? 'הרווח הוא אחוז ממחיר המכירה לפני מע״מ.' : 'הרווח מתווסף כאחוז על העלות הישירה.'}</span>
       </div>
-      <div class="field" style="margin-top:14px"><span>תוספות באחוזים</span>
+      <div class="field" style="margin-top:14px"><span>אחוזים מהמחיר שמשולמים הלאה</span>
         ${(pr.extras || []).map(function (x) {
           return html`<div key=${x.id} class="xrow">
-            <input class="cell" value=${x.label} aria-label="שם התוספת" onInput=${function (e) { x.label = e.target.value; commit('current'); }}/>
-            <span class="pctbox"><input class="cell" inputmode="decimal" value=${x.pct} aria-label="אחוז" onInput=${function (e) { x.pct = e.target.value; commit('current'); }}/>%</span>
+            <input class="cell" value=${x.label} aria-label="למי משולם" onInput=${function (e) { x.label = e.target.value; commit('current'); }}/>
+            <span class="pctbox"><input class="cell" inputmode="decimal" value=${x.pct} aria-label=${'אחוז ' + (x.label || '')} onInput=${function (e) { x.pct = e.target.value; commit('current'); }}/>%</span>
             <button type="button" class="ibtn del" aria-label="מחיקה" onClick=${function () { pr.extras = pr.extras.filter(function (z) { return z !== x; }); commit('current'); }}>${Ico.trash()}</button>
           </div>`;
         })}
-        <button type="button" class="linkbtn" style="align-self:flex-start" onClick=${function () { pr.extras = pr.extras || []; pr.extras.push({ id: uid('x'), label: 'תוספת', pct: '0' }); commit('current'); }}>+ תוספת באחוזים</button>
-        <span class="hint">מחושבות על המחיר אחרי הרווח, ונכללות במחיר ליחידה. אפשר לשנות את השם, למשל מס הכנסה, תקורה או עמלה.</span>
+        <button type="button" class="linkbtn" style="align-self:flex-start" onClick=${function () { pr.extras = pr.extras || []; pr.extras.push({ id: uid('x'), label: pr.extras.length ? 'אחר' : FARM_LABEL, pct: '0' }); commit('current'); }}>+ אחוז נוסף</button>
+        <span class="hint">למשל התשלום לחווה. האחוז נלקח מתוך המחיר ללקוח לפני מע״מ, והמחיר מחושב כך שאחרי התשלום נשאר לכם הרווח שהגדרתם.</span>
+        ${(function () {
+          var p = num(pr.profit) / 100, f = (pr.extras || []).reduce(function (a, e) { return a + num(e.pct); }, 0) / 100, m = pr.profitMode === 'margin';
+          var keep = m ? 1 - p - f : 1 - f;
+          if (keep <= 0.05) return html`<span class="hint bad-t">הרווח והאחוזים ביחד גבוהים מדי. הורידו אותם כדי שיישאר מקום לעלות.</span>`;
+          var price = 100 * (m ? 1 : 1 + p) / keep;
+          return html`<span class="hint">בדוגמה: עלות ₪100 ← מחיר ${money(price)}, מתוכו ${money(m ? price * p : 100 * p)} רווח${f ? ' ו-' + money(price * f) + ' משולמים הלאה' : ''}.</span>`;
+        })()}
       </div>
       <div class="fields" style="margin-top:14px">
         <label class="field">עיגול מחיר ליחידה
@@ -2449,16 +2914,33 @@
       ${R('חומרים נוספים', money(P.mat), 'sub')}
       ${R('עבודה · ' + fmtHours(P.hours) + ' שעות', money(P.labor), 'sub')}
       ${R('עלות ישירה', money(P.direct), 'strong')}
-      ${R('רווח ' + fmtDim(num(q.pricing.profit)) + '% ' + (q.pricing.profitMode === 'margin' ? 'מתוך המחיר' : 'על העלות'), money(P.profit))}
-      ${(q.pricing.extras || []).filter(function (x) { return num(x.pct); }).length ? R('תוספות באחוזים', money(P.extraAmt)) : null}
+      ${R(['רווח ' + fmtDim(num(q.pricing.profit)) + '% ' + (q.pricing.profitMode === 'margin' ? 'מתוך המחיר' : 'על העלות')].concat((q.pricing.extras || []).filter(function (x) { return num(x.pct); }).map(function (x) { return (x.label || 'אחוז נוסף') + ' ' + fmtDim(num(x.pct)) + '%'; })).join(' + '), money(P.profit + P.extraAmt))}
       ${Math.abs(P.rounding) >= 0.5 ? R('עיגול מחירים', money(P.rounding)) : null}
       ${P.fixed ? R('תוספות קבועות', money(P.fixed)) : null}
       ${P.discount ? R('הנחה ' + fmtDim(num(q.pricing.discount)) + '%', money(-P.discount)) : null}
       ${R('סה״כ לפני מע״מ', money(P.beforeVat), 'strong')}
       ${q.pricing.vatOn ? R('מע״מ ' + fmtDim(num(q.pricing.vat)) + '%', money(P.vat), 'sub') : null}
       ${R('סה״כ ללקוח', money(P.total), 'total')}
-      <div class="okbox" style="margin-top:10px">רווח בפועל <b class="num">${money(P.realProfit)}</b> (${Math.round(P.marginPct * 100)}% מהמחיר לפני מע״מ), אחרי תשלום על ${fmtHours(P.hours)} שעות עבודה.</div>
+      <${MoneySplit} P=${P}/>
     </section>`;
+  }
+
+  /* Where the price before VAT goes: costs, payments out, and what stays as profit. */
+  function MoneySplit(props) {
+    var P = props.P, base = P.beforeVat;
+    if (!(base > 0)) return null;
+    var parts = [{ k: 'cost', label: 'עלויות: עץ, חומרים ועבודה', v: P.direct, color: 'var(--split-cost)' }];
+    if (P.fixed) parts.push({ k: 'fixed', label: 'תוספות קבועות', v: P.fixed, color: 'var(--split-fixed)' });
+    P.paidOut.forEach(function (x, i) { if (x.amount) parts.push({ k: 'out' + i, label: (x.label || 'אחוז נוסף') + ' ' + fmtDim(x.pct) + '%', v: x.amount, color: 'var(--split-out)' }); });
+    parts.push({ k: 'profit', label: 'נשאר לכם רווח', v: P.realProfit, color: 'var(--split-profit)', strong: true });
+    return html`<div class="split">
+      <div class="split-head">מתוך ${money(base)} לפני מע״מ</div>
+      <div class="split-bar" aria-hidden="true">${parts.filter(function (x) { return x.v > 0; }).map(function (x) { return html`<span key=${x.k} style=${'flex:' + x.v + ' 1 0;background:' + x.color}></span>`; })}</div>
+      ${parts.map(function (x) {
+        return html`<div key=${x.k} class=${'split-row' + (x.strong ? ' strong' : '')}><span><span class="sw" style=${'background:' + x.color}></span>${x.label}</span><span class="v">${money(x.v)} <span class="mut">${Math.round(x.v / base * 100)}%</span></span></div>`;
+      })}
+      <p class="hint">הרווח כבר אחרי תשלום על ${fmtHours(P.hours)} שעות עבודה.</p>
+    </div>`;
   }
 
   function CostsTab(props) {
@@ -2580,6 +3062,7 @@
         <span>רווח <b>${money(P.realProfit)}</b></span>
         <span class="opt">עץ <b>${money(P.wood)}</b></span>
         <span class="opt"><b>${fmtHours(P.hours)}</b> שעות</span>
+        ${P.paidOutTotal ? html`<span class="opt">${(q.pricing.extras[0] && q.pricing.extras[0].label) || 'משולם הלאה'} <b>${money(P.paidOutTotal)}</b></span>` : null}
         ${warn ? html`<span class="pb-warn">${warn}</span>` : null}
       </div>
       ${S.ui.tab !== 'quote' ? html`<button type="button" class="btn" onClick=${function () { setTab('quote'); }}>להצעה ללקוח</button>` : html`<button type="button" class="btn" onClick=${function () { setTab('costs'); }}>לעלויות ורווח</button>`}
