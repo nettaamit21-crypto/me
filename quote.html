@@ -1,0 +1,2828 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>מחשבון הצעות הנגרייה</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=Heebo:wght@300;400;500;600;700&display=swap">
+<style>
+  :root {
+    /* Layout: a workbench — the size controls sit beside a drawing board on graph paper; the running price is pinned to the bottom edge like a tally strip */
+    --paper: #F4EEE5;
+    --surface: #FFFCF7;
+    --surface-2: #F1E8DB;
+    --sunk: #ECE3D5;
+    --ink: #241B14;
+    --muted: #6B5A4B;
+    --faint: #9A8977;
+    --line: rgba(42, 31, 23, .13);
+    --line-2: rgba(42, 31, 23, .26);
+    --oak: #9A6535;
+    --oak-2: #81512A;
+    --on-oak: #FFF9F1;
+    --brass: #B8874A;
+    --walnut: #2A1F17;
+    --on-walnut: #F3EDE3;
+    --on-walnut-2: #C9B79E;
+    --walnut-accent: #E7C796;
+    --walnut-warn: #F2A88F;
+    --board: #FBF8F2;
+    --grid: rgba(154, 101, 53, .08);
+    --grid-2: rgba(154, 101, 53, .15);
+    --ok: #3D7A4C;
+    --ok-bg: rgba(61, 122, 76, .11);
+    --warn: #8E5A0C;
+    --warn-bg: rgba(198, 135, 30, .14);
+    --bad: #AE3E2A;
+    --bad-bg: rgba(174, 62, 42, .10);
+    --scrim: rgba(20, 14, 10, .45);
+    --shadow: 0 1px 2px rgba(42, 31, 23, .06), 0 10px 28px -16px rgba(42, 31, 23, .30);
+
+    --display: "Frank Ruhl Libre", "David Libre", "Times New Roman", serif;
+    --ui: "Heebo", "Assistant", "Arial Hebrew", Arial, sans-serif;
+    --radius: 8px;
+    --gutter: clamp(16px, 3vw, 32px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #18120E; --surface: #221A14; --surface-2: #2B2119; --sunk: #1C1511;
+      --ink: #F1E9DC; --muted: #BCA991; --faint: #8C7B68;
+      --line: rgba(241, 233, 220, .11); --line-2: rgba(241, 233, 220, .22);
+      --oak: #D49F5C; --oak-2: #E2B273; --on-oak: #1B140F; --brass: #C99561;
+      --walnut: #0E0A07; --on-walnut: #F1E9DC; --on-walnut-2: #B8A58C; --walnut-accent: #E7C796; --walnut-warn: #F2A88F;
+      --board: #1E1712; --grid: rgba(212, 159, 92, .06); --grid-2: rgba(212, 159, 92, .12);
+      --ok: #82C094; --ok-bg: rgba(130, 192, 148, .12); --warn: #E6AE52; --warn-bg: rgba(230, 174, 82, .13);
+      --bad: #EE8A72; --bad-bg: rgba(238, 138, 114, .12); --scrim: rgba(0, 0, 0, .6);
+      --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 10px 28px -14px rgba(0, 0, 0, .6);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #18120E; --surface: #221A14; --surface-2: #2B2119; --sunk: #1C1511;
+    --ink: #F1E9DC; --muted: #BCA991; --faint: #8C7B68;
+    --line: rgba(241, 233, 220, .11); --line-2: rgba(241, 233, 220, .22);
+    --oak: #D49F5C; --oak-2: #E2B273; --on-oak: #1B140F; --brass: #C99561;
+    --walnut: #0E0A07; --on-walnut: #F1E9DC; --on-walnut-2: #B8A58C; --walnut-accent: #E7C796; --walnut-warn: #F2A88F;
+    --board: #1E1712; --grid: rgba(212, 159, 92, .06); --grid-2: rgba(212, 159, 92, .12);
+    --ok: #82C094; --ok-bg: rgba(130, 192, 148, .12); --warn: #E6AE52; --warn-bg: rgba(230, 174, 82, .13);
+    --bad: #EE8A72; --bad-bg: rgba(238, 138, 114, .12); --scrim: rgba(0, 0, 0, .6);
+    --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 10px 28px -14px rgba(0, 0, 0, .6);
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: var(--ui); font-size: 15px; line-height: 1.55; font-weight: 400;
+    direction: rtl; -webkit-font-smoothing: antialiased;
+    padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+  }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  img { max-width: 100%; }
+  h1, h2, h3, h4 { margin: 0; font-weight: 500; text-wrap: balance; }
+  p { margin: 0; }
+  .wrap { max-width: 1280px; margin-inline: auto; padding-inline: var(--gutter); }
+  .ltr { direction: ltr; unicode-bidi: isolate; }
+  .num { font-variant-numeric: tabular-nums; }
+  .mut { color: var(--muted); font-weight: 400; }
+  .boot { padding: 48px 24px; text-align: center; color: var(--muted); }
+  :focus-visible { outline: 2px solid var(--oak); outline-offset: 2px; }
+  input[type="checkbox"], input[type="radio"] { accent-color: var(--oak); }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; scroll-behavior: auto !important; } }
+
+  /* ---------- header & tabs ---------- */
+  .top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 30; background: var(--paper); border-bottom: 1px solid var(--line); }
+  .top-row { display: flex; align-items: center; justify-content: space-between; gap: 8px 14px; min-height: 56px; flex-wrap: wrap; padding-block: 6px; }
+  .brand { display: flex; align-items: baseline; gap: 10px; min-width: 0; }
+  .brand-name { font-family: var(--display); font-size: 1.45rem; font-weight: 500; letter-spacing: .02em; }
+  .brand-sub { font-size: .8rem; color: var(--muted); letter-spacing: .03em; }
+  .top-actions { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+  .sync { font-size: .74rem; color: var(--faint); display: inline-flex; align-items: center; gap: 6px; margin-inline-end: 6px; white-space: nowrap; }
+  .sync::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--faint); }
+  .sync.ok::before { background: var(--ok); }
+  .sync.busy::before { background: var(--brass); }
+  .sync.err::before { background: var(--bad); }
+  .tabs { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab { appearance: none; border: 0; background: none; padding: 9px 14px 10px; font-size: .92rem; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
+  .tab:hover { color: var(--ink); }
+  .tab.on { color: var(--ink); border-bottom-color: var(--oak); font-weight: 500; }
+  .tab .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--bad); }
+  @media (max-width: 700px) { .top { position: static; } .top-actions .btn { padding: 4px 7px; } .brand-name { font-size: 1.3rem; } }
+
+  /* ---------- buttons ---------- */
+  .btn { appearance: none; display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: 1px solid var(--line-2); background: var(--surface); color: var(--ink); border-radius: 6px; padding: 7px 12px; font-size: .88rem; font-weight: 500; cursor: pointer; line-height: 1.2; white-space: nowrap; }
+  .btn:hover { border-color: var(--oak); color: var(--oak); }
+  .btn.primary { background: var(--oak); border-color: var(--oak); color: var(--on-oak); }
+  .btn.primary:hover { background: var(--oak-2); border-color: var(--oak-2); color: var(--on-oak); }
+  .btn.ghost { background: transparent; border-color: transparent; color: var(--muted); }
+  .btn.ghost:hover { color: var(--ink); background: var(--surface-2); }
+  .btn.sm { padding: 5px 10px; font-size: .82rem; }
+  .btn.danger { color: var(--bad); }
+  .btn.danger:hover { border-color: var(--bad); color: var(--bad); }
+  .btn[disabled] { opacity: .5; cursor: not-allowed; }
+  .btn .badge { background: var(--surface-2); color: var(--muted); border-radius: 10px; padding: 0 6px; font-size: .72rem; font-weight: 500; }
+  .linkbtn { appearance: none; background: none; border: 0; padding: 0; color: var(--oak); cursor: pointer; font-size: .85rem; text-decoration: underline; text-underline-offset: 3px; }
+  .ibtn { appearance: none; border: 0; background: transparent; width: 30px; height: 30px; border-radius: 5px; cursor: pointer; color: var(--muted); display: inline-grid; place-items: center; flex: none; }
+  .ibtn:hover { background: var(--surface-2); color: var(--ink); }
+  .ibtn.on { color: var(--oak); background: var(--surface-2); }
+  .ibtn.del:hover { color: var(--bad); }
+  .ibtn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ---------- layout ---------- */
+  .main { display: flex; flex-direction: column; gap: 16px; padding-block: 18px 28px; }
+  .panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; min-width: 0; }
+  .panel-head { display: flex; align-items: center; justify-content: space-between; gap: 8px 12px; flex-wrap: wrap; margin-bottom: 12px; }
+  .h-sec { font-family: var(--display); font-size: 1.25rem; font-weight: 500; }
+  .h-min { font-size: .9rem; font-weight: 600; margin: 14px 0 6px; }
+  .eyebrow { font-size: .72rem; letter-spacing: .1em; color: var(--oak); font-weight: 500; }
+  .sub { color: var(--muted); font-size: .86rem; margin-top: 4px; max-width: 70ch; }
+  .note { font-size: .82rem; color: var(--muted); }
+  .hint { font-size: .78rem; color: var(--faint); }
+  .row { display: flex; align-items: center; justify-content: space-between; gap: 8px 12px; flex-wrap: wrap; }
+  .gap { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .banner { display: flex; gap: 10px 14px; align-items: center; justify-content: space-between; flex-wrap: wrap; background: var(--warn-bg); border: 1px solid color-mix(in srgb, var(--warn) 28%, transparent); border-radius: var(--radius); padding: 10px 14px; font-size: .88rem; }
+  .warnbox { background: var(--bad-bg); border: 1px solid color-mix(in srgb, var(--bad) 28%, transparent); border-radius: 6px; padding: 10px 12px; font-size: .86rem; display: flex; flex-direction: column; gap: 6px; }
+  .okbox { background: var(--ok-bg); border-radius: 6px; padding: 10px 12px; font-size: .86rem; }
+  .pill { display: inline-flex; align-items: center; font-size: .68rem; padding: 1px 7px; border-radius: 10px; background: var(--warn-bg); color: var(--warn); font-weight: 600; white-space: nowrap; vertical-align: middle; }
+  .bad-t { color: var(--bad); }
+
+  /* ---------- quote head & item strip ---------- */
+  .qhead { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px 16px; flex-wrap: wrap; }
+  .qtitle { display: flex; flex-direction: column; gap: 2px; flex: 1 1 320px; min-width: 0; }
+  .title-in { border: 0; border-bottom: 1px dashed var(--line-2); background: transparent; font-family: var(--display); font-size: clamp(1.35rem, 3vw, 1.85rem); padding: 2px 0; width: 100%; color: var(--ink); }
+  .title-in:focus { outline: none; border-bottom-color: var(--oak); }
+  .strip { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: thin; }
+  .ichip { appearance: none; display: flex; flex-direction: column; align-items: flex-start; gap: 1px; border: 1px solid var(--line-2); background: var(--surface); border-radius: 8px; padding: 8px 12px; cursor: pointer; text-align: right; min-width: 150px; max-width: 240px; flex: none; }
+  .ichip .n { font-weight: 500; font-size: .9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+  .ichip .m { font-size: .78rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .ichip.on { border-color: var(--oak); box-shadow: inset 0 0 0 1px var(--oak); background: color-mix(in srgb, var(--oak) 7%, var(--surface)); }
+  .ichip.add { border-style: dashed; color: var(--oak); justify-content: center; align-items: center; min-width: 120px; font-weight: 500; }
+
+  /* ---------- design tab ---------- */
+  .design { display: grid; grid-template-columns: minmax(290px, 370px) minmax(0, 1fr); gap: 16px; align-items: start; }
+  @media (max-width: 900px) { .design { grid-template-columns: minmax(0, 1fr); } .design .boardcol { order: -1; } }
+  .config { display: flex; flex-direction: column; gap: 14px; }
+  .item-name { width: 100%; border: 0; border-bottom: 1px solid var(--line-2); background: transparent; font-family: var(--display); font-size: 1.3rem; padding: 2px 0; }
+  .item-name:focus { outline: none; border-bottom-color: var(--oak); }
+  .lbl { font-size: .86rem; color: var(--muted); }
+  .sec-title { font-size: .76rem; letter-spacing: .1em; color: var(--oak); font-weight: 600; padding-top: 12px; border-top: 1px solid var(--line); }
+  .stepper, .valbox { display: inline-flex; align-items: center; border: 1px solid var(--line-2); border-radius: 6px; overflow: hidden; background: var(--surface); flex: none; }
+  .stepper button, .valbox button { appearance: none; border: 0; background: var(--surface-2); width: 30px; height: 30px; font-size: 1rem; cursor: pointer; color: var(--ink); }
+  .stepper button:hover, .valbox button:hover { background: var(--sunk); }
+  .stepper input, .valbox input { width: 56px; border: 0; text-align: center; background: transparent; height: 30px; font-weight: 500; font-variant-numeric: tabular-nums; }
+  .valbox .u { font-size: .74rem; color: var(--muted); padding-inline: 0 6px; }
+  .pc { display: flex; flex-direction: column; gap: 6px; }
+  .pc-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+  .pc-label { font-weight: 500; font-size: .92rem; }
+  .pc-hint { display: block; font-size: .74rem; color: var(--faint); font-weight: 400; }
+  .pc-scale { display: flex; justify-content: space-between; font-size: .72rem; color: var(--faint); direction: ltr; font-variant-numeric: tabular-nums; }
+  .range { -webkit-appearance: none; appearance: none; width: 100%; height: 24px; background: transparent; direction: ltr; margin: 0; cursor: pointer; }
+  .range::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: linear-gradient(to right, var(--oak) var(--pct, 50%), var(--line-2) var(--pct, 50%)); }
+  .range::-moz-range-track { height: 4px; border-radius: 2px; background: var(--line-2); }
+  .range::-moz-range-progress { height: 4px; border-radius: 2px; background: var(--oak); }
+  .range::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--surface); border: 2px solid var(--oak); margin-top: -8px; box-shadow: 0 1px 3px rgba(0, 0, 0, .25); }
+  .range::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: var(--surface); border: 2px solid var(--oak); }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { appearance: none; border: 1px solid var(--line-2); background: var(--surface); border-radius: 16px; padding: 5px 12px; font-size: .85rem; cursor: pointer; font-variant-numeric: tabular-nums; }
+  .chip:hover { border-color: var(--oak); }
+  .chip.on { background: var(--oak); border-color: var(--oak); color: var(--on-oak); }
+  .fixed-list { display: flex; flex-wrap: wrap; gap: 3px 12px; font-size: .78rem; color: var(--muted); }
+  .unitprice { display: flex; align-items: baseline; justify-content: space-between; gap: 4px 10px; flex-wrap: wrap; padding: 10px 12px; border-radius: 6px; background: var(--surface-2); }
+  .unitprice b { font-size: 1.35rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .unitprice small { color: var(--muted); font-size: .78rem; }
+  .actions { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  .boardcol { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+  .board { position: relative; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background-color: var(--board);
+    background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px), linear-gradient(var(--grid-2) 1px, transparent 1px), linear-gradient(90deg, var(--grid-2) 1px, transparent 1px);
+    background-size: 16px 16px, 16px 16px, 80px 80px, 80px 80px; }
+  .board-canvas { width: 100%; aspect-ratio: 16 / 11; max-height: min(64vh, 580px); min-height: 250px; }
+  .v3d { position: relative; width: 100%; height: 100%; }
+  .v3d canvas { display: block; width: 100%; height: 100%; }
+  .v3d-labels { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+  .v3d-lab { position: absolute; left: 0; top: 0; font-size: .78rem; font-weight: 600; color: var(--ink); background: color-mix(in srgb, var(--board) 86%, transparent); padding: 0 6px; border-radius: 4px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .board-photo { display: block; width: 100%; aspect-ratio: 16 / 11; max-height: min(64vh, 580px); object-fit: contain; background: var(--board); }
+  .board-note { position: absolute; inset-inline-start: 10px; top: 10px; max-width: calc(100% - 20px); font-size: .78rem; color: var(--muted); background: color-mix(in srgb, var(--board) 90%, transparent); padding: 3px 8px; border-radius: 4px; pointer-events: none; }
+  .board-sel { position: absolute; inset-inline-start: 10px; bottom: 10px; max-width: calc(100% - 20px); font-size: .8rem; background: var(--surface); border: 1px solid var(--oak); color: var(--ink); padding: 3px 9px; border-radius: 4px; pointer-events: none; }
+  .board-empty { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 24px; color: var(--muted); font-size: .9rem; pointer-events: none; }
+  .board-tools { display: flex; justify-content: space-between; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .seg { display: inline-flex; border: 1px solid var(--line-2); border-radius: 6px; overflow: hidden; background: var(--surface); flex-wrap: wrap; }
+  .seg button { appearance: none; border: 0; background: transparent; padding: 5px 10px; font-size: .8rem; cursor: pointer; color: var(--muted); border-inline-start: 1px solid var(--line); }
+  .seg button:first-child { border-inline-start: 0; }
+  .seg button:hover { color: var(--ink); }
+  .seg button.on { background: var(--surface-2); color: var(--ink); font-weight: 500; }
+  .dimsline { font-size: .86rem; color: var(--muted); }
+  .dimsline b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+  /* ---------- editable tables ---------- */
+  .tscroll { overflow-x: auto; }
+  table.grid { border-collapse: collapse; width: 100%; font-size: .86rem; }
+  .grid th { font-weight: 500; font-size: .74rem; color: var(--muted); text-align: right; padding: 6px; border-bottom: 1px solid var(--line-2); white-space: nowrap; }
+  .grid td { padding: 5px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .grid td.c-num { white-space: nowrap; font-variant-numeric: tabular-nums; padding-top: 10px; }
+  .grid tr.sel > td { background: color-mix(in srgb, var(--oak) 9%, transparent); }
+  .grid tfoot td { border-bottom: 0; font-weight: 600; padding-top: 8px; }
+  .cell { width: 100%; min-width: 0; border: 1px solid transparent; background: var(--sunk); border-radius: 4px; padding: 4px 6px; height: 30px; font-size: .86rem; }
+  .cell:hover { border-color: var(--line-2); }
+  .cell:focus { border-color: var(--oak); outline: none; background: var(--surface); }
+  select.cell { padding-block: 0; cursor: pointer; }
+  .cell.ltr { direction: ltr; text-align: left; }
+  .w-code { width: 46px; text-align: center !important; }
+  .w-name { min-width: 140px; }
+  .w-n { width: 62px; }
+  .w-d { width: 82px; }
+  .w-prof { width: 158px; }
+  .w-money { width: 86px; }
+  @media (max-width: 560px) { .grid td { padding: 4px 3px; } .w-name { min-width: 112px; } .w-n { width: 52px; } .w-d { width: 72px; } .w-money { width: 66px; } .grid .pill { display: none; } }
+  .expr { display: flex; flex-direction: column; gap: 1px; }
+  .ev { font-size: .7rem; color: var(--faint); font-variant-numeric: tabular-nums; line-height: 1.3; }
+  .expr .ev { direction: ltr; text-align: left; }
+  .expr.bad .cell { border-color: var(--bad); background: var(--bad-bg); }
+  .expr.bad .ev, .ev.bad { color: var(--bad); }
+  .sw { display: inline-block; width: 12px; height: 12px; border-radius: 3px; border: 1px solid rgba(0, 0, 0, .22); flex: none; }
+  .codecell { display: flex; align-items: center; gap: 5px; }
+  .rowbtns { display: flex; gap: 1px; justify-content: flex-end; }
+  .place-row > td { background: var(--surface-2); }
+  .place { display: flex; flex-wrap: wrap; gap: 10px 20px; align-items: flex-end; padding: 6px 2px; }
+  .place fieldset { border: 0; padding: 0; margin: 0; display: flex; gap: 6px; align-items: flex-end; flex-wrap: wrap; }
+  .place legend { font-size: .72rem; color: var(--muted); padding: 0; margin-bottom: 3px; }
+  .f { display: flex; flex-direction: column; gap: 2px; font-size: .72rem; color: var(--muted); }
+  .place .cell { width: 82px; background: var(--surface); }
+  .place select.cell { width: 170px; }
+  .check { display: inline-flex; align-items: center; gap: 6px; font-size: .86rem; cursor: pointer; }
+  .vars { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: .78rem; color: var(--muted); margin-top: 10px; }
+  .var { direction: ltr; unicode-bidi: isolate; background: var(--surface-2); border-radius: 4px; padding: 1px 6px; color: var(--ink); font-variant-numeric: tabular-nums; }
+  details.adv > summary { cursor: pointer; font-weight: 500; font-size: .92rem; list-style: none; display: flex; align-items: center; gap: 8px; }
+  details.adv > summary::-webkit-details-marker { display: none; }
+  details.adv > summary::before { content: "›"; display: inline-block; transform: rotate(180deg); transition: transform .15s; color: var(--oak); font-size: 1.2rem; line-height: 1; }
+  details.adv[open] > summary::before { transform: rotate(90deg); }
+
+  /* ---------- wood tab ---------- */
+  .two { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(270px, 1fr); gap: 16px; align-items: start; }
+  @media (max-width: 920px) { .two { grid-template-columns: minmax(0, 1fr); } }
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; }
+  .kpi { background: var(--surface-2); border-radius: 6px; padding: 10px 12px; display: flex; flex-direction: column; gap: 1px; }
+  .kpi .k { font-size: .76rem; color: var(--muted); }
+  .kpi .v { font-size: 1.35rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .kpi .s { font-size: .74rem; color: var(--faint); }
+  .kpi.main { background: var(--walnut); color: var(--on-walnut); }
+  .kpi.main .k, .kpi.main .s { color: var(--on-walnut-2); }
+  .kpi.main .v { color: var(--walnut-accent); }
+  .plan { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+  .plan-head { display: flex; justify-content: space-between; gap: 4px 10px; flex-wrap: wrap; align-items: baseline; }
+  .plan-head h4 { font-size: 1.02rem; }
+  .plan-meta { font-size: .8rem; color: var(--muted); font-weight: 400; }
+  .beams { display: flex; flex-direction: column; gap: 5px; }
+  .beam { display: flex; height: 26px; border-radius: 3px; overflow: hidden; border: 1px solid var(--line-2); direction: ltr; background: repeating-linear-gradient(-45deg, var(--sunk) 0 6px, var(--surface-2) 6px 12px); }
+  .piece { display: flex; align-items: center; justify-content: center; font-size: .7rem; font-weight: 600; border-right: 2px solid var(--surface); overflow: hidden; white-space: nowrap; min-width: 0; }
+  .beam-rest { flex: 1; display: flex; align-items: center; justify-content: center; font-size: .68rem; color: var(--faint); white-space: nowrap; overflow: hidden; }
+  .legend { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .8rem; color: var(--muted); }
+  .legend > span { display: inline-flex; align-items: center; gap: 5px; }
+  .legend b { color: var(--ink); font-weight: 600; }
+  .costline { display: flex; gap: 4px 18px; flex-wrap: wrap; font-size: .82rem; color: var(--muted); }
+  .costline b { color: var(--ink); font-variant-numeric: tabular-nums; }
+  .radio { display: flex; flex-direction: column; gap: 8px; }
+  .radio label { display: flex; gap: 8px; align-items: flex-start; font-size: .88rem; cursor: pointer; }
+  .radio input { margin-top: 4px; accent-color: var(--oak); }
+  .field { display: flex; flex-direction: column; gap: 4px; font-size: .8rem; color: var(--muted); min-width: 0; }
+  .field input, .field select, .field textarea { border: 1px solid var(--line-2); background: var(--surface); border-radius: 6px; padding: 7px 9px; font-size: .92rem; color: var(--ink); width: 100%; }
+  .field textarea { min-height: 92px; resize: vertical; line-height: 1.5; }
+  .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--oak); }
+  .fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+  .pctbox { display: inline-flex; align-items: center; gap: 4px; }
+  .pctbox .cell { width: 76px; text-align: center; }
+
+  /* ---------- costs tab ---------- */
+  .costs { display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 380px); gap: 16px; align-items: start; }
+  @media (max-width: 980px) { .costs { grid-template-columns: minmax(0, 1fr); } }
+  .stack { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+  .side { position: sticky; top: 112px; }
+  @media (max-width: 980px) { .side { position: static; } }
+  .cost-top { display: flex; justify-content: space-between; gap: 4px 12px; flex-wrap: wrap; padding: 8px 10px; background: var(--surface-2); border-radius: 6px; font-size: .86rem; }
+  .cost-top b { font-variant-numeric: tabular-nums; }
+  .sum { display: flex; flex-direction: column; }
+  .sum-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 6px 0; border-bottom: 1px dashed var(--line); font-size: .9rem; }
+  .sum-row .v { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .sum-row.sub { color: var(--muted); font-size: .84rem; padding-inline-start: 10px; }
+  .sum-row.strong { font-weight: 600; border-bottom: 1px solid var(--line-2); }
+  .sum-row.total { font-size: 1.15rem; font-weight: 700; border-bottom: 0; padding-top: 10px; }
+  .xrow { display: flex; gap: 6px; align-items: center; }
+  .xrow .cell { flex: 1; }
+  .xrow .pctbox .cell { flex: none; }
+
+  /* ---------- quote & shop tabs ---------- */
+  .qt { display: grid; grid-template-columns: minmax(280px, 390px) minmax(0, 1fr); gap: 16px; align-items: start; }
+  @media (max-width: 1020px) { .qt { grid-template-columns: minmax(0, 1fr); } }
+  .docwrap { background: var(--sunk); border: 1px solid var(--line); border-radius: var(--radius); padding: clamp(6px, 2vw, 20px); min-width: 0; overflow-x: auto; }
+  .docwrap .doc { margin-inline: auto; box-shadow: var(--shadow); }
+  .doc-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .item-q { border-top: 1px solid var(--line); padding-top: 10px; margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+
+  /* ---------- price strip ---------- */
+  .pricebar { position: fixed; inset-inline: 0; bottom: 0; z-index: 40; background: var(--walnut); color: var(--on-walnut); padding-bottom: env(safe-area-inset-bottom, 0px); box-shadow: 0 -6px 24px -12px rgba(0, 0, 0, .45); }
+  .pb { display: flex; align-items: center; gap: 6px 18px; min-height: 62px; flex-wrap: wrap; padding-block: 8px; }
+  .pb-total { display: flex; align-items: baseline; gap: 8px; }
+  .pb-total .k { font-size: .78rem; color: var(--on-walnut-2); }
+  .pb-total .v { font-size: 1.55rem; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--walnut-accent); }
+  .pb-meta { display: flex; gap: 2px 14px; font-size: .82rem; color: var(--on-walnut-2); flex-wrap: wrap; }
+  .pb-meta b { color: var(--on-walnut); font-weight: 500; font-variant-numeric: tabular-nums; }
+  .pb-warn { color: var(--walnut-warn); }
+  .pb .btn { margin-inline-start: auto; background: var(--walnut-accent); border-color: var(--walnut-accent); color: #22180F; }
+  .pb .btn:hover { filter: brightness(1.06); color: #22180F; }
+  @media (max-width: 560px) { .pb { gap: 2px 12px; } .pb-total .v { font-size: 1.3rem; } .pb .btn { padding: 6px 10px; } .pb-meta .opt { display: none; } }
+
+  /* ---------- dialogs ---------- */
+  .overlay { position: fixed; inset: 0; z-index: 60; background: var(--scrim); display: flex; align-items: flex-start; justify-content: center; padding: max(20px, env(safe-area-inset-top, 0px)) 16px 24px; overflow-y: auto; }
+  .modal { background: var(--surface); color: var(--ink); border-radius: 10px; box-shadow: 0 20px 60px -20px rgba(0, 0, 0, .55); width: 100%; max-width: 640px; padding: 18px; display: flex; flex-direction: column; gap: 14px; margin-block: auto; }
+  .modal.wide { max-width: 900px; }
+  .modal-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .modal-head h3 { font-family: var(--display); font-size: 1.3rem; }
+  .modal-foot { display: flex; justify-content: flex-start; gap: 8px; flex-wrap: wrap; }
+  .tpl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+  .tpl { appearance: none; text-align: right; border: 1px solid var(--line-2); background: var(--surface); border-radius: 8px; padding: 10px; cursor: pointer; display: flex; flex-direction: column; gap: 6px; position: relative; }
+  .tpl:hover { border-color: var(--oak); }
+  .tpl .thumb { width: 100%; aspect-ratio: 3 / 2; object-fit: contain; background: var(--board); border-radius: 4px; display: block; }
+  .tpl .thumb.blank { display: grid; place-items: center; color: var(--faint); font-size: .8rem; }
+  .tpl .t { font-weight: 600; font-size: .92rem; }
+  .tpl .d { font-size: .78rem; color: var(--muted); }
+  .listrow { display: flex; justify-content: space-between; align-items: center; gap: 8px 12px; flex-wrap: wrap; padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .listrow .t { font-weight: 500; }
+  .listrow .m { font-size: .8rem; color: var(--muted); }
+  .thumbs { display: flex; gap: 8px; flex-wrap: wrap; }
+  .thumbs img { width: 84px; height: 64px; object-fit: cover; border-radius: 4px; border: 1px solid var(--line-2); }
+  .progress { display: flex; align-items: center; gap: 10px; font-size: .9rem; }
+  .spinner { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--line-2); border-top-color: var(--oak); animation: spin 0.9s linear infinite; flex: none; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .toast { position: fixed; bottom: calc(80px + env(safe-area-inset-bottom, 0px)); inset-inline-start: 50%; transform: translateX(50%); z-index: 80; background: var(--ink); color: var(--paper); padding: 8px 16px; border-radius: 20px; font-size: .88rem; box-shadow: var(--shadow); max-width: calc(100vw - 32px); text-align: center; }
+  .copybox { width: 100%; min-height: 220px; font-family: var(--ui); font-size: .88rem; border: 1px solid var(--line-2); border-radius: 6px; padding: 10px; background: var(--surface); }
+
+  #print-root { display: none; }
+  @media print {
+    body { padding: 0; background: #fff; }
+    #app { display: none !important; }
+    #print-root { display: block !important; }
+    @page { size: A4; margin: 12mm; }
+  }
+</style>
+</head>
+<body>
+<div id="app"><div class="boot">טוען את המחשבון…</div></div>
+<div id="print-root"></div>
+<script src="https://cdn.jsdelivr.net/npm/htm@3.1.1/preact/standalone.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function () {
+  'use strict';
+  var appEl = document.getElementById('app');
+  if (!window.htmPreact) {
+    appEl.innerHTML = '<div class="boot">המחשבון לא נטען. בדקו את החיבור לאינטרנט ורעננו את הדף.</div>';
+    return;
+  }
+  var HP = window.htmPreact;
+  var html = HP.html, render = HP.render, useState = HP.useState, useEffect = HP.useEffect, useRef = HP.useRef;
+  var HAS3D = !!window.THREE;
+  var IN_VIEWER = !!(window.claude && typeof window.claude.use === 'function');
+  var H2C_URL = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+  var FONTS_URL = 'https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=Heebo:wght@300;400;500;600;700&display=swap';
+
+  /* =========================================================
+     Utilities
+     ========================================================= */
+  var KEY_RE = /^[A-Za-z_][A-Za-z0-9_]*$/;
+  function clamp(v, a, b) { return Math.min(b, Math.max(a, v)); }
+  function uid(p) { return (p || '') + Math.random().toString(36).slice(2, 8) + (Date.now() % 1e7).toString(36); }
+  function clone(o) { return JSON.parse(JSON.stringify(o)); }
+  function num(v) {
+    if (typeof v === 'number') return Number.isFinite(v) ? v : 0;
+    if (v == null) return 0;
+    var s = String(v).trim().replace(/[₪\s]/g, '');
+    if (/^-?\d{1,3}(,\d{3})+(\.\d+)?$/.test(s)) s = s.replace(/,/g, '');
+    else s = s.replace(',', '.');
+    var n = parseFloat(s);
+    return Number.isFinite(n) ? n : 0;
+  }
+  function isBlank(v) { return v == null || String(v).trim() === ''; }
+  var NF0 = new Intl.NumberFormat('he-IL', { maximumFractionDigits: 0 });
+  var NF2 = new Intl.NumberFormat('he-IL', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+  function money(v, dec) {
+    if (!Number.isFinite(v)) return '—';
+    var a = Math.abs(v);
+    var s = dec ? NF2.format(Math.round(a * 100) / 100) : NF0.format(Math.round(a));
+    return (v < -0.004 ? '−' : '') + '₪' + s;
+  }
+  function fmtDim(v) {
+    if (!Number.isFinite(v)) return '?';
+    var r = Math.round(v * 10) / 10;
+    return String(Object.is(r, -0) ? 0 : r);
+  }
+  function fmtHours(v) { return String(Math.round(v * 10) / 10); }
+  function sec(t, w) { var a = [t, w].sort(function (x, y) { return x - y; }); return fmtDim(a[0]) + '×' + fmtDim(a[1]); }
+  function lri(s) { return '⁦' + s + '⁩'; }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function todayISO() { var d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+  function fmtDate(iso) { var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || ''); return m ? (+m[3]) + '.' + (+m[2]) + '.' + m[1] : ''; }
+  function addDays(iso, n) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || '');
+    if (!m) return '';
+    var d = new Date(+m[1], +m[2] - 1, +m[3] + Math.round(n || 0));
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+  function roundUp(x, step) { return step > 0 ? Math.ceil(x / step - 1e-9) * step : Math.round(x * 100) / 100; }
+  function textOn(hex) {
+    var m = /^#?([0-9a-f]{6})$/i.exec(hex || '');
+    if (!m) return '#1f1812';
+    var n = parseInt(m[1], 16), r = n >> 16 & 255, g = n >> 8 & 255, b = n & 255;
+    return (0.299 * r + 0.587 * g + 0.114 * b) > 140 ? '#1f1812' : '#ffffff';
+  }
+
+  /* =========================================================
+     Formula engine — numbers, + − × ÷, parentheses, parameter keys
+     ========================================================= */
+  var FUNCS = { min: Math.min, max: Math.max, round: Math.round, floor: Math.floor, ceil: Math.ceil, abs: Math.abs, sqrt: Math.sqrt };
+  var exprCache = new Map();
+  function compileExpr(src) {
+    if (exprCache.has(src)) return exprCache.get(src);
+    var s = src, i = 0;
+    function peek() { while (i < s.length && /\s/.test(s[i])) i++; return s[i]; }
+    function expr() {
+      var a = term();
+      for (;;) {
+        var c = peek();
+        if (c === '+' || c === '-') { i++; var b = term(); a = (function (l, r, plus) { return plus ? function (e) { return l(e) + r(e); } : function (e) { return l(e) - r(e); }; })(a, b, c === '+'); }
+        else return a;
+      }
+    }
+    function term() {
+      var a = unary();
+      for (;;) {
+        var c = peek();
+        if (c === '*' || c === '/' || c === '×') { i++; var b = unary(); a = (function (l, r, div) { return div ? function (e) { return l(e) / r(e); } : function (e) { return l(e) * r(e); }; })(a, b, c === '/'); }
+        else return a;
+      }
+    }
+    function unary() {
+      var c = peek();
+      if (c === '-') { i++; var a = unary(); return function (e) { return -a(e); }; }
+      if (c === '+') { i++; return unary(); }
+      return primary();
+    }
+    function primary() {
+      var c = peek();
+      if (c === '(') { i++; var a = expr(); if (peek() !== ')') throw new Error('חסר סוגר'); i++; return a; }
+      var rest = s.slice(i), m = /^(\d+(\.\d*)?|\.\d+)/.exec(rest);
+      if (m) { i += m[0].length; var val = parseFloat(m[0]); return function () { return val; }; }
+      m = /^[A-Za-z_][A-Za-z0-9_]*/.exec(rest);
+      if (m) {
+        i += m[0].length;
+        var name = m[0];
+        if (peek() === '(') {
+          var fn = FUNCS[name.toLowerCase()];
+          if (!fn) throw new Error('פונקציה לא מוכרת: ' + name);
+          i++;
+          var args = [];
+          if (peek() !== ')') { for (;;) { args.push(expr()); if (peek() === ',') { i++; continue; } break; } }
+          if (peek() !== ')') throw new Error('חסר סוגר');
+          i++;
+          return function (e) { return fn.apply(null, args.map(function (g) { return g(e); })); };
+        }
+        return function (e) { if (!Object.prototype.hasOwnProperty.call(e, name)) throw new Error('פרמטר לא מוכר: ' + name); return e[name]; };
+      }
+      throw new Error(c === undefined ? 'הנוסחה לא הושלמה' : 'תו לא צפוי: ' + c);
+    }
+    var out;
+    try { var f = expr(); if (peek() !== undefined) throw new Error('תו לא צפוי: ' + s[i]); out = { fn: f }; }
+    catch (err) { out = { error: err.message }; }
+    if (exprCache.size > 5000) exprCache.clear();
+    exprCache.set(src, out);
+    return out;
+  }
+  function ev(src, vars) {
+    var s = String(src == null ? '' : src).trim();
+    if (s === '') return { v: NaN, err: 'שדה ריק' };
+    var c = compileExpr(s);
+    if (c.error) return { v: NaN, err: c.error };
+    try { var v = c.fn(vars); return Number.isFinite(v) ? { v: v } : { v: NaN, err: 'תוצאה לא תקינה' }; }
+    catch (err) { return { v: NaN, err: err.message }; }
+  }
+
+  /* =========================================================
+     Product templates (x = length left→right, y = depth front→back, z = height, cm)
+     ========================================================= */
+  var ORIENTS = [
+    ['X-flat', 'לאורך · שוכב', function (t, w, l) { return [l, w, t]; }],
+    ['X-edge', 'לאורך · על הצד', function (t, w, l) { return [l, t, w]; }],
+    ['Y-flat', 'לעומק · שוכב', function (t, w, l) { return [w, l, t]; }],
+    ['Y-edge', 'לעומק · על הצד', function (t, w, l) { return [t, l, w]; }],
+    ['Z-front', 'עומד · פנים לחזית', function (t, w, l) { return [w, t, l]; }],
+    ['Z-side', 'עומד · פנים לצד', function (t, w, l) { return [t, w, l]; }]
+  ];
+  var ORIENT_MAP = {};
+  ORIENTS.forEach(function (o) { ORIENT_MAP[o[0]] = o; });
+  function orientFn(o) { return (ORIENT_MAP[o] || ORIENT_MAP['X-flat'])[2]; }
+  var POS_KEYS = ['x', 'y', 'z', 'dx', 'dy', 'dz', 'dx2', 'dy2', 'dz2'];
+  var WOOD = ['#C9955D', '#E3C38F', '#A8703F', '#D7AE76', '#8E5A34', '#EBD3A8', '#B9814F', '#9D6C45'];
+  var VIVID = ['#3E4C8A', '#D98CA0', '#5E8C61', '#D9A441', '#7A5BA6', '#4F97A3', '#C46A3A', '#8A8F99'];
+  function partColor(code, idx, vivid) {
+    var pal = vivid ? VIVID : WOOD;
+    var c = String(code || '').trim().toUpperCase();
+    var k = c ? c.charCodeAt(0) - 65 : idx;
+    return pal[((k % pal.length) + pal.length) % pal.length];
+  }
+  function part(o) {
+    return Object.assign({ id: uid('p'), code: 'A', name: '', n: '1', n2: '1', t: '2', w: '10', l: '50', orient: 'X-flat', x: '0', y: '0', z: '0', dx: '0', dy: '0', dz: '0', dx2: '0', dy2: '0', dz2: '0', placed: true, profile: '' }, o);
+  }
+  var CM = 'ס״מ';
+  var HEIGHT_OPTS = [{ v: 10, label: '12 ' + CM }, { v: 15, label: '17 ' + CM }, { v: 20, label: '22 ' + CM }];
+  var TEMPLATES = [
+    {
+      id: 'zula-bench', name: 'ספסל זולה לקטנטנים', desc: 'ספסל נמוך עם משענת, לפי דף העבודה "פינת זולה לקטנטנים".',
+      params: [
+        { key: 'L', label: 'אורך', type: 'range', min: 30, max: 150, step: 1, value: 50, unit: CM },
+        { key: 'LH', label: 'גובה ישיבה', type: 'choice', value: 15, options: HEIGHT_OPTS, hint: 'נקבע לפי רוחב הקורה של הרגל' },
+        { key: 'nS', label: 'שלבים במושב', type: 'choice', value: 3, options: [{ v: 2, label: '2' }, { v: 3, label: '3' }, { v: 4, label: '4' }] },
+        { key: 'BH', label: 'גובה משענת', type: 'range', min: 30, max: 70, step: 1, value: 48, unit: CM },
+        { key: 'nB', label: 'שלבים במשענת', type: 'choice', value: 2, options: [{ v: 1, label: '1' }, { v: 2, label: '2' }, { v: 3, label: '3' }] },
+        { key: 'gap', label: 'מרווח בין שלבים', type: 'range', min: 0, max: 2, step: 0.5, value: 0, unit: CM },
+        { key: 'T', label: 'עובי רגל ותומך', type: 'const', value: 5 },
+        { key: 'ST', label: 'עובי שלב', type: 'const', value: 2 },
+        { key: 'SW', label: 'רוחב שלב', type: 'const', value: 10 },
+        { key: 'D', label: 'עומק', type: 'calc', expr: 'nS*(SW+gap)-gap+T' }
+      ],
+      parts: [
+        part({ code: 'A', name: 'רגל ספסל', n: '2', t: 'T', w: 'LH', l: 'D', orient: 'Y-edge', dx: 'L-T' }),
+        part({ code: 'B', name: 'מושב', n: 'nS', t: 'ST', w: 'SW', l: 'L', orient: 'X-flat', z: 'LH', dy: 'SW+gap' }),
+        part({ code: 'B', name: 'משענת', n: 'nB', t: 'ST', w: 'SW', l: 'L', orient: 'X-edge', y: 'D-T-ST', z: 'BH-SW', dz: '-(SW+gap)' }),
+        part({ code: 'C', name: 'תומך משענת', n: '2', t: 'T', w: 'SW', l: 'BH', orient: 'Z-front', x: 'T', y: 'D-T', dx: 'L-2*T-SW' })
+      ],
+      materials: [
+        { name: 'בורג 5×45', qty: '16', price: '0.3', sample: true },
+        { name: 'בורג 5×70', qty: '8', price: '0.45', sample: true },
+        { name: 'שמן לעץ', qty: '1', price: '10', sample: true }
+      ],
+      labor: [{ name: 'חיתוך והרכבה', hours: '1', rate: '' }, { name: 'שיוף וגימור', hours: '0.5', rate: '' }]
+    },
+    {
+      id: 'zula-table', name: 'שולחן זולה לקטנטנים', desc: 'שולחן נמוך משתי רגלי לוח ומשטח שלבים, מאותו דף עבודה.',
+      params: [
+        { key: 'L', label: 'אורך', type: 'range', min: 40, max: 150, step: 1, value: 55, unit: CM },
+        { key: 'LH', label: 'גובה', type: 'choice', value: 20, options: HEIGHT_OPTS, hint: 'נקבע לפי רוחב הקורה של הרגל' },
+        { key: 'nT', label: 'שלבים במשטח', type: 'choice', value: 4, options: [{ v: 3, label: '3' }, { v: 4, label: '4' }, { v: 5, label: '5' }, { v: 6, label: '6' }] },
+        { key: 'inset', label: 'הזחת רגליים מהקצה', type: 'range', min: 0, max: 15, step: 1, value: 5, unit: CM },
+        { key: 'gap', label: 'מרווח בין שלבים', type: 'range', min: 0, max: 2, step: 0.5, value: 0, unit: CM },
+        { key: 'T', label: 'עובי רגל', type: 'const', value: 5 },
+        { key: 'ST', label: 'עובי שלב', type: 'const', value: 2 },
+        { key: 'SW', label: 'רוחב שלב', type: 'const', value: 10 },
+        { key: 'D', label: 'עומק', type: 'calc', expr: 'nT*(SW+gap)-gap' }
+      ],
+      parts: [
+        part({ code: 'A', name: 'רגל שולחן', n: '2', t: 'T', w: 'LH', l: 'D-2', orient: 'Y-edge', x: 'inset', y: '1', dx: 'L-2*inset-T' }),
+        part({ code: 'B', name: 'משטח שולחן', n: 'nT', t: 'ST', w: 'SW', l: 'L', orient: 'X-flat', z: 'LH', dy: 'SW+gap' })
+      ],
+      materials: [{ name: 'בורג 5×45', qty: '16', price: '0.3', sample: true }, { name: 'שמן לעץ', qty: '1', price: '10', sample: true }],
+      labor: [{ name: 'חיתוך והרכבה', hours: '0.75', rate: '' }, { name: 'שיוף וגימור', hours: '0.5', rate: '' }]
+    },
+    {
+      id: 'bench', name: 'ספסל עץ לפי מידה', desc: 'ארבע רגליים, סינרים וחיזוק תחתון. אורך, גובה ועומק לבחירה.',
+      params: [
+        { key: 'L', label: 'אורך', type: 'range', min: 50, max: 300, step: 1, value: 160, unit: CM },
+        { key: 'H', label: 'גובה', type: 'range', min: 35, max: 60, step: 1, value: 45, unit: CM },
+        { key: 'nT', label: 'עומק המושב', type: 'choice', value: 3, options: [{ v: 2, label: '21 ' + CM }, { v: 3, label: '32 ' + CM }, { v: 4, label: '43 ' + CM }, { v: 5, label: '54 ' + CM }] },
+        { key: 'inset', label: 'הזחת רגליים מהקצה', type: 'range', min: 2, max: 30, step: 1, value: 10, unit: CM },
+        { key: 'P', label: 'עובי רגל', type: 'const', value: 5 },
+        { key: 'ST', label: 'עובי שלב', type: 'const', value: 2 },
+        { key: 'SW', label: 'רוחב שלב', type: 'const', value: 10 },
+        { key: 'gap', label: 'מרווח בין שלבים', type: 'const', value: 1 },
+        { key: 'AW', label: 'רוחב סינר', type: 'const', value: 10 },
+        { key: 'yin', label: 'הזחת רגליים מלפנים ומאחור', type: 'const', value: 2 },
+        { key: 'D', label: 'עומק', type: 'calc', expr: 'nT*(SW+gap)-gap' }
+      ],
+      parts: [
+        part({ code: 'A', name: 'רגל', n: '2', n2: '2', t: 'P', w: 'P', l: 'H-ST', orient: 'Z-front', x: 'inset', y: 'yin', dx: 'L-2*inset-P', dy2: 'D-2*yin-P' }),
+        part({ code: 'B', name: 'שלב מושב', n: 'nT', t: 'ST', w: 'SW', l: 'L', orient: 'X-flat', z: 'H-ST', dy: 'SW+gap' }),
+        part({ code: 'C', name: 'סינר אורך', n: '2', t: 'ST', w: 'AW', l: 'L-2*inset-2*P', orient: 'X-edge', x: 'inset+P', y: 'yin', z: 'H-ST-AW', dy: 'D-2*yin-ST' }),
+        part({ code: 'D', name: 'סינר צד', n: '2', t: 'ST', w: 'AW', l: 'D-2*yin', orient: 'Y-edge', x: 'inset-ST', y: 'yin', z: 'H-ST-AW', dx: 'L-2*inset+ST' }),
+        part({ code: 'D', name: 'חיזוק תחתון צד', n: '2', t: 'ST', w: 'AW', l: 'D-2*yin', orient: 'Y-edge', x: 'inset-ST', y: 'yin', z: '8', dx: 'L-2*inset+ST' }),
+        part({ code: 'E', name: 'חיזוק תחתון אורך', n: '1', t: 'ST', w: 'AW', l: 'L-2*inset', orient: 'X-edge', x: 'inset', y: 'D/2-ST/2', z: '8' })
+      ],
+      materials: [{ name: 'בורג 5×50', qty: '40', price: '0.3', sample: true }, { name: 'שמן לעץ', qty: '1', price: '20', sample: true }],
+      labor: [{ name: 'חיתוך והרכבה', hours: '2.5', rate: '' }, { name: 'שיוף וגימור', hours: '1', rate: '' }]
+    },
+    {
+      id: 'planter', name: 'אדנית עץ', desc: 'ארגז שתילה מלוחות על הצד, עמודי פינה ותחתית שלבים.',
+      params: [
+        { key: 'L', label: 'אורך', type: 'range', min: 40, max: 160, step: 1, value: 80, unit: CM },
+        { key: 'D', label: 'עומק', type: 'range', min: 20, max: 60, step: 1, value: 34, unit: CM },
+        { key: 'nH', label: 'גובה', type: 'choice', value: 3, options: [{ v: 2, label: '20 ' + CM }, { v: 3, label: '30 ' + CM }, { v: 4, label: '40 ' + CM }] },
+        { key: 'ST', label: 'עובי לוח', type: 'const', value: 2 },
+        { key: 'SW', label: 'רוחב לוח', type: 'const', value: 10 },
+        { key: 'P', label: 'עובי עמוד פינה', type: 'const', value: 5 },
+        { key: 'H', label: 'גובה', type: 'calc', expr: 'nH*SW' }
+      ],
+      parts: [
+        part({ code: 'A', name: 'דופן אורך', n: 'nH', n2: '2', t: 'ST', w: 'SW', l: 'L', orient: 'X-edge', dz: 'SW', dy2: 'D-ST' }),
+        part({ code: 'B', name: 'דופן צד', n: 'nH', n2: '2', t: 'ST', w: 'SW', l: 'D-2*ST', orient: 'Y-edge', y: 'ST', dz: 'SW', dx2: 'L-ST' }),
+        part({ code: 'C', name: 'עמוד פינה', n: '2', n2: '2', t: 'P', w: 'P', l: 'H', orient: 'Z-front', x: 'ST', y: 'ST', dx: 'L-2*ST-P', dy2: 'D-2*ST-P' }),
+        part({ code: 'D', name: 'שלב תחתית', n: 'floor((L-2*ST-2*P+1)/(SW+1))', t: 'ST', w: 'SW', l: 'D-2*ST', orient: 'Y-flat', x: 'ST+P', y: 'ST', dx: 'SW+1' })
+      ],
+      materials: [{ name: 'בורג 4×40 נירוסטה', qty: '40', price: '0.4', sample: true }, { name: 'יריעת ניילון לבטנה', qty: '1', price: '15', sample: true }],
+      labor: [{ name: 'חיתוך והרכבה', hours: '1.5', rate: '' }, { name: 'גימור', hours: '0.5', rate: '' }]
+    },
+    {
+      id: 'blank', name: 'מוצר חדש', desc: 'מתחילים מאפס: מקלידים או מדביקים רשימת חיתוכים.',
+      params: [{ key: 'L', label: 'אורך', type: 'range', min: 20, max: 300, step: 1, value: 100, unit: CM }],
+      parts: [],
+      materials: [],
+      labor: [{ name: 'עבודה', hours: '1', rate: '' }]
+    }
+  ];
+  var TPL_BY_ID = {};
+  TEMPLATES.forEach(function (t) { TPL_BY_ID[t.id] = t; });
+
+  function itemFromTemplate(t) {
+    return {
+      id: uid('i'), tpl: t.id || null, name: t.name || 'מוצר', qty: '1',
+      params: clone(t.params || []),
+      parts: clone(t.parts || []).map(function (p) { return Object.assign(part({}), p, { id: uid('p') }); }),
+      materials: clone(t.materials || []).map(function (m) { return Object.assign({ name: '', qty: '1', price: '' }, m, { id: uid('m') }); }),
+      labor: clone(t.labor || []).map(function (l) { return Object.assign({ name: '', hours: '0', rate: '' }, l, { id: uid('l') }); }),
+      photo: t.photo || null, img: 'render', note: ''
+    };
+  }
+  function templateFromItem(item) {
+    return {
+      kind: 'nagriya-product', v: 1, name: item.name, desc: '',
+      params: clone(item.params),
+      parts: item.parts.map(function (p) { var o = clone(p); delete o.id; return o; }),
+      materials: item.materials.map(function (m) { return { name: m.name, qty: m.qty, price: m.price }; }),
+      labor: item.labor.map(function (l) { return { name: l.name, hours: l.hours, rate: l.rate }; })
+    };
+  }
+
+  /* =========================================================
+     Model evaluation
+     ========================================================= */
+  function evalItem(item) {
+    var vars = Object.create(null), paramErr = {};
+    item.params.forEach(function (p) { if (p.type !== 'calc' && KEY_RE.test(p.key || '')) vars[p.key] = num(p.value); });
+    item.params.forEach(function (p) {
+      if (p.type === 'calc' && KEY_RE.test(p.key || '')) { var r = ev(p.expr, vars); vars[p.key] = r.v; if (r.err) paramErr[p.key] = r.err; }
+    });
+    var parts = [], boxes = [], unplaced = 0;
+    item.parts.forEach(function (pt, idx) {
+      var f = {}, errs = {};
+      function get(k, d) { var raw = pt[k]; var r = ev(isBlank(raw) ? d : raw, vars); f[k] = r.v; if (r.err) errs[k] = r.err; }
+      get('n', '1'); get('n2', '1'); get('t', ''); get('w', ''); get('l', '');
+      POS_KEYS.forEach(function (k) { get(k, '0'); });
+      ['t', 'w', 'l'].forEach(function (k) { if (!errs[k] && !(f[k] > 0)) errs[k] = 'צריך להיות גדול מ-0'; });
+      if (!errs.n && f.n < 0) errs.n = 'כמות שלילית';
+      var n = Number.isFinite(f.n) ? Math.max(0, Math.round(f.n)) : 0;
+      var n2 = Number.isFinite(f.n2) ? Math.max(1, Math.round(f.n2)) : 1;
+      var ok = !errs.t && !errs.w && !errs.l && !errs.n;
+      var qty = ok ? n * n2 : 0;
+      if (ok && pt.placed !== false) {
+        if (POS_KEYS.every(function (k) { return !errs[k]; })) {
+          var s = orientFn(pt.orient)(f.t, f.w, f.l);
+          for (var j = 0; j < n2; j++) for (var i = 0; i < n; i++) {
+            if (boxes.length >= 900) break;
+            boxes.push({ x: f.x + i * f.dx + j * f.dx2, y: f.y + i * f.dy + j * f.dy2, z: f.z + i * f.dz + j * f.dz2, sx: s[0], sy: s[1], sz: s[2], pid: pt.id, code: pt.code, idx: idx });
+          }
+        }
+      } else if (ok && qty > 0) unplaced++;
+      parts.push({ pt: pt, idx: idx, f: f, n: n, n2: n2, qty: qty, ok: ok, errs: errs });
+    });
+    var draw = boxes, layout = false;
+    if (!boxes.length) { draw = layoutBoxes(parts); layout = draw.length > 0; }
+    var bb = bboxOf(boxes);
+    return {
+      vars: vars, paramErr: paramErr, parts: parts, boxes: draw, layout: layout, unplaced: unplaced,
+      dims: bb ? { W: bb.max[0] - bb.min[0], D: bb.max[1] - bb.min[1], H: bb.max[2] - bb.min[2] } : null
+    };
+  }
+  function layoutBoxes(parts) {
+    var out = [], x = 0, y = 0, colW = 0, rows = 0;
+    var list = parts.filter(function (r) { return r.ok && r.qty > 0; }).sort(function (a, b) { return b.f.l - a.f.l; });
+    for (var a = 0; a < list.length; a++) {
+      var r = list[a];
+      for (var k = 0; k < Math.min(r.qty, 40); k++) {
+        if (rows >= 14) { x += colW + 8; y = 0; colW = 0; rows = 0; }
+        out.push({ x: x, y: y, z: 0, sx: r.f.l, sy: r.f.w, sz: r.f.t, pid: r.pt.id, code: r.pt.code, idx: r.idx });
+        y += r.f.w + 3; colW = Math.max(colW, r.f.l); rows++;
+        if (out.length >= 400) return out;
+      }
+    }
+    return out;
+  }
+  function bboxOf(boxes) {
+    if (!boxes.length) return null;
+    var mn = [Infinity, Infinity, Infinity], mx = [-Infinity, -Infinity, -Infinity];
+    boxes.forEach(function (b) {
+      mn[0] = Math.min(mn[0], b.x); mn[1] = Math.min(mn[1], b.y); mn[2] = Math.min(mn[2], b.z);
+      mx[0] = Math.max(mx[0], b.x + b.sx); mx[1] = Math.max(mx[1], b.y + b.sy); mx[2] = Math.max(mx[2], b.z + b.sz);
+    });
+    return { min: mn, max: mx };
+  }
+  function coloredBoxes(E, vivid) { return E.boxes.map(function (b) { return Object.assign({}, b, { color: partColor(b.code, b.idx, vivid) }); }); }
+  function modelSig(E, vivid) {
+    return (vivid ? 'v' : 'w') + (E.layout ? 'L' : 'A') + E.boxes.map(function (b) {
+      return [b.x, b.y, b.z, b.sx, b.sy, b.sz].map(function (v) { return Math.round(v * 10); }).join(',') + b.code + b.pid;
+    }).join(';');
+  }
+
+  /* =========================================================
+     Wood: match parts to beams, pack cuts, price
+     ========================================================= */
+  function findProfile(profiles, t, w, explicitId) {
+    if (explicitId) { var ex = profiles.find(function (p) { return p.id === explicitId; }); if (ex) return ex; }
+    var a = [t, w].sort(function (x, y) { return x - y; });
+    return profiles.find(function (p) {
+      var b = [num(p.t), num(p.w)].sort(function (x, y) { return x - y; });
+      return Math.abs(a[0] - b[0]) < 0.05 && Math.abs(a[1] - b[1]) < 0.05;
+    }) || null;
+  }
+  function packBeams(pieces, stock, kerf, trim) {
+    var usable = stock - trim, list = [];
+    pieces.forEach(function (p) { for (var k = 0; k < p.count && list.length < 4000; k++) list.push(p); });
+    list.sort(function (a, b) { return b.len - a.len; });
+    var beams = [], tooLong = [];
+    list.forEach(function (p) {
+      if (p.len > usable + 1e-6) { if (tooLong.indexOf(p) < 0) tooLong.push(p); return; }
+      var best = null, bestRem = Infinity;
+      beams.forEach(function (b) {
+        var rem = b.free - (p.len + (b.pieces.length ? kerf : 0));
+        if (rem >= -1e-6 && rem < bestRem) { best = b; bestRem = rem; }
+      });
+      if (!best) { best = { pieces: [], free: usable }; beams.push(best); }
+      best.free -= p.len + (best.pieces.length ? kerf : 0);
+      best.pieces.push(p);
+    });
+    return { beams: beams, tooLong: tooLong };
+  }
+  function computeWood(items, evals, prices, vivid) {
+    var profs = prices.profiles || [];
+    var kerf = Math.max(0, num(prices.kerf)), trim = Math.max(0, num(prices.trim)), waste = Math.max(0, num(prices.waste)) / 100;
+    var groups = new Map();
+    items.forEach(function (item, ii) {
+      var Q = Math.max(0, Math.round(num(item.qty)));
+      if (!Q) return;
+      evals[ii].parts.forEach(function (r) {
+        if (!r.ok || r.qty <= 0) return;
+        var prof = findProfile(profs, r.f.t, r.f.w, r.pt.profile);
+        var key = prof ? 'p:' + prof.id : 'm:' + sec(r.f.t, r.f.w);
+        if (!groups.has(key)) groups.set(key, { key: key, prof: prof, t: prof ? num(prof.t) : Math.min(r.f.t, r.f.w), w: prof ? num(prof.w) : Math.max(r.f.t, r.f.w), pieces: [] });
+        groups.get(key).pieces.push({ itemId: item.id, itemName: item.name, code: r.pt.code, name: r.pt.name, len: r.f.l, count: r.qty * Q, color: partColor(r.pt.code, r.idx, vivid) });
+      });
+    });
+    var results = [], alloc = {}, total = 0, buyCost = 0, meterCost = 0, beamsN = 0, missingN = 0;
+    groups.forEach(function (g) {
+      var totalLen = g.pieces.reduce(function (a, p) { return a + p.len * p.count; }, 0);
+      var count = g.pieces.reduce(function (a, p) { return a + p.count; }, 0);
+      if (!g.prof) { missingN += count; results.push(Object.assign(g, { missing: true, totalLen: totalLen, count: count, cost: 0 })); return; }
+      var stock = num(g.prof.len), price = num(g.prof.price);
+      var ppm = stock > 0 ? price / (stock / 100) : 0;
+      var pack = stock > 0 ? packBeams(g.pieces, stock, kerf, trim) : { beams: [], tooLong: g.pieces.slice() };
+      var costBeams = pack.beams.length * price;
+      var cutLen = g.pieces.reduce(function (a, p) { return a + (p.len + kerf) * p.count; }, 0);
+      var costMeters = cutLen / 100 * ppm * (1 + waste);
+      var cost = prices.mode === 'beams' ? costBeams : costMeters;
+      var used = pack.beams.reduce(function (a, b) { return a + b.pieces.reduce(function (s, p) { return s + p.len; }, 0); }, 0);
+      var util = pack.beams.length && stock ? used / (pack.beams.length * stock) : 0;
+      g.pieces.forEach(function (p) { if (totalLen > 0) alloc[p.itemId] = (alloc[p.itemId] || 0) + cost * (p.len * p.count) / totalLen; });
+      total += cost; buyCost += costBeams; meterCost += costMeters; beamsN += pack.beams.length;
+      results.push(Object.assign(g, { missing: false, stock: stock, price: price, ppm: ppm, pack: pack, costBeams: costBeams, costMeters: costMeters, cost: cost, totalLen: totalLen, count: count, util: util, sample: !!g.prof.sample, noPrice: isBlank(g.prof.price) }));
+    });
+    results.sort(function (a, b) { return (a.t - b.t) || (a.w - b.w); });
+    var tooLong = 0, noPrice = 0;
+    results.forEach(function (r) { if (r.pack) tooLong += r.pack.tooLong.length; if (r.noPrice) noPrice++; });
+    return { results: results, alloc: alloc, total: total, buyCost: buyCost, meterCost: meterCost, beams: beamsN, missingN: missingN, tooLong: tooLong, noPrice: noPrice };
+  }
+
+  /* =========================================================
+     Pricing
+     ========================================================= */
+  function computePricing(q, wood, settings) {
+    var pr = q.pricing, rateDef = num(settings.rate);
+    var p = num(pr.profit) / 100, margin = pr.profitMode === 'margin';
+    var extraP = (pr.extras || []).reduce(function (a, e) { return a + num(e.pct); }, 0) / 100;
+    var step = num(pr.round);
+    var byId = {};
+    var items = q.items.map(function (item) {
+      var Q = Math.max(0, Math.round(num(item.qty)));
+      var woodC = wood.alloc[item.id] || 0;
+      var matU = (item.materials || []).reduce(function (a, m) { return a + num(m.qty) * num(m.price); }, 0);
+      var hoursU = (item.labor || []).reduce(function (a, l) { return a + num(l.hours); }, 0);
+      var laborU = (item.labor || []).reduce(function (a, l) { return a + num(l.hours) * (isBlank(l.rate) ? rateDef : num(l.rate)); }, 0);
+      var direct = woodC + (matU + laborU) * Q;
+      var base = margin ? (p < 0.95 ? direct / (1 - p) : direct * 20) : direct * (1 + p);
+      var profit = base - direct, extraAmt = base * extraP, raw = base + extraAmt;
+      var unit = Q > 0 ? roundUp(raw / Q, step) : 0;
+      var line = unit * Q;
+      var o = { id: item.id, name: item.name, Q: Q, wood: woodC, mat: matU * Q, labor: laborU * Q, hours: hoursU * Q, direct: direct, profit: profit, extraAmt: extraAmt, raw: raw, unit: unit, line: line, rounding: line - raw, directUnit: Q ? direct / Q : 0 };
+      byId[item.id] = o;
+      return o;
+    });
+    function sum(k) { return items.reduce(function (a, i) { return a + i[k]; }, 0); }
+    var fixed = (q.extras || []).reduce(function (a, e) { return a + num(e.amount); }, 0);
+    var itemsTotal = sum('line'), subtotal = itemsTotal + fixed;
+    var discount = subtotal * clamp(num(pr.discount), 0, 100) / 100;
+    var beforeVat = subtotal - discount;
+    var vatRate = pr.vatOn ? num(pr.vat) / 100 : 0;
+    var vat = beforeVat * vatRate;
+    var direct = sum('direct'), profit = sum('profit'), rounding = sum('rounding');
+    var realProfit = profit + rounding - discount;
+    return {
+      items: items, byId: byId, wood: sum('wood'), mat: sum('mat'), labor: sum('labor'), hours: sum('hours'), direct: direct,
+      profit: profit, extraAmt: sum('extraAmt'), rounding: rounding, fixed: fixed, itemsTotal: itemsTotal, subtotal: subtotal,
+      discount: discount, beforeVat: beforeVat, vatRate: vatRate, vat: vat, total: beforeVat + vat, realProfit: realProfit,
+      marginPct: beforeVat > 0 ? realProfit / beforeVat : 0
+    };
+  }
+  function computeFor(q) {
+    var evals = q.items.map(evalItem);
+    var evalById = {};
+    q.items.forEach(function (it, i) { evalById[it.id] = evals[i]; });
+    var wood = computeWood(q.items, evals, S.prices, S.ui.vivid);
+    return { evals: evals, evalById: evalById, wood: wood, pricing: computePricing(q, wood, S.settings) };
+  }
+
+  /* =========================================================
+     State, local storage and account sync
+     ========================================================= */
+  var LS = {
+    get: function (k) { try { var s = localStorage.getItem('nq:' + k); return s ? JSON.parse(s) : null; } catch (e) { return null; } },
+    set: function (k, v) { try { localStorage.setItem('nq:' + k, JSON.stringify(v)); return true; } catch (e) { return false; } },
+    del: function (k) { try { localStorage.removeItem('nq:' + k); } catch (e) { /* storage unavailable */ } }
+  };
+  function seedPrices() {
+    return {
+      updatedAt: 0, mode: 'meters', waste: '10', kerf: '0.3', trim: '0',
+      profiles: [
+        { id: 'pr-2x10', t: '2', w: '10', len: '400', price: '28', note: 'אורן', sample: true },
+        { id: 'pr-5x5', t: '5', w: '5', len: '400', price: '32', note: 'אורן', sample: true },
+        { id: 'pr-5x10', t: '5', w: '10', len: '400', price: '55', note: 'אורן', sample: true },
+        { id: 'pr-5x15', t: '5', w: '15', len: '400', price: '85', note: 'אורן', sample: true },
+        { id: 'pr-5x20', t: '5', w: '20', len: '400', price: '115', note: 'אורן', sample: true }
+      ]
+    };
+  }
+  function seedSettings() {
+    return {
+      updatedAt: 0, rate: '90', validDays: '14', nextNo: 1002,
+      biz: { name: 'הנגרייה', line: 'נגרייה · מרחב שיקומי · עבודת יד', phone: '', email: 'nettaamit21@gmail.com', address: 'חוות רום, הר כמון', taxId: '' },
+      terms: 'המחיר כולל חומרים, עבודה וגימור בשמן לעץ.\nזמן אספקה: עד 21 ימי עבודה מאישור ההזמנה.\nתנאי תשלום: 50% מקדמה עם האישור, היתרה במסירה.'
+    };
+  }
+  function newQuote(no, settings) {
+    settings = settings || seedSettings();
+    return {
+      id: uid('q'), no: no, title: '', date: todayISO(), validDays: String(settings.validDays || '14'),
+      customer: { name: '', phone: '', email: '', address: '' },
+      items: [], extras: [],
+      pricing: { profit: '30', profitMode: 'markup', extras: [{ id: uid('x'), label: 'אחוזי הכנסה', pct: '0' }], round: '5', discount: '0', vatOn: true, vat: '18' },
+      terms: settings.terms || '', updatedAt: 0
+    };
+  }
+  function sampleQuote() {
+    var q = newQuote(1001);
+    q.sample = true;
+    q.title = 'פינת זולה לגן';
+    q.customer = { name: 'לקוח לדוגמה', phone: '', email: '', address: '' };
+    var b = itemFromTemplate(TPL_BY_ID['zula-bench']); b.qty = '2';
+    var t = itemFromTemplate(TPL_BY_ID['zula-table']); t.qty = '1';
+    q.items = [b, t];
+    q.extras = [{ id: uid('e'), name: 'הובלה והרכבה במקום', amount: '150' }];
+    return q;
+  }
+  function defaults(obj, def) {
+    if (obj == null || typeof obj !== 'object' || Array.isArray(obj)) return clone(def);
+    Object.keys(def).forEach(function (k) {
+      if (obj[k] === undefined) obj[k] = clone(def[k]);
+      else if (def[k] && typeof def[k] === 'object' && !Array.isArray(def[k]) && obj[k] && typeof obj[k] === 'object' && !Array.isArray(obj[k])) defaults(obj[k], def[k]);
+    });
+    return obj;
+  }
+  function fixQuote(q) {
+    q = defaults(q, newQuote(q && q.no || 1001));
+    q.items = (q.items || []).map(function (it) {
+      it = defaults(it, itemFromTemplate({ name: 'מוצר', params: [], parts: [] }));
+      it.parts = (it.parts || []).map(function (p) { return defaults(p, part({ id: p.id || uid('p') })); });
+      return it;
+    });
+    return q;
+  }
+  function fixGroup(g, data) {
+    if (g === 'prices') return defaults(data, seedPrices());
+    if (g === 'settings') return defaults(data, seedSettings());
+    if (g === 'current') return fixQuote(data);
+    return data;
+  }
+  function defaultUI() { return { tab: 'design', sel: null, selPart: null, dims: true, vivid: false, photo: false, place: {}, hideSample: false }; }
+
+  var S = {
+    prices: fixGroup('prices', LS.get('prices')),
+    settings: fixGroup('settings', LS.get('settings')),
+    quote: LS.get('current') ? fixQuote(LS.get('current')) : sampleQuote(),
+    saved: (LS.get('saved') || []).map(fixQuote),
+    library: LS.get('library') || [],
+    ui: Object.assign(defaultUI(), LS.get('ui') || {}, { modal: null, toast: null })
+  };
+  if (!S.ui.place || typeof S.ui.place !== 'object') S.ui.place = {};
+
+  function groupData(g) { return g === 'prices' ? S.prices : g === 'settings' ? S.settings : g === 'current' ? S.quote : g === 'saved' ? S.saved : g === 'library' ? S.library : null; }
+  function setGroup(g, v) { if (g === 'prices') S.prices = v; else if (g === 'settings') S.settings = v; else if (g === 'current') S.quote = v; }
+  function uiSnapshot() { return { tab: S.ui.tab, sel: S.ui.sel, dims: S.ui.dims, vivid: S.ui.vivid, photo: S.ui.photo, place: S.ui.place, hideSample: S.ui.hideSample }; }
+
+  var FORCE = function () {};
+  var dirty = new Set(), saveTimer = null;
+  function commit() {
+    var now = Date.now();
+    for (var i = 0; i < arguments.length; i++) {
+      var g = arguments[i];
+      if (g === 'prices') S.prices.updatedAt = now;
+      else if (g === 'settings') S.settings.updatedAt = now;
+      else if (g === 'current') { S.quote.updatedAt = now; }
+      dirty.add(g);
+    }
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(flushLocal, 350);
+    FORCE();
+  }
+  var storageWarned = false;
+  function flushLocal() {
+    dirty.forEach(function (g) {
+      var ok = LS.set(g, g === 'ui' ? uiSnapshot() : groupData(g));
+      if (!ok && g !== 'ui' && !storageWarned) { storageWarned = true; toast('הדפדפן לא שומר כרגע נתונים. הורידו גיבוי כדי לא לאבד עבודה.'); }
+      if (g === 'prices' || g === 'settings' || g === 'current') pushGroup(g);
+    });
+    dirty.clear();
+  }
+  window.addEventListener('pagehide', function () { clearTimeout(saveTimer); flushLocal(); });
+
+  var Cloud = { db: null, base: '', state: IN_VIEWER ? 'device' : 'browser', timers: {}, busy: {}, again: {} };
+  function cloudCol(name) { return Cloud.db.doc(Cloud.base + '/lists').collection(name); }
+  function cloudQueue(key, fn, delay) {
+    if (!Cloud.db) return;
+    clearTimeout(Cloud.timers[key]);
+    Cloud.timers[key] = setTimeout(function () { cloudRun(key, fn); }, delay == null ? 1200 : delay);
+  }
+  function cloudRun(key, fn) {
+    if (Cloud.busy[key]) { Cloud.again[key] = fn; return; }
+    Cloud.busy[key] = true;
+    var prev = Cloud.state;
+    Promise.resolve().then(fn).then(function () {
+      Cloud.state = 'synced'; LS.set('lastSync', Date.now());
+    }, function (e) {
+      Cloud.state = e && e.code === 'quota_exceeded' ? 'full' : 'error';
+    }).then(function () {
+      Cloud.busy[key] = false;
+      if (prev !== Cloud.state) FORCE();
+      var n = Cloud.again[key];
+      if (n) { delete Cloud.again[key]; cloudRun(key, n); }
+    });
+  }
+  function pushGroup(g) {
+    if (!Cloud.db) return;
+    cloudQueue(g, function () { var d = groupData(g); return Cloud.db.doc(Cloud.base + '/' + g).set({ updatedAt: num(d.updatedAt) || Date.now(), data: clone(d) }); });
+  }
+  function pushListItem(name, obj) {
+    if (!Cloud.db) return;
+    cloudQueue(name + ':' + obj.id, function () { return cloudCol(name).doc(obj.id).set({ updatedAt: num(obj.updatedAt) || Date.now(), data: clone(obj) }); }, 400);
+  }
+  function delListItem(name, id) {
+    if (!Cloud.db) return;
+    cloudQueue(name + ':' + id, function () { return cloudCol(name).doc(id).delete(); }, 200);
+  }
+  function cloudInit() {
+    if (!IN_VIEWER) return;
+    Promise.all([window.claude.use('db'), window.claude.use('user')]).then(function (r) {
+      var db = r[0], user = r[1];
+      if (!db || !user) return null;
+      return user.id().then(function (id) {
+        if (!id) return null;
+        Cloud.db = db; Cloud.base = 'data/users/' + id; Cloud.state = 'syncing'; FORCE();
+        return cloudPull();
+      });
+    }).catch(function () { if (Cloud.db) { Cloud.state = 'error'; FORCE(); } });
+  }
+  function cloudPull() {
+    var lastSync = num(LS.get('lastSync'));
+    var groups = ['prices', 'settings', 'current'];
+    return groups.reduce(function (p, g) {
+      return p.then(function () {
+        return Cloud.db.doc(Cloud.base + '/' + g).get().then(function (snap) {
+          var local = groupData(g), lu = num(local.updatedAt);
+          if (snap.exists) {
+            var rd = snap.data() || {}, ru = num(rd.updatedAt);
+            if (rd.data && ru > lu) { setGroup(g, fixGroup(g, clone(rd.data))); LS.set(g, groupData(g)); }
+            else if (lu > ru) pushGroup(g);
+          } else if (lu > 0) pushGroup(g);
+        });
+      });
+    }, Promise.resolve()).then(function () {
+      return [['quotes', 'saved'], ['templates', 'library']].reduce(function (p, pair) {
+        return p.then(function () {
+          return cloudCol(pair[0]).get().then(function (qs) {
+            var remote = new Map();
+            qs.docs.forEach(function (d) { var v = d.data(); if (v && v.data) remote.set(d.id, v); });
+            var out = [];
+            S[pair[1]].forEach(function (loc) {
+              var r = remote.get(loc.id);
+              if (r) {
+                if (num(r.updatedAt) > num(loc.updatedAt)) out.push(r.data);
+                else { out.push(loc); if (num(loc.updatedAt) > num(r.updatedAt)) pushListItem(pair[0], loc); }
+                remote.delete(loc.id);
+              } else if (num(loc.updatedAt) > lastSync) { out.push(loc); pushListItem(pair[0], loc); }
+            });
+            remote.forEach(function (r) { out.push(r.data); });
+            S[pair[1]] = pair[1] === 'saved' ? out.map(fixQuote) : out;
+            LS.set(pair[1], S[pair[1]]);
+          });
+        });
+      }, Promise.resolve());
+    }).then(function () {
+      Cloud.state = 'synced'; LS.set('lastSync', Date.now()); FORCE();
+      pushLocalImages();
+    }, function () { Cloud.state = 'error'; FORCE(); });
+  }
+
+  /* Images (photos of furniture): kept apart from the quote so documents stay small */
+  var IMG = {}, IMG_LOADING = {};
+  function getImage(id) {
+    if (!id) return null;
+    if (IMG[id]) return IMG[id];
+    var v = LS.get('img:' + id);
+    if (v) { IMG[id] = v; return v; }
+    if (Cloud.db && !IMG_LOADING[id]) {
+      IMG_LOADING[id] = true;
+      cloudCol('images').doc(id).get().then(function (s) {
+        if (s.exists && s.data().data) { IMG[id] = s.data().data; LS.set('img:' + id, IMG[id]); FORCE(); }
+      }).catch(function () { /* stays unavailable */ });
+    }
+    return null;
+  }
+  function putImage(dataURL) {
+    var id = uid('img');
+    IMG[id] = dataURL;
+    if (!LS.set('img:' + id, dataURL)) toast('התמונה נשמרה רק עד שתסגרו את הדף – אין מקום באחסון הדפדפן.');
+    if (Cloud.db) cloudQueue('img:' + id, function () { return cloudCol('images').doc(id).set({ data: dataURL, updatedAt: Date.now() }).then(function () { LS.set('imgup:' + id, 1); }); }, 100);
+    return id;
+  }
+  function pushLocalImages() {
+    var ids = new Set();
+    [S.quote].concat(S.saved).forEach(function (q) { (q.items || []).forEach(function (it) { if (it.photo) ids.add(it.photo); }); });
+    S.library.forEach(function (t) { if (t.photo) ids.add(t.photo); });
+    ids.forEach(function (id) {
+      var d = IMG[id] || LS.get('img:' + id);
+      if (d && !LS.get('imgup:' + id)) cloudQueue('img:' + id, function () { return cloudCol('images').doc(id).set({ data: d, updatedAt: Date.now() }).then(function () { LS.set('imgup:' + id, 1); }); }, 300);
+    });
+  }
+  function fileToDataURL(file, max, q) {
+    max = max || 1100; q = q || 0.82;
+    return new Promise(function (resolve, reject) {
+      var url = URL.createObjectURL(file), img = new Image();
+      img.onload = function () {
+        var s = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+        var c = document.createElement('canvas');
+        c.width = Math.max(1, Math.round(img.naturalWidth * s)); c.height = Math.max(1, Math.round(img.naturalHeight * s));
+        var g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); g.drawImage(img, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(url);
+        var out = c.toDataURL('image/jpeg', q);
+        if (out.length > 260000 && max > 500) fileToDataURL(file, Math.round(max * 0.75), 0.74).then(resolve, reject);
+        else resolve(out);
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); reject(new Error('bad image')); };
+      img.src = url;
+    });
+  }
+  function dataURLtoBlob(d) {
+    var m = /^data:([^;]+);base64,(.*)$/.exec(d || '');
+    if (!m) return null;
+    var bin = atob(m[2]), arr = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+    return new Blob([arr], { type: m[1] });
+  }
+
+  /* Optional abilities in the Claude viewer: asking Claude, saving files */
+  var SAMPLE = null, SAMPLE_IMAGES = false, SAMPLE_MAXIMG = 3, DL = null;
+  function capsInit() {
+    if (!IN_VIEWER) return;
+    window.claude.use('sample').then(function (s) {
+      if (!s) return;
+      SAMPLE = s;
+      return s.limits().then(function (lim) {
+        SAMPLE_IMAGES = !!(lim && lim.images);
+        if (lim && lim.images && lim.images.maxCount) SAMPLE_MAXIMG = Math.min(3, lim.images.maxCount);
+      }, function () { /* text only */ });
+    }).catch(function () { SAMPLE = null; }).then(function () { FORCE(); });
+    window.claude.use('downloads').then(function (d) { DL = d; FORCE(); }).catch(function () { DL = null; });
+  }
+  function canSaveFiles() { return !IN_VIEWER || !!DL; }
+  function saveFile(filename, data, mime) {
+    if (IN_VIEWER) {
+      if (!DL) { toast('שמירת קבצים לא זמינה כאן'); return Promise.resolve(false); }
+      return DL.save({ filename: filename, data: data }).then(function () { toast('הקובץ נשמר'); return true; }, function (e) {
+        if (!e || e.code !== 'declined') toast('השמירה לא הצליחה. נסו שוב בעוד רגע.');
+        return false;
+      });
+    }
+    var blob = data instanceof Blob ? data : new Blob([data], { type: mime || 'application/octet-stream' });
+    var url = URL.createObjectURL(blob), a = document.createElement('a');
+    a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 5000);
+    return Promise.resolve(true);
+  }
+  function loadScript(url) {
+    return new Promise(function (resolve, reject) {
+      if (document.querySelector('script[data-src="' + url + '"]')) return resolve();
+      var s = document.createElement('script'); s.src = url; s.async = true; s.setAttribute('data-src', url);
+      s.onload = function () { resolve(); }; s.onerror = function () { s.remove(); reject(new Error('load failed')); };
+      document.head.appendChild(s);
+    });
+  }
+  function copyText(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { toast('הטקסט הועתק'); }, function () { openModal({ type: 'text', text: text }); });
+    } else openModal({ type: 'text', text: text });
+  }
+
+  /* =========================================================
+     3D drawing (three.js, orthographic, drawn on demand)
+     ========================================================= */
+  function cssColor(name, fallback) {
+    try { var v = getComputedStyle(document.documentElement).getPropertyValue(name).trim(); return v || fallback; } catch (e) { return fallback; }
+  }
+  function Viewer(opts) {
+    opts = opts || {};
+    var T = window.THREE;
+    this.off = !!opts.offscreen;
+    this.el = document.createElement('div'); this.el.className = 'v3d';
+    var r = this.renderer = new T.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+    r.setPixelRatio(this.off ? 1 : Math.min(2, window.devicePixelRatio || 1));
+    r.setClearColor(0xffffff, 0);
+    r.shadowMap.enabled = true; r.shadowMap.type = T.PCFSoftShadowMap;
+    this.el.appendChild(r.domElement);
+    this.lab = document.createElement('div'); this.lab.className = 'v3d-labels'; this.el.appendChild(this.lab);
+    var sc = this.scene = new T.Scene();
+    this.cam = new T.OrthographicCamera(-1, 1, 1, -1, 0.1, 100000);
+    sc.add(new T.HemisphereLight(0xfff6ea, 0x5d4c3c, 0.8));
+    var sun = this.sun = new T.DirectionalLight(0xffffff, 0.5);
+    sun.castShadow = true; sun.shadow.mapSize.set(1024, 1024); sun.shadow.bias = -0.0006;
+    sc.add(sun); sc.add(sun.target);
+    this.ground = new T.Mesh(new T.PlaneGeometry(1, 1), new T.ShadowMaterial({ opacity: 0.13 }));
+    this.ground.rotation.x = -Math.PI / 2; this.ground.receiveShadow = true; sc.add(this.ground);
+    this.model = new T.Group(); sc.add(this.model);
+    this.dims = new T.Group(); sc.add(this.dims);
+    this.edgeMat = new T.LineBasicMaterial({ color: 0x2e2117, transparent: true, opacity: 0.55 });
+    this.selEdge = new T.LineBasicMaterial({ color: 0x7a3f0f });
+    this.az = -0.62; this.elev = 0.5; this.zoom = 1; this.fitHalf = 50;
+    this.target = new T.Vector3(); this.size = { W: 0, D: 0, H: 0 }; this.R = 50; this.z0 = 0; this.has = false;
+    this.showDims = true; this.labels = []; this.w = 0; this.h = 0; this.sel = null; this.onPick = null;
+    if (!this.off) {
+      this.bind();
+      var self = this;
+      if (window.ResizeObserver) { this.ro = new ResizeObserver(function () { self.resize(); }); this.ro.observe(this.el); }
+    }
+  }
+  Viewer.prototype.setSize = function (w, h) { this.w = w; this.h = h; this.renderer.setSize(w, h, false); };
+  Viewer.prototype.resize = function () {
+    var w = this.el.clientWidth, h = this.el.clientHeight;
+    if (!w || !h || (w === this.w && h === this.h)) return;
+    this.setSize(w, h); this.fit(); this.refresh();
+  };
+  Viewer.prototype.clearModel = function () {
+    var kids = this.model.children.slice();
+    for (var i = 0; i < kids.length; i++) {
+      var m = kids[i]; this.model.remove(m); m.geometry.dispose(); m.material.dispose();
+      m.children.forEach(function (c) { c.geometry.dispose(); });
+    }
+  };
+  Viewer.prototype.setModel = function (boxes, opts) {
+    var T = window.THREE;
+    opts = opts || {};
+    this.clearModel();
+    if (opts.reset) { this.az = -0.62; this.elev = 0.5; this.zoom = 1; }
+    this.has = boxes.length > 0;
+    if (!this.has) { this.refresh(); return; }
+    var bb = bboxOf(boxes), mn = bb.min, mx = bb.max;
+    var cx = (mn[0] + mx[0]) / 2, cy = (mn[1] + mx[1]) / 2;
+    this.size = { W: mx[0] - mn[0], D: mx[1] - mn[1], H: mx[2] - mn[2] };
+    this.z0 = mn[2];
+    this.R = Math.max(this.size.W, this.size.D, this.size.H, 1) / 2;
+    this.target.set(0, (mn[2] + mx[2]) / 2, 0);
+    for (var i = 0; i < boxes.length; i++) {
+      var b = boxes[i];
+      var g = new T.BoxGeometry(Math.max(b.sx, 0.01), Math.max(b.sz, 0.01), Math.max(b.sy, 0.01));
+      var mesh = new T.Mesh(g, new T.MeshLambertMaterial({ color: b.color }));
+      mesh.position.set(b.x + b.sx / 2 - cx, b.z + b.sz / 2, -(b.y + b.sy / 2 - cy));
+      mesh.castShadow = true; mesh.receiveShadow = true; mesh.userData = { pid: b.pid };
+      mesh.add(new T.LineSegments(new T.EdgesGeometry(g), this.edgeMat));
+      this.model.add(mesh);
+    }
+    var R = this.R;
+    this.ground.position.set(0, this.z0 - 0.02, 0); this.ground.scale.set(R * 14, R * 14, 1);
+    this.sun.position.set(-R * 1.2, this.target.y + R * 3, R * 1.8); this.sun.target.position.copy(this.target);
+    var sc = this.sun.shadow.camera;
+    sc.left = -R * 2.4; sc.right = R * 2.4; sc.top = R * 2.4; sc.bottom = -R * 2.4; sc.near = 0.1; sc.far = R * 14; sc.updateProjectionMatrix();
+    this.applyHighlight();
+    this.fit(); this.refresh();
+  };
+  Viewer.prototype.dimOff = function () { return Math.max(3, this.R * 0.13); };
+  Viewer.prototype.updateCam = function () {
+    var d = this.R * 6 + 100, ce = Math.cos(this.elev), se = Math.sin(this.elev);
+    this.cam.position.set(this.target.x + d * ce * Math.sin(this.az), this.target.y + d * se, this.target.z + d * ce * Math.cos(this.az));
+    this.cam.up.set(0, 1, 0); this.cam.lookAt(this.target);
+    this.cam.near = 0.1; this.cam.far = d * 3;
+    var a = this.w && this.h ? this.w / this.h : 4 / 3, hh = this.fitHalf / this.zoom;
+    this.cam.left = -hh * a; this.cam.right = hh * a; this.cam.top = hh; this.cam.bottom = -hh;
+    this.cam.updateProjectionMatrix(); this.cam.updateMatrixWorld();
+  };
+  Viewer.prototype.fit = function () {
+    var T = window.THREE;
+    if (!this.has) { this.fitHalf = 50; this.updateCam(); return; }
+    this.fitHalf = 1; this.updateCam();
+    var W = this.size.W, D = this.size.D, H = this.size.H, off = this.showDims ? this.dimOff() * 1.5 : 0;
+    var xs = [-W / 2 - off, W / 2 + off], ys = [this.z0, this.z0 + H], zs = [-D / 2 - off, D / 2 + off];
+    var inv = this.cam.matrixWorldInverse, v = new T.Vector3(), mx = 0, my = 0;
+    for (var a = 0; a < 2; a++) for (var b = 0; b < 2; b++) for (var c = 0; c < 2; c++) {
+      v.set(xs[a], ys[b], zs[c]).applyMatrix4(inv); mx = Math.max(mx, Math.abs(v.x)); my = Math.max(my, Math.abs(v.y));
+    }
+    var asp = this.w && this.h ? this.w / this.h : 4 / 3;
+    this.fitHalf = Math.max(my, mx / asp, 1) * 1.14;
+    this.updateCam();
+  };
+  Viewer.prototype.addLabel = function (p, value) {
+    var T = window.THREE, l = { p: new T.Vector3(p[0], p[1], p[2]), text: fmtDim(value) + ' ' + CM };
+    if (!this.off) { l.el = document.createElement('span'); l.el.className = 'v3d-lab'; l.el.textContent = l.text; this.lab.appendChild(l.el); }
+    this.labels.push(l);
+  };
+  Viewer.prototype.buildDims = function () {
+    var T = window.THREE;
+    var kids = this.dims.children.slice();
+    for (var i = 0; i < kids.length; i++) { this.dims.remove(kids[i]); kids[i].geometry.dispose(); kids[i].material.dispose(); }
+    this.labels.forEach(function (l) { if (l.el) l.el.remove(); });
+    this.labels = [];
+    if (!this.showDims || !this.has) return;
+    var W = this.size.W, D = this.size.D, H = this.size.H, off = this.dimOff(), tick = off * 0.3;
+    var y0 = this.z0 + 0.05, y1 = this.z0 + H, x0 = -W / 2, x1 = W / 2, zf = D / 2, zb = -D / 2;
+    var side = Math.sin(this.az) >= 0 ? 1 : -1, se = Math.sin(this.elev), sa = Math.abs(Math.sin(this.az)), ca = Math.abs(Math.cos(this.az));
+    var segs = [];
+    function add(a, b) { segs.push(a[0], a[1], a[2], b[0], b[1], b[2]); }
+    if (ca > 0.18 || se > 0.3) {
+      var z = zf + off;
+      add([x0, y0, zf], [x0, y0, z + tick]); add([x1, y0, zf], [x1, y0, z + tick]); add([x0, y0, z], [x1, y0, z]);
+      add([x0 - tick, y0, z + tick], [x0 + tick, y0, z - tick]); add([x1 - tick, y0, z + tick], [x1 + tick, y0, z - tick]);
+      this.addLabel([0, y0, z], W);
+    }
+    if (sa > 0.18 || se > 0.3) {
+      var xs = side > 0 ? x1 : x0, x = xs + side * off;
+      add([xs, y0, zf], [x + side * tick, y0, zf]); add([xs, y0, zb], [x + side * tick, y0, zb]); add([x, y0, zf], [x, y0, zb]);
+      add([x - tick, y0, zf - tick], [x + tick, y0, zf + tick]); add([x - tick, y0, zb - tick], [x + tick, y0, zb + tick]);
+      this.addLabel([x, y0, 0], D);
+    }
+    if (se < 1.25) {
+      var hs = side > 0 ? x0 : x1, hx = hs - side * off;
+      add([hs, y0, zf], [hx - side * tick, y0, zf]); add([hs, y1, zf], [hx - side * tick, y1, zf]); add([hx, y0, zf], [hx, y1, zf]);
+      add([hx - tick, y0 - tick, zf], [hx + tick, y0 + tick, zf]); add([hx - tick, y1 - tick, zf], [hx + tick, y1 + tick, zf]);
+      this.addLabel([hx, (y0 + y1) / 2, zf], H);
+    }
+    var geo = new T.BufferGeometry();
+    geo.setAttribute('position', new T.Float32BufferAttribute(segs, 3));
+    var col = this.off ? '#7a6a58' : cssColor('--muted', '#7a6a58');
+    this.dims.add(new T.LineSegments(geo, new T.LineBasicMaterial({ color: new T.Color(col) })));
+  };
+  Viewer.prototype.placeLabels = function () {
+    if (this.off || !this.w) return;
+    var w = this.w, h = this.h, cam = this.cam;
+    this.labels.forEach(function (l) {
+      var v = l.p.clone().project(cam);
+      l.el.style.transform = 'translate(' + ((v.x + 1) / 2 * w) + 'px,' + ((1 - v.y) / 2 * h) + 'px) translate(-50%,-50%)';
+    });
+  };
+  Viewer.prototype.render = function () {
+    if (!this.w) return;
+    this.renderer.render(this.scene, this.cam);
+    this.placeLabels();
+  };
+  Viewer.prototype.refresh = function () { this.updateCam(); this.buildDims(); this.render(); };
+  Viewer.prototype.setDims = function (on) { if (this.showDims === on) return; this.showDims = on; this.fit(); this.refresh(); };
+  Viewer.prototype.setView = function (k) {
+    var V = { iso: [-0.62, 0.5], front: [0, 0.0001], side: [-Math.PI / 2, 0.0001], top: [0, 1.5607] }[k] || [-0.62, 0.5];
+    this.az = V[0]; this.elev = V[1]; this.zoom = 1; this.fit(); this.refresh();
+  };
+  Viewer.prototype.zoomBy = function (f) { this.zoom = clamp(this.zoom * f, 0.4, 6); this.refresh(); };
+  Viewer.prototype.applyHighlight = function () {
+    var pid = this.sel, self = this;
+    this.model.children.forEach(function (m) {
+      var on = !!pid && m.userData.pid === pid;
+      m.material.emissive.setHex(on ? 0x55300f : 0x000000);
+      if (m.children[0]) m.children[0].material = on ? self.selEdge : self.edgeMat;
+    });
+  };
+  Viewer.prototype.highlight = function (pid) { this.sel = pid || null; this.applyHighlight(); this.render(); };
+  Viewer.prototype.pick = function (e) {
+    var T = window.THREE, rect = this.renderer.domElement.getBoundingClientRect();
+    var v = new T.Vector2((e.clientX - rect.left) / rect.width * 2 - 1, -(e.clientY - rect.top) / rect.height * 2 + 1);
+    var rc = new T.Raycaster(); rc.setFromCamera(v, this.cam);
+    var hit = rc.intersectObjects(this.model.children, false)[0];
+    if (this.onPick) this.onPick(hit ? hit.object.userData.pid : null);
+  };
+  Viewer.prototype.bind = function () {
+    var self = this, c = this.renderer.domElement, pts = new Map(), drag = null, pinch = null;
+    c.style.touchAction = 'pan-y'; c.style.cursor = 'grab';
+    c.addEventListener('pointerdown', function (e) {
+      pts.set(e.pointerId, [e.clientX, e.clientY]);
+      if (pts.size === 1) {
+        drag = { x: e.clientX, y: e.clientY, az: self.az, el: self.elev, moved: false };
+        try { c.setPointerCapture(e.pointerId); } catch (err) { /* capture not supported */ }
+        c.style.cursor = 'grabbing';
+      } else if (pts.size === 2) {
+        var p = Array.from(pts.values());
+        pinch = { d: Math.hypot(p[0][0] - p[1][0], p[0][1] - p[1][1]), z: self.zoom }; drag = null;
+      }
+    });
+    c.addEventListener('pointermove', function (e) {
+      if (!pts.has(e.pointerId)) return;
+      pts.set(e.pointerId, [e.clientX, e.clientY]);
+      if (pinch && pts.size === 2) {
+        var p = Array.from(pts.values()), d = Math.hypot(p[0][0] - p[1][0], p[0][1] - p[1][1]);
+        self.zoom = clamp(pinch.z * d / Math.max(pinch.d, 1), 0.4, 6); self.refresh(); return;
+      }
+      if (!drag) return;
+      var dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+      if (!drag.moved && Math.abs(dx) + Math.abs(dy) > 4) drag.moved = true;
+      if (!drag.moved) return;
+      self.az = drag.az - dx * 0.01; self.elev = clamp(drag.el + dy * 0.008, -0.05, 1.55); self.refresh();
+    });
+    function end(e) {
+      var tap = drag && !drag.moved && e.type === 'pointerup';
+      pts.delete(e.pointerId);
+      if (pts.size < 2) pinch = null;
+      if (tap) self.pick(e);
+      if (pts.size === 0) { drag = null; c.style.cursor = 'grab'; }
+    }
+    c.addEventListener('pointerup', end); c.addEventListener('pointercancel', end);
+    c.addEventListener('wheel', function (e) {
+      if (!e.ctrlKey && !e.metaKey) return;
+      e.preventDefault(); self.zoom = clamp(self.zoom * Math.exp(-e.deltaY * 0.004), 0.4, 6); self.refresh();
+    }, { passive: false });
+    c.addEventListener('dblclick', function () { self.setView('iso'); });
+  };
+  Viewer.prototype.toImage = function () {
+    this.updateCam(); this.buildDims(); this.renderer.render(this.scene, this.cam);
+    var src = this.renderer.domElement, c = document.createElement('canvas');
+    c.width = src.width; c.height = src.height;
+    var g = c.getContext('2d');
+    g.fillStyle = '#ffffff'; g.fillRect(0, 0, c.width, c.height); g.drawImage(src, 0, 0);
+    var fs = Math.round(c.width / 40), cam = this.cam;
+    g.font = '600 ' + fs + 'px Heebo, Arial, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    try { g.direction = 'rtl'; } catch (e) { /* older canvas */ }
+    this.labels.forEach(function (l) {
+      var v = l.p.clone().project(cam), x = (v.x + 1) / 2 * c.width, y = (1 - v.y) / 2 * c.height;
+      var tw = g.measureText(l.text).width + fs * 0.8;
+      g.fillStyle = 'rgba(255,255,255,.94)'; g.fillRect(x - tw / 2, y - fs * 0.72, tw, fs * 1.44);
+      g.fillStyle = '#4a3b2e'; g.fillText(l.text, x, y);
+    });
+    return c.toDataURL('image/jpeg', 0.88);
+  };
+
+  var MAINV = null;
+  function mainViewer() {
+    if (MAINV === null) { try { MAINV = HAS3D ? new Viewer({}) : false; } catch (e) { MAINV = false; } }
+    return MAINV || null;
+  }
+  var SNAPV = null, snapCache = new Map();
+  function snapshotFor(E, dims) {
+    if (!HAS3D || !E || !E.boxes.length) return null;
+    var key = modelSig(E, false) + (dims === false ? '-' : '+');
+    if (snapCache.has(key)) return snapCache.get(key);
+    try {
+      if (!SNAPV) { SNAPV = new Viewer({ offscreen: true }); SNAPV.setSize(960, 660); }
+      SNAPV.showDims = dims !== false && !E.layout;
+      SNAPV.setModel(coloredBoxes(E, false), { reset: true });
+      var url = SNAPV.toImage();
+      snapCache.set(key, url);
+      if (snapCache.size > 60) snapCache.delete(snapCache.keys().next().value);
+      return url;
+    } catch (e) { return null; }
+  }
+
+  /* =========================================================
+     Asking Claude to draft or change a model from a photo
+     ========================================================= */
+  function compactTemplate(t) {
+    return {
+      name: t.name, description: t.desc,
+      params: t.params.map(function (p) { var o = Object.assign({}, p); delete o.hint; return o; }),
+      parts: t.parts.map(function (p) { var o = {}; ['code', 'name', 'n', 'n2', 't', 'w', 'l', 'orient'].concat(POS_KEYS).forEach(function (k) { o[k] = p[k]; }); return o; }),
+      materials: (t.materials || []).map(function (m) { return { name: m.name, qty: num(m.qty) }; }),
+      laborHours: (t.labor || []).reduce(function (a, l) { return a + num(l.hours); }, 0)
+    };
+  }
+  function buildAIPrompt(mode, notes, item, hasImages) {
+    var profs = S.prices.profiles.map(function (p) { return fmtDim(num(p.t)) + 'x' + fmtDim(num(p.w)); }).join(', ') || '2x10, 5x5, 5x10';
+    var L = [];
+    L.push(mode === 'modify'
+      ? 'You are editing a parametric 3D model of a piece of furniture for a small carpentry workshop\'s price-quote tool.'
+      : 'You are drafting a parametric 3D model of a piece of furniture for a small carpentry workshop\'s price-quote tool. Turn the furniture ' + (hasImages ? 'in the attached photo(s)' : 'the user describes') + ' into a simple model built only from rectangular solid-wood boards and beams. The workshop uses it to draw the piece, list the cuts and price the wood, so it must be buildable, look like the original, and use realistic sizes.');
+    L.push('');
+    L.push('COORDINATES (centimeters): x runs left to right along the length (x=0 is the left end); y runs front to back (y=0 is the front, where a person sits or stands); z runs up from the floor (z=0 is the floor).');
+    L.push('');
+    L.push('PARTS: each part is a board of thickness t, width w and length l (usually t <= w <= l), cut from a beam whose cross-section is t x w. "orient" says how it lies:');
+    L.push('- "X-flat": length along x, width along y, thickness up (seat slat, table-top board)');
+    L.push('- "X-edge": length along x, width up, thickness along y (apron or rail on edge, backrest slat, box side)');
+    L.push('- "Y-flat": length along y, width along x, thickness up');
+    L.push('- "Y-edge": length along y, width up, thickness along x (side rail, slab leg of a low bench)');
+    L.push('- "Z-front": length up, width along x, thickness along y (leg, post)');
+    L.push('- "Z-side": length up, width along y, thickness along x');
+    L.push('x, y, z = the part\'s left-front-bottom corner. "n" copies are placed at (x+i*dx, y+i*dy, z+i*dz) for i = 0..n-1. Set "n2" above 1 to repeat that whole row at offsets (dx2, dy2, dz2); for four legs use n=2 along x and n2=2 along y. Parts must not overlap, and every part must rest on or be fixed to another part or the floor.');
+    L.push('');
+    L.push('EXPRESSIONS: every numeric field of a part, and the "expr" of a calc parameter, is a STRING with an arithmetic expression over parameter keys, e.g. "L-2*T", "H-ST", "nS*(SW+gap)-gap". Allowed: numbers, + - * / ( ), min(), max(), round(), floor(), ceil(). Write sizes and positions as expressions so the piece stays consistent when the user moves a slider.');
+    L.push('');
+    L.push('PARAMETERS ("params", evaluated in order, keys are short ASCII names):');
+    L.push('- {"key","label","type":"range","min","max","step","value","unit":"ס״מ"}: a slider for a main overall size. Always give one for the length "L", and for height and depth where it makes sense.');
+    L.push('- {"key","label","type":"choice","value","options":[{"v":number,"label":"text"}]}: discrete options, such as the number of slats or a height set by a beam width.');
+    L.push('- {"key","label","type":"const","value"}: fixed construction sizes such as board thickness, beam width or gaps.');
+    L.push('- {"key","label","type":"calc","expr"}: derived values.');
+    L.push('');
+    L.push('BEAMS: the workshop stocks these cross-sections (thickness x width, cm): ' + profs + '. Prefer them. Give parts cut to the same size the same "code" letter (A, B, C...).');
+    L.push('');
+    L.push('Reply with ONLY one JSON object and no other text:');
+    L.push('{"name":"short Hebrew product name","description":"one short Hebrew sentence","params":[...],"parts":[{"code":"A","name":"Hebrew part name","n":"2","n2":"1","t":"5","w":"15","l":"D","orient":"Y-edge","x":"0","y":"0","z":"0","dx":"L-T","dy":"0","dz":"0","dx2":"0","dy2":"0","dz2":"0"}],"materials":[{"name":"בורג 5×70","qty":8}],"laborHours":2}');
+    L.push('Labels, names and materials are in Hebrew.');
+    L.push('');
+    L.push('EXAMPLE, a toddler bench with a backrest:');
+    L.push(JSON.stringify(compactTemplate(TPL_BY_ID['zula-bench'])));
+    L.push('');
+    if (mode === 'modify') {
+      L.push('CURRENT MODEL:');
+      L.push(JSON.stringify(compactTemplate({ name: item.name, desc: '', params: item.params, parts: item.parts, materials: item.materials, labor: item.labor })));
+      L.push('');
+      if (hasImages) L.push('The attached photo shows the furniture this model is based on.');
+      L.push('CHANGE REQUEST from the user (Hebrew):');
+      L.push('"""' + notes + '"""');
+      L.push('Apply the change, keep everything else as it is, and reply with the complete updated model in the same JSON format.');
+    } else if (notes) {
+      L.push('The user\'s notes (Hebrew). If they include a cut list (thickness x width x length, cm), use exactly those pieces and sizes:');
+      L.push('"""' + notes + '"""');
+    }
+    return L.join('\n');
+  }
+  function str(v, d) { return v == null || String(v).trim() === '' ? d : String(v); }
+  function normalizeTemplate(t) {
+    if (!t || typeof t !== 'object' || Array.isArray(t)) throw new Error('shape');
+    var keys = new Set(), params = [];
+    (Array.isArray(t.params) ? t.params : []).forEach(function (p) {
+      if (!p || typeof p !== 'object') return;
+      var key = String(p.key || '').trim();
+      if (!KEY_RE.test(key) || keys.has(key)) return;
+      keys.add(key);
+      var type = ['range', 'choice', 'const', 'calc'].indexOf(p.type) >= 0 ? p.type : 'const';
+      var o = { key: key, label: String(p.label || key).slice(0, 40), type: type };
+      if (type === 'range') {
+        o.min = num(p.min); o.max = num(p.max) > o.min ? num(p.max) : o.min + 100; o.step = num(p.step) > 0 ? num(p.step) : 1;
+        o.value = clamp(num(p.value), o.min, o.max); o.unit = p.unit == null ? CM : String(p.unit);
+      } else if (type === 'choice') {
+        o.options = (Array.isArray(p.options) ? p.options : []).slice(0, 12).map(function (x) {
+          return x && typeof x === 'object' ? { v: num(x.v != null ? x.v : x.value), label: String(x.label != null ? x.label : (x.v != null ? x.v : x.value)) } : { v: num(x), label: String(x) };
+        });
+        if (!o.options.length) { o.type = 'const'; o.value = num(p.value); }
+        else o.value = o.options.some(function (x) { return x.v === num(p.value); }) ? num(p.value) : o.options[0].v;
+      } else if (type === 'const') o.value = num(p.value);
+      else o.expr = str(p.expr != null ? p.expr : p.value, '0');
+      params.push(o);
+    });
+    var parts = (Array.isArray(t.parts) ? t.parts : []).slice(0, 80).filter(function (x) { return x && typeof x === 'object'; }).map(function (x) {
+      var o = part({
+        code: String(x.code || '').slice(0, 2).toUpperCase() || 'A', name: String(x.name || 'חלק').slice(0, 60),
+        n: str(x.n, '1'), n2: str(x.n2, '1'), t: str(x.t, '2'), w: str(x.w, '10'), l: str(x.l, '50'),
+        orient: ORIENT_MAP[x.orient] ? x.orient : 'X-flat', placed: x.placed !== false
+      });
+      POS_KEYS.forEach(function (k) { o[k] = str(x[k], '0'); });
+      return o;
+    });
+    if (!parts.length) throw new Error('empty');
+    var materials = (Array.isArray(t.materials) ? t.materials : []).slice(0, 20).map(function (m) {
+      return { name: String(m && m.name || ''), qty: String(m && m.qty != null ? m.qty : 1), price: m && m.price != null ? String(m.price) : '' };
+    });
+    var labor = Array.isArray(t.labor) ? t.labor.map(function (l) { return { name: String(l.name || 'עבודה'), hours: String(num(l.hours)), rate: l.rate != null ? String(l.rate) : '' }; })
+      : [{ name: 'עבודה', hours: String(num(t.laborHours) || 1), rate: '' }];
+    return { name: String(t.name || 'מוצר חדש').slice(0, 60), desc: String(t.description || t.desc || '').slice(0, 140), params: params, parts: parts, materials: materials, labor: labor };
+  }
+  var AI_ERRORS = {
+    not_granted: 'אין הרשאה להשתמש ב-Claude מהדף הזה.', sampling_disabled: 'Claude לא זמין בחשבון הזה.',
+    rate_limited: 'יותר מדי בקשות כרגע. נסו שוב בעוד כמה דקות.', session_expired: 'צריך להתחבר מחדש ל-Claude.',
+    image_rejected: 'התמונה לא התקבלה. נסו קובץ JPG או PNG אחר.', images_unavailable: 'אי אפשר לשלוח תמונות מכאן. נסו לתאר את הרהיט במילים.',
+    invalid_json: 'התשובה לא הגיעה במבנה הנכון. נסו שוב.', refused: 'Claude לא עיבד את הבקשה הזו. נסו לנסח אחרת.',
+    empty_completion: 'לא התקבלה תשובה. נסו לפשט את הבקשה.', prompt_too_large: 'הבקשה ארוכה מדי. קצרו את התיאור.'
+  };
+  var PREV = {};
+
+  /* =========================================================
+     Mutations
+     ========================================================= */
+  function toast(msg) {
+    S.ui.toast = msg; FORCE();
+    clearTimeout(toast.t);
+    toast.t = setTimeout(function () { S.ui.toast = null; FORCE(); }, 2600);
+  }
+  function openModal(m) { S.ui.modal = m; FORCE(); }
+  function closeModal() { S.ui.modal = null; FORCE(); }
+  function confirmBox(title, text, okLabel, onOk, danger) { openModal({ type: 'confirm', title: title, text: text, ok: okLabel, onOk: onOk, danger: danger !== false }); }
+  function setTab(t) { S.ui.tab = t; commit('ui'); try { window.scrollTo({ top: 0 }); } catch (e) { window.scrollTo(0, 0); } }
+  function selItem() {
+    var it = S.quote.items.find(function (i) { return i.id === S.ui.sel; });
+    if (!it && S.quote.items.length) { it = S.quote.items[0]; S.ui.sel = it.id; }
+    return it || null;
+  }
+  function selectItem(id) { S.ui.sel = id; S.ui.selPart = null; commit('ui'); }
+  function addItemFromTemplate(t) {
+    var it = itemFromTemplate(t);
+    S.quote.items.push(it); S.ui.sel = it.id; S.ui.selPart = null; S.ui.tab = 'design';
+    commit('current', 'ui');
+    return it;
+  }
+  function duplicateItem(item) {
+    var c = clone(item);
+    c.id = uid('i'); c.name = item.name + ' (עותק)';
+    c.parts.forEach(function (p) { p.id = uid('p'); });
+    var i = S.quote.items.indexOf(item);
+    S.quote.items.splice(i + 1, 0, c); S.ui.sel = c.id; commit('current', 'ui');
+  }
+  function removeItem(item) {
+    confirmBox('למחוק את "' + (item.name || 'המוצר') + '" מההצעה?', 'המוצר, רשימת החלקים והעלויות שלו יוסרו מההצעה הזו.', 'מחיקה', function () {
+      var i = S.quote.items.indexOf(item);
+      S.quote.items.splice(i, 1);
+      var nx = S.quote.items[Math.max(0, i - 1)];
+      S.ui.sel = nx ? nx.id : null; S.ui.selPart = null;
+      commit('current', 'ui');
+    });
+  }
+  function saveAsTemplate(item) {
+    var t = templateFromItem(item);
+    t.id = uid('t'); t.desc = 'נשמר מתוך הצעה ' + S.quote.no; t.photo = item.photo || null; t.updatedAt = Date.now();
+    S.library.unshift(t); commit('library'); pushListItem('templates', t);
+    toast('נשמר בתבניות שלי');
+  }
+  function addPart(item) {
+    var last = item.parts[item.parts.length - 1];
+    var used = new Set(item.parts.map(function (p) { return p.code; }));
+    var code = 'A';
+    for (var c = 65; c < 91; c++) { if (!used.has(String.fromCharCode(c))) { code = String.fromCharCode(c); break; } }
+    var p = part({ code: code, name: 'חלק חדש', t: last ? last.t : '2', w: last ? last.w : '10', l: '50', placed: item.parts.some(function (x) { return x.placed !== false; }) ? true : false });
+    item.parts.push(p); S.ui.selPart = p.id; commit('current');
+  }
+  function dupPart(item, pt) {
+    var c = clone(pt); c.id = uid('p');
+    item.parts.splice(item.parts.indexOf(pt) + 1, 0, c); S.ui.selPart = c.id; commit('current');
+  }
+  function delPart(item, pt) {
+    item.parts.splice(item.parts.indexOf(pt), 1);
+    if (S.ui.selPart === pt.id) S.ui.selPart = null;
+    commit('current');
+  }
+  function quoteSummary(q) {
+    var C = computeFor(q);
+    return { total: C.pricing.total, items: q.items.length };
+  }
+  function upsertSaved(q) {
+    if (!q.items.length && !q.title) return;
+    var copy = clone(q);
+    copy.updatedAt = Date.now();
+    copy.summary = quoteSummary(copy);
+    var i = S.saved.findIndex(function (s) { return s.id === q.id; });
+    if (i >= 0) S.saved[i] = copy; else S.saved.unshift(copy);
+    commit('saved'); pushListItem('quotes', copy);
+  }
+  function saveCurrent() { upsertSaved(S.quote); toast('ההצעה נשמרה ברשימת ההצעות'); }
+  function startNewQuote() {
+    if (!S.quote.sample || num(S.quote.updatedAt) > 0) upsertSaved(S.quote);
+    var no = num(S.settings.nextNo) || 1001;
+    S.settings.nextNo = no + 1;
+    S.quote = newQuote(no, S.settings);
+    S.ui.sel = null; S.ui.selPart = null; S.ui.tab = 'design'; S.ui.modal = null;
+    commit('current', 'settings', 'ui');
+    toast('הצעה חדשה מס׳ ' + no);
+  }
+  function openSaved(id) {
+    var s = S.saved.find(function (x) { return x.id === id; });
+    if (!s) return;
+    if (S.quote.id !== id && (!S.quote.sample || num(S.quote.updatedAt) > 0)) upsertSaved(S.quote);
+    S.quote = fixQuote(clone(s));
+    S.ui.sel = null; S.ui.selPart = null; S.ui.modal = null; S.ui.tab = 'design';
+    commit('current', 'ui');
+    toast('נפתחה הצעה מס׳ ' + S.quote.no);
+  }
+  function duplicateSaved(id) {
+    var s = S.saved.find(function (x) { return x.id === id; });
+    if (!s) return;
+    var c = fixQuote(clone(s)), no = num(S.settings.nextNo) || 1001;
+    S.settings.nextNo = no + 1;
+    c.id = uid('q'); c.no = no; c.title = (s.title || 'הצעה') + ' (עותק)'; c.date = todayISO(); c.sample = false;
+    c.updatedAt = Date.now(); c.summary = quoteSummary(c);
+    S.saved.unshift(c); commit('saved', 'settings'); pushListItem('quotes', c);
+    toast('נוצר עותק מס׳ ' + no);
+  }
+  function deleteSaved(id) {
+    var s = S.saved.find(function (x) { return x.id === id; });
+    if (!s) return;
+    confirmBox('למחוק את הצעה מס׳ ' + s.no + '?', 'ההצעה תימחק מהרשימה. אי אפשר לבטל.', 'מחיקה', function () {
+      S.saved = S.saved.filter(function (x) { return x.id !== id; });
+      commit('saved'); delListItem('quotes', id);
+      openModal({ type: 'saved' });
+    });
+  }
+  function parseCutList(text, takenCodes) {
+    var out = [], skipped = 0, codes = {}, taken = new Set(takenCodes || []);
+    function freeCode() { for (var c = 65; c < 91; c++) { var k = String.fromCharCode(c); if (!taken.has(k)) return k; } return 'Z'; }
+    text.split(/\r?\n/).forEach(function (line) {
+      var s = line.trim();
+      if (!s) return;
+      var m = s.match(/(\d+(?:[.,]\d+)?)\s*[xX×*]\s*(\d+(?:[.,]\d+)?)\s*[xX×*]\s*(\d+(?:[.,]\d+)?)/);
+      if (!m) { skipped++; return; }
+      var d = [m[1], m[2], m[3]].map(num);
+      var rest = s.slice(0, m.index) + ' ' + s.slice(m.index + m[0].length);
+      var qty = 1, code = '';
+      var qc = rest.match(/(\d+)\s*-\s*([A-Za-z]{1,2})(?![A-Za-z])/);
+      var cq = rest.match(/(?:^|[^A-Za-z])([A-Za-z]{1,2})\s*-\s*(\d+)/);
+      if (qc) { qty = +qc[1]; code = qc[2].toUpperCase(); rest = rest.replace(qc[0], ' '); }
+      else if (cq) { code = cq[1].toUpperCase(); qty = +cq[2]; rest = rest.replace(cq[0], ' '); }
+      else {
+        var q = rest.match(/(?:^|\s)(\d+)\s*(?:יח(?:׳|'|ידות)?|x|×)?(?=\s|$|[|,;])/);
+        if (q) { qty = +q[1]; rest = rest.replace(q[0], ' '); }
+      }
+      var name = rest.replace(/[|,;:\t]+/g, ' ').replace(/\s+/g, ' ').trim() || 'חלק';
+      var dimKey = d.join('x');
+      if (!code) code = codes[dimKey] || freeCode();
+      codes[dimKey] = codes[dimKey] || code;
+      taken.add(code);
+      out.push(part({ code: code, name: name, n: String(qty), t: fmtDim(d[0]), w: fmtDim(d[1]), l: fmtDim(d[2]), placed: false }));
+    });
+    return { parts: out, skipped: skipped };
+  }
+  function exportBackup() {
+    var imgs = {};
+    [S.quote].concat(S.saved).forEach(function (q) { q.items.forEach(function (it) { if (it.photo) { var d = getImage(it.photo); if (d) imgs[it.photo] = d; } }); });
+    S.library.forEach(function (t) { if (t.photo) { var d = getImage(t.photo); if (d) imgs[t.photo] = d; } });
+    var data = { app: 'nagriya-quotes', v: 1, exportedAt: new Date().toISOString(), prices: S.prices, settings: S.settings, quote: S.quote, saved: S.saved, library: S.library, images: imgs };
+    saveFile('גיבוי-הצעות-' + todayISO() + '.json', JSON.stringify(data), 'application/json');
+  }
+  function importBackup(data) {
+    var now = Date.now();
+    if (data.prices) { S.prices = fixGroup('prices', data.prices); }
+    if (data.settings) { S.settings = fixGroup('settings', data.settings); }
+    if (data.quote) { S.quote = fixQuote(data.quote); }
+    if (Array.isArray(data.saved)) S.saved = data.saved.map(function (q) { q = fixQuote(q); q.updatedAt = now; return q; });
+    if (Array.isArray(data.library)) S.library = data.library.map(function (t) { t.updatedAt = now; return t; });
+    if (data.images) Object.keys(data.images).forEach(function (k) { IMG[k] = data.images[k]; LS.set('img:' + k, data.images[k]); LS.del('imgup:' + k); });
+    S.ui.sel = null; S.ui.selPart = null; S.ui.modal = null;
+    commit('prices', 'settings', 'current', 'saved', 'library', 'ui');
+    S.saved.forEach(function (q) { pushListItem('quotes', q); });
+    S.library.forEach(function (t) { pushListItem('templates', t); });
+    if (Cloud.db) pushLocalImages();
+    toast('הגיבוי שוחזר');
+  }
+  function readJSONFile(file) {
+    return new Promise(function (resolve, reject) {
+      var fr = new FileReader();
+      fr.onload = function () { try { resolve(JSON.parse(fr.result)); } catch (e) { reject(e); } };
+      fr.onerror = reject;
+      fr.readAsText(file);
+    });
+  }
+  function importProductJSON(obj) {
+    var t = normalizeTemplate(obj);
+    t.labor = t.labor.length ? t.labor : [{ name: 'עבודה', hours: '1', rate: '' }];
+    var it = addItemFromTemplate(t);
+    closeModal();
+    toast('המוצר "' + it.name + '" נוסף להצעה');
+  }
+
+  /* =========================================================
+     Documents: customer quote, workshop sheet, plain text
+     ========================================================= */
+  var DOC_CSS = [
+    '.doc{background:#fff;color:#1f1812;font-family:Heebo,Arial,sans-serif;font-size:13px;line-height:1.5;direction:rtl;text-align:right;width:100%;max-width:800px;padding:36px 40px;border-radius:2px}',
+    '.doc *{box-sizing:border-box}.doc .ltr{direction:ltr;unicode-bidi:isolate}.doc p{margin:0}',
+    '.doc-head{display:flex;justify-content:space-between;gap:24px;align-items:flex-start;padding-bottom:16px;border-bottom:2px solid #2a1f17}',
+    '.doc-biz-name{font-family:"Frank Ruhl Libre",serif;font-size:27px;font-weight:500;line-height:1.1}',
+    '.doc-biz-line{font-size:12px;color:#6b5a4b;margin-top:3px}',
+    '.doc-contact{font-size:11.5px;color:#4a3b2e;margin-top:8px;display:flex;flex-direction:column;gap:1px}',
+    '.doc-meta{font-size:12px;color:#4a3b2e;display:flex;flex-direction:column;gap:2px;align-items:flex-end;text-align:left}',
+    '.doc-title{font-family:"Frank Ruhl Libre",serif;font-size:23px;color:#1f1812;font-weight:500;line-height:1.1;margin-bottom:4px}',
+    '.doc-to{margin-top:18px;display:flex;flex-direction:column;gap:1px}',
+    '.doc-label{font-size:11px;letter-spacing:.06em;color:#9a6535;font-weight:600}',
+    '.doc-strong{font-size:15px;font-weight:600}',
+    '.doc-subject{margin:18px 0 8px;font-size:15px;font-weight:600}',
+    '.doc-table{width:100%;border-collapse:collapse}',
+    '.doc-table th{background:#2a1f17;color:#f3ede3;font-weight:500;font-size:11.5px;padding:7px 8px;text-align:right}',
+    '.doc-table td{padding:9px 8px;border-bottom:1px solid #e6dccf;vertical-align:top}',
+    '.doc-table .n{text-align:left;white-space:nowrap;font-variant-numeric:tabular-nums}',
+    '.doc-item{display:flex;gap:12px;align-items:flex-start}',
+    '.doc-item img{width:124px;height:86px;object-fit:contain;background:#fbf8f3;border:1px solid #eee4d6;border-radius:3px;flex:none}',
+    '.doc-item .t{font-weight:600;font-size:13.5px}.doc-item .s{font-size:11.5px;color:#6b5a4b}',
+    '.doc-totals{margin-top:14px;margin-inline-start:auto;width:min(300px,100%);display:flex;flex-direction:column}',
+    '.doc-tr{display:flex;justify-content:space-between;gap:12px;padding:5px 0;border-bottom:1px solid #eee4d6;font-variant-numeric:tabular-nums}',
+    '.doc-tr.grand{border-bottom:0;border-top:2px solid #2a1f17;margin-top:4px;padding-top:8px;font-size:16px;font-weight:700}',
+    '.doc-notes{margin-top:22px;font-size:12px;color:#3a2e24;white-space:pre-wrap}',
+    '.doc-sign{margin-top:36px;display:flex;justify-content:space-between;gap:24px;font-size:12px;color:#4a3b2e}',
+    '.doc-sign div{flex:1;border-top:1px solid #9a8977;padding-top:6px}',
+    '.doc-foot{margin-top:24px;font-size:10.5px;color:#9a8977;text-align:center}',
+    '.doc-sec{margin-top:22px;break-inside:avoid}',
+    '.doc-h{font-size:15px;font-weight:600;margin:0 0 8px;display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap}',
+    '.doc-h small{font-size:11.5px;color:#6b5a4b;font-weight:400}',
+    '.doc-shop{display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:14px;align-items:start}',
+    '.doc-shop img{width:100%;border:1px solid #eee4d6;border-radius:3px;background:#fbf8f3;display:block}',
+    '.doc-sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-inline-end:5px;vertical-align:middle;border:1px solid rgba(0,0,0,.2)}',
+    '.doc-beam{display:flex;height:20px;border:1px solid #cdbfae;border-radius:2px;overflow:hidden;direction:ltr;background:repeating-linear-gradient(-45deg,#f3ede3 0 5px,#fff 5px 10px);margin-bottom:4px}',
+    '.doc-beam .p{display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;border-right:2px solid #fff;overflow:hidden;white-space:nowrap}',
+    '.doc-beam .r{flex:1;font-size:9.5px;color:#9a8977;display:flex;align-items:center;justify-content:center;white-space:nowrap;overflow:hidden}',
+    '.doc-mini{font-size:11.5px;color:#6b5a4b;margin-top:4px}',
+    '@media (max-width:640px){.doc{padding:20px 14px;font-size:12px}.doc-head{flex-direction:column}.doc-meta{align-items:flex-start;text-align:right}.doc-item{flex-direction:column;gap:6px}.doc-item img{width:110px;height:76px}.doc-table th,.doc-table td{padding:7px 5px}.doc-shop{grid-template-columns:minmax(0,1fr)}}',
+    '@media print{.doc{max-width:none;padding:0;box-shadow:none!important}.no-print{display:none!important}.doc-table tr{break-inside:avoid}}'
+  ].join('\n');
+  (function () { var st = document.createElement('style'); st.textContent = DOC_CSS; document.head.appendChild(st); })();
+
+  function itemImage(it, E) {
+    if (it.img === 'none') return null;
+    if (it.img === 'photo' && it.photo) return getImage(it.photo);
+    return snapshotFor(E, true);
+  }
+  function dimsText(E) { return E && E.dims ? fmtDim(E.dims.W) + ' × ' + fmtDim(E.dims.D) + ' × ' + fmtDim(E.dims.H) : ''; }
+  function bizBlock(b) {
+    var c = [b.phone, b.email, b.address, b.taxId ? 'ע.מ./ח.פ. ' + b.taxId : ''].filter(Boolean).map(function (x) { return '<span>' + esc(x) + '</span>'; }).join('');
+    return '<div><div class="doc-biz-name">' + esc(b.name || 'הנגרייה') + '</div>' + (b.line ? '<div class="doc-biz-line">' + esc(b.line) + '</div>' : '') + (c ? '<div class="doc-contact">' + c + '</div>' : '') + '</div>';
+  }
+  function quoteDocHTML(C) {
+    var q = S.quote, b = S.settings.biz, P = C.pricing;
+    var valid = num(q.validDays) > 0 ? addDays(q.date, num(q.validDays)) : '';
+    var rows = [], n = 0;
+    q.items.forEach(function (it) {
+      var p = P.byId[it.id];
+      if (!p || p.Q <= 0) return;
+      var E = C.evalById[it.id], img = itemImage(it, E), dt = dimsText(E);
+      n++;
+      rows.push('<tr><td class="n">' + n + '</td><td><div class="doc-item">' + (img ? '<img src="' + img + '" alt="">' : '') + '<div><div class="t">' + esc(it.name) + '</div>' +
+        (dt ? '<div class="s">מידות (אורך × עומק × גובה): <span class="ltr">' + dt + '</span> ' + CM + '</div>' : '') +
+        (it.note ? '<div class="s">' + esc(it.note) + '</div>' : '') + '</div></div></td><td class="n">' + p.Q + '</td><td class="n">' + money(p.unit, true) + '</td><td class="n">' + money(p.line, true) + '</td></tr>');
+    });
+    (q.extras || []).forEach(function (e) {
+      if (!num(e.amount)) return;
+      n++;
+      rows.push('<tr><td class="n">' + n + '</td><td><div class="t">' + esc(e.name || 'תוספת') + '</div></td><td class="n">1</td><td class="n">' + money(num(e.amount), true) + '</td><td class="n">' + money(num(e.amount), true) + '</td></tr>');
+    });
+    var tot = [];
+    if (P.discount > 0) {
+      tot.push('<div class="doc-tr"><span>סכום</span><span>' + money(P.subtotal, true) + '</span></div>');
+      tot.push('<div class="doc-tr"><span>הנחה ' + fmtDim(num(q.pricing.discount)) + '%</span><span>' + money(-P.discount, true) + '</span></div>');
+    }
+    if (q.pricing.vatOn) {
+      tot.push('<div class="doc-tr"><span>סה״כ לפני מע״מ</span><span>' + money(P.beforeVat, true) + '</span></div>');
+      tot.push('<div class="doc-tr"><span>מע״מ ' + fmtDim(num(q.pricing.vat)) + '%</span><span>' + money(P.vat, true) + '</span></div>');
+      tot.push('<div class="doc-tr grand"><span>סה״כ לתשלום</span><span>' + money(P.total, true) + '</span></div>');
+    } else {
+      tot.push('<div class="doc-tr grand"><span>סה״כ לתשלום</span><span>' + money(P.total, true) + '</span></div>');
+    }
+    var cust = q.customer || {};
+    var custLine = [cust.phone, cust.email, cust.address].filter(Boolean).map(esc).join(' · ');
+    return '<div class="doc">' +
+      '<div class="doc-head">' + bizBlock(b) + '<div class="doc-meta"><div class="doc-title">הצעת מחיר</div><div>מס׳ ' + esc(q.no) + '</div><div>תאריך: ' + fmtDate(q.date) + '</div>' + (valid ? '<div>בתוקף עד: ' + fmtDate(valid) + '</div>' : '') + '</div></div>' +
+      (cust.name || custLine ? '<div class="doc-to"><div class="doc-label">לכבוד</div>' + (cust.name ? '<div class="doc-strong">' + esc(cust.name) + '</div>' : '') + (custLine ? '<div>' + custLine + '</div>' : '') + '</div>' : '') +
+      (q.title ? '<div class="doc-subject">הנדון: ' + esc(q.title) + '</div>' : '<div style="height:14px"></div>') +
+      '<table class="doc-table"><thead><tr><th style="width:28px">#</th><th>פריט</th><th class="n">כמות</th><th class="n">מחיר ליחידה</th><th class="n">סה״כ</th></tr></thead><tbody>' +
+      (rows.join('') || '<tr><td colspan="5">אין פריטים בהצעה</td></tr>') + '</tbody></table>' +
+      '<div class="doc-totals">' + tot.join('') + '</div>' +
+      (!q.pricing.vatOn ? '<div class="doc-mini">המחירים אינם כוללים מע״מ.</div>' : '') +
+      (q.terms ? '<div class="doc-notes"><div class="doc-label">הערות ותנאים</div>' + esc(q.terms) + '</div>' : '') +
+      '<div class="doc-sign"><div>חתימת הלקוח</div><div>תאריך</div></div>' +
+      '<div class="doc-foot">' + esc(b.name || '') + (b.line ? ' · ' + esc(b.line) : '') + '</div>' +
+      '</div>';
+  }
+  function groupedCuts(E, Q) {
+    var map = new Map();
+    E.parts.forEach(function (r) {
+      if (!r.ok || r.qty <= 0) return;
+      var key = [r.pt.code, fmtDim(r.f.t), fmtDim(r.f.w), fmtDim(r.f.l)].join('|');
+      if (!map.has(key)) map.set(key, { code: r.pt.code, names: [], qty: 0, t: r.f.t, w: r.f.w, l: r.f.l, color: partColor(r.pt.code, r.idx, false) });
+      var g = map.get(key);
+      g.qty += r.qty;
+      if (r.pt.name && g.names.indexOf(r.pt.name) < 0) g.names.push(r.pt.name);
+    });
+    return Array.from(map.values()).map(function (g) { g.total = g.qty * Q; return g; });
+  }
+  function shopDocHTML(C) {
+    var q = S.quote, out = [];
+    out.push('<div class="doc"><div class="doc-head">' + bizBlock(S.settings.biz) + '<div class="doc-meta"><div class="doc-title">דף עבודה</div><div>הצעה מס׳ ' + esc(q.no) + '</div><div>' + fmtDate(q.date) + '</div></div></div>');
+    if (q.title) out.push('<div class="doc-subject">' + esc(q.title) + '</div>');
+    q.items.forEach(function (it, i) {
+      var Q = Math.max(0, Math.round(num(it.qty)));
+      if (!Q) return;
+      var E = C.evalById[it.id], img = snapshotFor(E, true), cuts = groupedCuts(E, Q), dt = dimsText(E);
+      var P = C.pricing.byId[it.id];
+      out.push('<div class="doc-sec"><div class="doc-h"><span>' + (i + 1) + '. ' + esc(it.name) + ' · ' + Q + ' יח׳</span>' + (dt ? '<small>מידות כוללות <span class="ltr">' + dt + '</span> ' + CM + '</small>' : '') + '</div>');
+      out.push('<div class="doc-shop"><div><table class="doc-table"><thead><tr><th>חלק</th><th>שימוש</th><th class="n">ליחידה</th><th class="n">להזמנה</th><th class="n">חומר ומידה</th></tr></thead><tbody>');
+      cuts.forEach(function (g) {
+        out.push('<tr><td><span class="doc-sw" style="background:' + g.color + '"></span>' + esc(g.code) + '</td><td>' + esc(g.names.join(' + ')) + '</td><td class="n">' + g.qty + '</td><td class="n"><b>' + g.total + '</b></td><td class="n"><span class="ltr">' + fmtDim(g.t) + '×' + fmtDim(g.w) + '×' + fmtDim(g.l) + '</span></td></tr>');
+      });
+      if (!cuts.length) out.push('<tr><td colspan="5">אין חלקים</td></tr>');
+      out.push('</tbody></table>');
+      var mats = (it.materials || []).filter(function (m) { return m.name && num(m.qty); });
+      if (mats.length) out.push('<div class="doc-mini">חומרים נוספים: ' + mats.map(function (m) { return esc(m.name) + ' × ' + fmtDim(num(m.qty) * Q); }).join(' · ') + '</div>');
+      if (P && P.hours) out.push('<div class="doc-mini">זמן עבודה מתוכנן: ' + fmtHours(P.hours) + ' שעות</div>');
+      out.push('</div>' + (img ? '<img src="' + img + '" alt="">' : '<div></div>') + '</div></div>');
+    });
+    var W = C.wood;
+    var buy = W.results.filter(function (r) { return !r.missing && r.pack.beams.length; });
+    if (buy.length) {
+      out.push('<div class="doc-sec"><div class="doc-h"><span>קורות לקנייה ותכנית חיתוך</span><small>עובי מסור ' + fmtDim(num(S.prices.kerf)) + ' ' + CM + '</small></div>');
+      out.push('<table class="doc-table"><thead><tr><th>חתך</th><th class="n">אורך קורה</th><th class="n">קורות</th><th class="n">ניצול</th><th>הערה</th></tr></thead><tbody>');
+      buy.forEach(function (r) { out.push('<tr><td><span class="ltr">' + sec(r.t, r.w) + '</span></td><td class="n">' + fmtDim(r.stock) + ' ' + CM + '</td><td class="n"><b>' + r.pack.beams.length + '</b></td><td class="n">' + Math.round(r.util * 100) + '%</td><td>' + esc(r.prof.note || '') + '</td></tr>'); });
+      out.push('</tbody></table>');
+      buy.forEach(function (r) {
+        out.push('<div style="margin-top:12px"><div class="doc-mini" style="margin-bottom:4px"><b>' + lri(sec(r.t, r.w)) + '</b> · קורה ' + fmtDim(r.stock) + ' ' + CM + '</div>');
+        r.pack.beams.slice(0, 40).forEach(function (bm) {
+          out.push('<div class="doc-beam">' + bm.pieces.map(function (pc) { return '<div class="p" style="flex:0 0 ' + (pc.len / r.stock * 100) + '%;background:' + pc.color + ';color:' + textOn(pc.color) + '">' + esc(pc.code) + ' ' + fmtDim(pc.len) + '</div>'; }).join('') + '<div class="r">' + (bm.free > 2 ? 'שארית ' + fmtDim(bm.free) : '') + '</div></div>');
+        });
+        out.push('</div>');
+      });
+      out.push('</div>');
+    }
+    var miss = W.results.filter(function (r) { return r.missing; });
+    if (miss.length) out.push('<div class="doc-sec doc-mini">חתכים שאין להם קורה במחירון: ' + miss.map(function (r) { return lri(sec(r.t, r.w)); }).join(', ') + '</div>');
+    out.push('</div>');
+    return out.join('');
+  }
+  function docFile(title, body) {
+    return '<!DOCTYPE html><html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>' + esc(title) + '</title>' +
+      '<link rel="stylesheet" href="' + FONTS_URL + '"><style>body{margin:0;background:#efe9df;padding:24px 12px;font-family:Heebo,Arial,sans-serif}.bar{max-width:800px;margin:0 auto 12px;display:flex;justify-content:flex-end}.bar button{font:inherit;padding:8px 16px;border-radius:6px;border:1px solid #9a6535;background:#9a6535;color:#fff;cursor:pointer}.doc{margin:0 auto;box-shadow:0 8px 30px -12px rgba(0,0,0,.3)}@media print{body{background:#fff;padding:0}}@page{size:A4;margin:12mm}' + DOC_CSS + '</style></head><body>' +
+      '<div class="bar no-print"><button onclick="window.print()">הדפסה או שמירה כ-PDF</button></div>' + body + '</body></html>';
+  }
+  function quoteText(C) {
+    var q = S.quote, P = C.pricing, b = S.settings.biz, L = [];
+    L.push('הצעת מחיר מס׳ ' + q.no + ' · ' + (b.name || 'הנגרייה'));
+    if (q.customer && q.customer.name) L.push('לכבוד: ' + q.customer.name);
+    if (q.title) L.push('הנדון: ' + q.title);
+    L.push('');
+    q.items.forEach(function (it) {
+      var p = P.byId[it.id];
+      if (!p || !p.Q) return;
+      var dt = dimsText(C.evalById[it.id]);
+      L.push('• ' + it.name + (dt ? ' (' + lri(dt) + ' ' + CM + ')' : '') + ': ' + p.Q + ' × ' + money(p.unit, true) + ' = ' + money(p.line, true));
+    });
+    (q.extras || []).forEach(function (e) { if (num(e.amount)) L.push('• ' + (e.name || 'תוספת') + ': ' + money(num(e.amount), true)); });
+    L.push('');
+    if (P.discount > 0) L.push('הנחה ' + fmtDim(num(q.pricing.discount)) + '%: ' + money(-P.discount, true));
+    if (q.pricing.vatOn) {
+      L.push('סה״כ לפני מע״מ: ' + money(P.beforeVat, true));
+      L.push('מע״מ ' + fmtDim(num(q.pricing.vat)) + '%: ' + money(P.vat, true));
+    }
+    L.push('סה״כ לתשלום: ' + money(P.total, true));
+    if (num(q.validDays) > 0) L.push('ההצעה בתוקף עד ' + fmtDate(addDays(q.date, num(q.validDays))));
+    if (q.terms) { L.push(''); L.push(q.terms); }
+    return L.join('\n');
+  }
+  function printDoc(docHTML) {
+    var root = document.getElementById('print-root');
+    root.innerHTML = docHTML;
+    var clear = function () { root.innerHTML = ''; window.removeEventListener('afterprint', clear); };
+    window.addEventListener('afterprint', clear);
+    setTimeout(function () { window.print(); }, 60);
+  }
+  function exportPNG(docHTML, filename) {
+    toast('מכין תמונה…');
+    loadScript(H2C_URL).then(function () {
+      var host = document.createElement('div');
+      host.style.cssText = 'position:absolute;top:0;left:-12000px;width:800px;background:#fff';
+      host.innerHTML = docHTML;
+      document.body.appendChild(host);
+      var ready = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
+      return ready.then(function () {
+        return window.html2canvas(host.firstElementChild, { scale: 2, backgroundColor: '#ffffff', logging: false });
+      }).then(function (canvas) {
+        return new Promise(function (res) { canvas.toBlob(res, 'image/png'); });
+      }).then(function (blob) {
+        host.remove();
+        if (!blob) throw new Error('no image');
+        return saveFile(filename, blob, 'image/png');
+      }, function (e) { host.remove(); throw e; });
+    }).catch(function () { toast('לא הצלחתי ליצור תמונה. נסו את ההורדה כקובץ.'); });
+  }
+
+  /* =========================================================
+     UI components
+     ========================================================= */
+  var Ico = {
+    move: function () { return html`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M3 12h18M12 3 9.5 5.5M12 3l2.5 2.5M12 21l-2.5-2.5M12 21l2.5-2.5M3 12l2.5-2.5M3 12l2.5 2.5M21 12l-2.5-2.5M21 12l-2.5 2.5"/></svg>`; },
+    copy: function () { return html`<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></svg>`; },
+    trash: function () { return html`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>`; },
+    close: function () { return html`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>`; }
+  };
+  var TABS = [
+    { id: 'design', label: 'תכנון ושרטוט' },
+    { id: 'wood', label: 'מחירון ועץ' },
+    { id: 'costs', label: 'עלויות ורווח' },
+    { id: 'quote', label: 'הצעה ללקוח' },
+    { id: 'shop', label: 'דף עבודה' }
+  ];
+  function syncInfo() {
+    switch (Cloud.state) {
+      case 'synced': return ['ok', 'מסונכרן לחשבון שלך'];
+      case 'syncing': return ['busy', 'מסנכרן…'];
+      case 'error': return ['err', 'הסנכרון נכשל · נשמר במכשיר'];
+      case 'full': return ['err', 'האחסון בחשבון מלא · נשמר במכשיר'];
+      case 'device': return ['', 'נשמר במכשיר הזה'];
+      default: return ['', 'נשמר בדפדפן הזה'];
+    }
+  }
+
+  function Header(props) {
+    var C = props.C, si = syncInfo();
+    var warn = C.wood.missingN > 0 || C.wood.tooLong > 0;
+    return html`<header class="top">
+      <div class="wrap top-row">
+        <div class="brand"><span class="brand-name">${S.settings.biz.name || 'הנגרייה'}</span><span class="brand-sub">מחשבון הצעות מחיר</span></div>
+        <div class="top-actions">
+          <span class=${'sync ' + si[0]}>${si[1]}</span>
+          <button class="btn ghost sm" onClick=${function () { openModal({ type: 'saved' }); }}>הצעות שמורות ${S.saved.length ? html`<span class="badge">${S.saved.length}</span>` : null}</button>
+          <button class="btn ghost sm" onClick=${saveCurrent}>שמירה</button>
+          <button class="btn ghost sm" onClick=${startNewQuote}>הצעה חדשה</button>
+          <button class="btn ghost sm" onClick=${function () { openModal({ type: 'backup' }); }}>גיבוי</button>
+        </div>
+      </div>
+      <nav class="wrap tabs" aria-label="שלבי ההצעה">
+        ${TABS.map(function (t) {
+          return html`<button class=${'tab' + (S.ui.tab === t.id ? ' on' : '')} aria-current=${S.ui.tab === t.id ? 'page' : null} onClick=${function () { setTab(t.id); }}>${t.label}${t.id === 'wood' && warn ? html`<span class="dot" title="יש חלקים בלי מחיר"></span>` : null}</button>`;
+        })}
+      </nav>
+    </header>`;
+  }
+
+  function Stepper(props) {
+    var v = props.value;
+    return html`<div class="stepper">
+      <button type="button" aria-label="פחות" onClick=${function () { props.onChange(String(Math.max(props.min || 0, Math.round(num(v)) - 1))); }}>−</button>
+      <input id=${props.id} inputmode="numeric" aria-label=${props.label} value=${v} onInput=${function (e) { props.onChange(e.target.value); }}/>
+      <button type="button" aria-label="יותר" onClick=${function () { props.onChange(String(Math.round(num(v)) + 1)); }}>+</button>
+    </div>`;
+  }
+
+  function ParamControl(props) {
+    var p = props.p, item = props.item, v = num(p.value);
+    var id = 'pc-' + item.id + '-' + p.key;
+    if (p.type === 'choice') {
+      return html`<div class="pc">
+        <div class="pc-head"><span class="pc-label">${p.label}${p.hint ? html`<span class="pc-hint">${p.hint}</span>` : null}</span></div>
+        <div class="chips" role="group" aria-label=${p.label}>
+          ${(p.options || []).map(function (o) {
+            var on = num(o.v) === v;
+            return html`<button type="button" class=${'chip' + (on ? ' on' : '')} aria-pressed=${on} onClick=${function () { p.value = num(o.v); commit('current'); }}>${o.label != null ? o.label : o.v}</button>`;
+          })}
+        </div>
+      </div>`;
+    }
+    var min = num(p.min), max = num(p.max), step = num(p.step) || 1;
+    function set(x) { p.value = Math.round(clamp(x, min, max) / step) * step; p.value = Math.round(p.value * 1000) / 1000; commit('current'); }
+    var pct = max > min ? (clamp(v, min, max) - min) / (max - min) * 100 : 0;
+    return html`<div class="pc">
+      <div class="pc-head">
+        <label class="pc-label" for=${id}>${p.label}${p.hint ? html`<span class="pc-hint">${p.hint}</span>` : null}</label>
+        <div class="valbox">
+          <button type="button" aria-label=${'להקטין ' + p.label} onClick=${function () { set(v - step); }}>−</button>
+          <input aria-label=${p.label} inputmode="decimal" value=${fmtDim(v)} onChange=${function (e) { set(num(e.target.value)); }}/>
+          ${p.unit ? html`<span class="u">${p.unit}</span>` : null}
+          <button type="button" aria-label=${'להגדיל ' + p.label} onClick=${function () { set(v + step); }}>+</button>
+        </div>
+      </div>
+      <input id=${id} class="range" type="range" min=${min} max=${max} step=${step} value=${v} style=${'--pct:' + pct + '%'} onInput=${function (e) { p.value = num(e.target.value); commit('current'); }}/>
+      <div class="pc-scale"><span>${fmtDim(min)}</span><span>${fmtDim(max)}</span></div>
+    </div>`;
+  }
+
+  function Viewer3D(props) {
+    var item = props.item, E = props.E;
+    var host = useRef(null), V = mainViewer();
+    var photo = item.photo ? getImage(item.photo) : null;
+    var showPhoto = S.ui.photo && !!photo;
+    useEffect(function () {
+      if (V && host.current) { host.current.appendChild(V.el); V.w = 0; V.resize(); }
+      return function () { if (V && V.el.parentNode) V.el.parentNode.removeChild(V.el); };
+    }, []);
+    var sig = item.id + '|' + modelSig(E, S.ui.vivid);
+    useEffect(function () {
+      if (!V) return;
+      V.onPick = function (pid) { S.ui.selPart = pid; FORCE(); };
+      var reset = V.lastItem !== item.id;
+      V.lastItem = item.id;
+      V.showDims = S.ui.dims && !E.layout;
+      V.sel = S.ui.selPart;
+      V.setModel(coloredBoxes(E, S.ui.vivid), { reset: reset });
+    }, [sig]);
+    useEffect(function () { if (V) V.highlight(S.ui.selPart); }, [S.ui.selPart]);
+    useEffect(function () { if (V) V.setDims(S.ui.dims && !E.layout); }, [S.ui.dims, E.layout]);
+    useEffect(function () { if (V && !showPhoto) { V.w = 0; V.resize(); } }, [showPhoto]);
+    var selR = E.parts.find(function (r) { return r.pt.id === S.ui.selPart; });
+    function tog(k) { S.ui[k] = !S.ui[k]; commit('ui'); }
+    return html`<div class="boardcol">
+      <div class="board">
+        <div class="board-canvas" ref=${host} hidden=${showPhoto || !V}></div>
+        ${!V ? html`<div class="board-canvas"><div class="board-empty">השרטוט התלת־ממדי לא נטען בדפדפן הזה. רשימת החיתוכים והמחירים עובדים כרגיל.</div></div>` : null}
+        ${showPhoto ? html`<img class="board-photo" src=${photo} alt=${'תמונה של ' + item.name}/>` : null}
+        ${!showPhoto && E.layout ? html`<div class="board-note">לחלקים אין מיקום בהרכבה, לכן הם מוצגים פרוסים כמו רשימת חיתוכים</div>` : null}
+        ${!showPhoto && !E.boxes.length && V ? html`<div class="board-empty">הוסיפו חלקים לרשימה כדי לראות שרטוט</div>` : null}
+        ${!showPhoto && selR ? html`<div class="board-sel">${selR.pt.code} · ${selR.pt.name} · <span class="ltr">${fmtDim(selR.f.t)}×${fmtDim(selR.f.w)}×${fmtDim(selR.f.l)}</span> · ${selR.qty} יח׳</div>` : null}
+      </div>
+      <div class="board-tools">
+        <div class="seg" role="group" aria-label="זווית מבט">
+          ${[['iso', 'תלת־ממד'], ['front', 'חזית'], ['side', 'צד'], ['top', 'מלמעלה']].map(function (v) {
+            return html`<button type="button" onClick=${function () { if (S.ui.photo) { S.ui.photo = false; commit('ui'); } if (V) V.setView(v[0]); }}>${v[1]}</button>`;
+          })}
+        </div>
+        <div class="seg" role="group" aria-label="תצוגה">
+          <button type="button" class=${S.ui.dims ? 'on' : ''} aria-pressed=${S.ui.dims} onClick=${function () { tog('dims'); }}>מידות</button>
+          <button type="button" class=${S.ui.vivid ? 'on' : ''} aria-pressed=${S.ui.vivid} onClick=${function () { tog('vivid'); }}>צבע לכל חלק</button>
+          ${photo ? html`<button type="button" class=${S.ui.photo ? 'on' : ''} aria-pressed=${S.ui.photo} onClick=${function () { tog('photo'); }}>תמונה</button>` : null}
+          <button type="button" aria-label="הגדלה" onClick=${function () { if (V) V.zoomBy(1.25); }}>+</button>
+          <button type="button" aria-label="הקטנה" onClick=${function () { if (V) V.zoomBy(0.8); }}>−</button>
+        </div>
+      </div>
+      <div class="row">
+        ${E.dims ? html`<span class="dimsline">מידות כוללות <b class="ltr">${dimsText(E)}</b> ${CM} <span class="hint">(אורך × עומק × גובה)</span></span>` : html`<span class="dimsline">אין עדיין מידות כוללות</span>`}
+        <span class="hint">גררו לסיבוב · לחיצה על חלק מסמנת אותו בטבלה</span>
+      </div>
+    </div>`;
+  }
+
+  function Expr(props) {
+    var s = props.v == null ? '' : String(props.v);
+    var literal = /^\s*-?\d+(\.\d+)?\s*$/.test(s);
+    return html`<div class=${'expr' + (props.err ? ' bad' : '')}>
+      <input class=${'cell ltr ' + (props.cls || 'w-d')} dir="ltr" value=${s} aria-label=${props.label} title=${props.err || ''} spellcheck="false" autocomplete="off" autocapitalize="off"
+        onInput=${function (e) { props.on(e.target.value); }} onFocus=${props.onFocus}/>
+      ${props.err ? html`<span class="ev">${props.err}</span>` : (!literal ? html`<span class="ev">= ${fmtDim(props.val)}</span>` : null)}
+    </div>`;
+  }
+
+  function PartRow(props) {
+    var r = props.r, item = props.item, Q = props.Q, pt = r.pt;
+    var open = !!S.ui.place[pt.id], sel = S.ui.selPart === pt.id;
+    function set(k) { return function (v) { pt[k] = v; commit('current'); }; }
+    function focus() { if (S.ui.selPart !== pt.id) { S.ui.selPart = pt.id; FORCE(); } }
+    var prof = r.ok ? findProfile(S.prices.profiles, r.f.t, r.f.w, pt.profile) : null;
+    var auto = r.ok ? findProfile(S.prices.profiles, r.f.t, r.f.w, '') : null;
+    var color = partColor(pt.code, r.idx, S.ui.vivid);
+    var rows = [html`<tr key=${pt.id} class=${sel ? 'sel' : ''} onMouseEnter=${function () { if (MAINV) MAINV.highlight(pt.id); }} onMouseLeave=${function () { if (MAINV) MAINV.highlight(S.ui.selPart); }}>
+      <td><div class="codecell"><span class="sw" style=${'background:' + color}></span><input class="cell w-code" value=${pt.code} maxlength="3" aria-label="קוד החלק" onInput=${function (e) { pt.code = e.target.value.toUpperCase(); commit('current'); }} onFocus=${focus}/></div></td>
+      <td><input class="cell w-name" value=${pt.name} aria-label="שם החלק" onInput=${function (e) { pt.name = e.target.value; commit('current'); }} onFocus=${focus}/></td>
+      <td><${Expr} v=${pt.n} val=${r.f.n} err=${r.errs.n} on=${set('n')} cls="w-n" label="כמות ליחידה" onFocus=${focus}/>${r.n2 > 1 ? html`<span class="ev">× ${r.n2} = ${r.qty}</span>` : null}</td>
+      <td><${Expr} v=${pt.t} val=${r.f.t} err=${r.errs.t} on=${set('t')} label="עובי" onFocus=${focus}/></td>
+      <td><${Expr} v=${pt.w} val=${r.f.w} err=${r.errs.w} on=${set('w')} label="רוחב" onFocus=${focus}/></td>
+      <td><${Expr} v=${pt.l} val=${r.f.l} err=${r.errs.l} on=${set('l')} label="אורך" onFocus=${focus}/></td>
+      <td>
+        <select class="cell w-prof" value=${pt.profile || ''} aria-label="קורה" onChange=${function (e) { pt.profile = e.target.value; commit('current'); }}>
+          <option value="">${auto ? 'אוטומטי · ' + lri(sec(num(auto.t), num(auto.w))) : 'אוטומטי'}</option>
+          ${S.prices.profiles.map(function (p) { return html`<option value=${p.id}>${lri(sec(num(p.t), num(p.w)))} · ${fmtDim(num(p.len))} ${CM}</option>`; })}
+        </select>
+        ${r.ok && !prof ? html`<span class="ev bad">אין במחירון קורה ${lri(sec(r.f.t, r.f.w))}</span>` : null}
+      </td>
+      <td class="c-num">${r.qty * Q}</td>
+      <td><div class="rowbtns">
+        <button type="button" class=${'ibtn' + (open ? ' on' : '')} title="מיקום בשרטוט" aria-label="מיקום בשרטוט" aria-expanded=${open} onClick=${function () { S.ui.place[pt.id] = !open; commit('ui'); }}>${Ico.move()}</button>
+        <button type="button" class="ibtn" title="שכפול" aria-label="שכפול החלק" onClick=${function () { dupPart(item, pt); }}>${Ico.copy()}</button>
+        <button type="button" class="ibtn del" title="מחיקה" aria-label="מחיקת החלק" onClick=${function () { delPart(item, pt); }}>${Ico.trash()}</button>
+      </div></td>
+    </tr>`];
+    if (open) {
+      var ex = function (k, label) { return html`<label class="f">${label}<${Expr} v=${pt[k]} val=${r.f[k]} err=${r.errs[k]} on=${set(k)} label=${label}/></label>`; };
+      rows.push(html`<tr key=${pt.id + '-pl'} class="place-row"><td colspan="9"><div class="place">
+        <label class="check"><input type="checkbox" checked=${pt.placed !== false} onChange=${function (e) { pt.placed = e.target.checked; commit('current'); }}/> מופיע בשרטוט</label>
+        <label class="f">כיוון החלק
+          <select class="cell" value=${pt.orient} onChange=${function (e) { pt.orient = e.target.value; commit('current'); }}>
+            ${ORIENTS.map(function (o) { return html`<option value=${o[0]}>${o[1]}</option>`; })}
+          </select></label>
+        <fieldset><legend>מיקום הפינה השמאלית־קדמית־תחתונה</legend>${ex('x', 'X אורך')}${ex('y', 'Y עומק')}${ex('z', 'Z גובה')}</fieldset>
+        <fieldset><legend>מרחק בין עותקים</legend>${ex('dx', 'X')}${ex('dy', 'Y')}${ex('dz', 'Z')}</fieldset>
+        <fieldset><legend>שורה נוספת של עותקים</legend>${ex('n2', 'כמה שורות')}${ex('dx2', 'X')}${ex('dy2', 'Y')}${ex('dz2', 'Z')}</fieldset>
+      </div></td></tr>`);
+    }
+    return rows;
+  }
+
+  function PartsTable(props) {
+    var item = props.item, E = props.E, Q = Math.max(0, Math.round(num(item.qty)));
+    var vars = item.params.filter(function (p) { return KEY_RE.test(p.key || ''); });
+    return html`<section class="panel">
+      <div class="panel-head">
+        <div><h3 class="h-sec">רשימת חלקים וחיתוכים</h3><p class="sub">מידות בס״מ: עובי × רוחב × אורך. אפשר להקליד מספר או נוסחה, למשל <span class="var">L-10</span>.</p></div>
+        <div class="actions">
+          <button type="button" class="btn sm" onClick=${function () { addPart(item); }}>+ חלק</button>
+          <button type="button" class="btn sm" onClick=${function () { openModal({ type: 'paste', itemId: item.id }); }}>הדבקת רשימת חיתוכים</button>
+        </div>
+      </div>
+      ${E.unplaced > 0 && !E.layout ? html`<p class="note" style="margin-bottom:8px">${E.unplaced === 1 ? 'חלק אחד' : E.unplaced + ' חלקים'} ללא מיקום בשרטוט. הם נכנסים לחישוב העץ אבל לא מצוירים. לחצו על ${Ico.move()} כדי למקם.</p>` : null}
+      ${item.parts.length ? html`<div class="tscroll"><table class="grid">
+        <thead><tr><th>קוד</th><th>שם החלק</th><th>כמות</th><th>עובי</th><th>רוחב</th><th>אורך</th><th>קורה מהמחירון</th><th>להזמנה</th><th aria-label="פעולות"></th></tr></thead>
+        <tbody>${E.parts.map(function (r) { return html`<${PartRow} key=${r.pt.id} r=${r} item=${item} Q=${Q}/>`; })}</tbody>
+      </table></div>` : html`<div class="okbox">אין עדיין חלקים. הוסיפו חלק, או הדביקו רשימת חיתוכים כמו בדף העבודה (למשל <span class="ltr">2-A רגל ספסל 5X15X35</span>).</div>`}
+      <div class="vars"><span>פרמטרים לנוסחאות:</span>
+        ${vars.map(function (p) { return html`<span title=${p.label}><span class="var">${p.key} = ${fmtDim(E.vars[p.key])}</span> ${p.label}</span>`; })}
+      </div>
+    </section>`;
+  }
+
+  function ParamEditor(props) {
+    var item = props.item, E = props.E;
+    function set(p, k) { return function (e) { p[k] = e.target.value; commit('current'); }; }
+    function setNum(p, k) { return function (e) { p[k] = num(e.target.value); commit('current'); }; }
+    function optsText(p) { return (p.options || []).map(function (o) { return o.label != null && String(o.label) !== String(o.v) ? o.v + ':' + o.label : String(o.v); }).join(', '); }
+    function setOpts(p, s) {
+      p.options = s.split(/[,،]/).map(function (x) { var m = x.split(':'); return m[0].trim() === '' ? null : { v: num(m[0]), label: (m[1] != null ? m.slice(1).join(':') : m[0]).trim() }; }).filter(Boolean);
+      if (p.options.length && !p.options.some(function (o) { return o.v === num(p.value); })) p.value = p.options[0].v;
+      commit('current');
+    }
+    return html`<details class="panel adv">
+      <summary>עריכת פרמטרים (מתקדם)</summary>
+      <p class="sub" style="margin-block:8px 12px">פרמטרים הם הסליידרים והבחירות שבצד, והערכים שהנוסחאות בטבלה משתמשות בהם. "קבוע" לא מוצג ללקוח, ו"מחושב" נקבע לפי נוסחה.</p>
+      <div class="tscroll"><table class="grid">
+        <thead><tr><th>מפתח</th><th>שם</th><th>סוג</th><th>מינימום</th><th>מקסימום</th><th>קפיצה</th><th>ערך או נוסחה</th><th>אפשרויות (ערך:תווית)</th><th></th></tr></thead>
+        <tbody>${item.params.map(function (p, i) {
+          var bad = !KEY_RE.test(p.key || '');
+          return html`<tr key=${i}>
+            <td><div class=${'expr' + (bad ? ' bad' : '')}><input class="cell ltr w-n" dir="ltr" value=${p.key} aria-label="מפתח" onInput=${set(p, 'key')}/>${bad ? html`<span class="ev">אותיות באנגלית בלבד</span>` : null}</div></td>
+            <td><input class="cell w-name" value=${p.label} aria-label="שם" onInput=${set(p, 'label')}/></td>
+            <td><select class="cell" value=${p.type} aria-label="סוג" onChange=${function (e) { p.type = e.target.value; if (p.type === 'range') { p.min = p.min != null ? p.min : 0; p.max = p.max != null ? p.max : 100; p.step = p.step || 1; p.unit = p.unit != null ? p.unit : CM; } if (p.type === 'choice' && !(p.options || []).length) p.options = [{ v: num(p.value), label: String(num(p.value)) }]; if (p.type === 'calc' && p.expr == null) p.expr = String(num(p.value)); commit('current'); }}>
+              <option value="range">סליידר</option><option value="choice">בחירה</option><option value="const">קבוע</option><option value="calc">מחושב</option>
+            </select></td>
+            <td>${p.type === 'range' ? html`<input class="cell w-n" inputmode="decimal" value=${p.min} aria-label="מינימום" onChange=${setNum(p, 'min')}/>` : null}</td>
+            <td>${p.type === 'range' ? html`<input class="cell w-n" inputmode="decimal" value=${p.max} aria-label="מקסימום" onChange=${setNum(p, 'max')}/>` : null}</td>
+            <td>${p.type === 'range' ? html`<input class="cell w-n" inputmode="decimal" value=${p.step} aria-label="קפיצה" onChange=${setNum(p, 'step')}/>` : null}</td>
+            <td>${p.type === 'calc' ? html`<${Expr} v=${p.expr} val=${E.vars[p.key]} err=${E.paramErr[p.key]} on=${function (v) { p.expr = v; commit('current'); }} label="נוסחה"/>`
+              : html`<input class="cell w-n" inputmode="decimal" value=${p.value} aria-label="ערך" onChange=${setNum(p, 'value')}/>`}</td>
+            <td>${p.type === 'choice' ? html`<input class="cell" style="min-width:150px" value=${optsText(p)} aria-label="אפשרויות" onChange=${function (e) { setOpts(p, e.target.value); }}/>` : null}</td>
+            <td><button type="button" class="ibtn del" aria-label="מחיקת פרמטר" onClick=${function () { item.params.splice(i, 1); commit('current'); }}>${Ico.trash()}</button></td>
+          </tr>`;
+        })}</tbody>
+      </table></div>
+      <div class="actions" style="margin-top:10px">
+        <button type="button" class="btn sm" onClick=${function () {
+          var k = 'P' + (item.params.length + 1);
+          item.params.push({ key: k, label: 'פרמטר חדש', type: 'range', min: 0, max: 100, step: 1, value: 50, unit: CM }); commit('current');
+        }}>+ פרמטר</button>
+      </div>
+    </details>`;
+  }
+
+  function ItemEditor(props) {
+    var item = props.item, E = props.E, P = props.P;
+    var fileRef = useRef(null);
+    var sliders = item.params.filter(function (p) { return p.type === 'range' || p.type === 'choice'; });
+    var fixed = item.params.filter(function (p) { return p.type === 'const' || p.type === 'calc'; });
+    var vatOn = S.quote.pricing.vatOn, vr = num(S.quote.pricing.vat) / 100;
+    function onPhoto(e) {
+      var f = e.target.files && e.target.files[0];
+      e.target.value = '';
+      if (!f) return;
+      fileToDataURL(f).then(function (d) { item.photo = putImage(d); item.img = 'photo'; S.ui.photo = true; commit('current', 'ui'); toast('התמונה צורפה למוצר'); }, function () { toast('לא הצלחתי לקרוא את התמונה'); });
+    }
+    return html`<div class="design">
+      <section class="panel config">
+        <div class="f"><span class="eyebrow">שם המוצר</span>
+          <input class="item-name" value=${item.name} aria-label="שם המוצר" onInput=${function (e) { item.name = e.target.value; commit('current'); }}/></div>
+        <div class="row"><span class="lbl">כמות בהצעה</span><${Stepper} id=${'qty-' + item.id} label="כמות" min=${0} value=${item.qty} onChange=${function (v) { item.qty = v; commit('current'); }}/></div>
+        ${sliders.length ? html`<div class="sec-title">בחירת מידות</div>` : null}
+        ${sliders.map(function (p) { return html`<${ParamControl} key=${p.key} p=${p} item=${item}/>`; })}
+        ${fixed.length ? html`<div class="fixed-list">${fixed.map(function (p) { return html`<span>${p.label}: <b class="num">${fmtDim(E.vars[p.key])}</b></span>`; })}</div>` : null}
+        <div class="unitprice">
+          <span class="lbl">מחיר ליחידה</span>
+          <b>${money(P ? P.unit : 0)}</b>
+          <small>עלות ${money(P ? P.directUnit : 0)} · ${vatOn ? 'כולל מע״מ ' + money((P ? P.unit : 0) * (1 + vr)) : 'ללא מע״מ'}</small>
+        </div>
+        <div class="actions">
+          ${SAMPLE ? html`<button type="button" class="btn sm primary" onClick=${function () { openModal({ type: 'ai', mode: 'modify', itemId: item.id }); }}>שינוי בעזרת Claude</button>` : null}
+          ${PREV[item.id] ? html`<button type="button" class="btn sm" onClick=${function () { var pv = PREV[item.id]; delete PREV[item.id]; item.params = pv.params; item.parts = pv.parts; commit('current'); toast('השינוי בוטל'); }}>ביטול השינוי האחרון</button>` : null}
+          <button type="button" class="btn sm" onClick=${function () { fileRef.current && fileRef.current.click(); }}>${item.photo ? 'החלפת תמונה' : 'צירוף תמונה'}</button>
+          <input type="file" accept="image/*" hidden ref=${fileRef} onChange=${onPhoto}/>
+          <button type="button" class="btn sm" onClick=${function () { duplicateItem(item); }}>שכפול</button>
+          <button type="button" class="btn sm" onClick=${function () { saveAsTemplate(item); }}>שמירה כתבנית</button>
+          ${canSaveFiles() ? html`<button type="button" class="btn sm" onClick=${function () { saveFile((item.name || 'מוצר') + '.json', JSON.stringify(templateFromItem(item), null, 2), 'application/json'); }}>ייצוא מוצר</button>` : null}
+          <button type="button" class="btn sm danger" onClick=${function () { removeItem(item); }}>מחיקה</button>
+        </div>
+      </section>
+      <${Viewer3D} item=${item} E=${E}/>
+    </div>`;
+  }
+
+  function TemplateCards(props) {
+    var list = TEMPLATES.map(function (t) { return { t: t, mine: false }; }).concat(S.library.map(function (t) { return { t: t, mine: true }; }));
+    return html`<div class="tpl-grid">
+      ${list.map(function (x) {
+        var t = x.t, thumb = null;
+        if (t.parts && t.parts.length) { try { thumb = snapshotFor(evalItem(itemFromTemplate(t)), false); } catch (e) { thumb = null; } }
+        if (!thumb && t.photo) thumb = getImage(t.photo);
+        return html`<div key=${t.id} class="tpl" role="button" tabindex="0" onClick=${function () { props.onPick(t); }} onKeyDown=${function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); props.onPick(t); } }}>
+          ${thumb ? html`<img class="thumb" src=${thumb} alt=""/>` : html`<div class="thumb blank">${t.id === 'blank' ? 'רשימת חיתוכים בלבד' : 'ללא שרטוט'}</div>`}
+          <span class="t">${t.name}${x.mine ? html` <span class="pill">שלי</span>` : null}</span>
+          <span class="d">${t.desc || ''}</span>
+          ${x.mine ? html`<button type="button" class="linkbtn" style="align-self:flex-start" onClick=${function (e) {
+            e.stopPropagation();
+            confirmBox('למחוק את התבנית "' + t.name + '"?', 'התבנית תימחק מהרשימה שלך. מוצרים שכבר בהצעות לא ישתנו.', 'מחיקה', function () {
+              S.library = S.library.filter(function (z) { return z.id !== t.id; }); commit('library'); delListItem('templates', t.id); closeModal();
+            });
+          }}>מחיקת התבנית</button>` : null}
+        </div>`;
+      })}
+    </div>`;
+  }
+
+  function DesignTab(props) {
+    var C = props.C, q = S.quote, item = selItem();
+    var E = item ? C.evalById[item.id] : null;
+    return html`
+      ${q.sample && !S.ui.hideSample ? html`<div class="banner">
+        <span>זו הצעה לדוגמה שבנויה לפי דף העבודה "פינת זולה לקטנטנים". כל המחירים להמחשה בלבד, עדכנו אותם בלשונית "מחירון ועץ".</span>
+        <span class="actions"><button type="button" class="btn sm" onClick=${startNewQuote}>התחלת הצעה חדשה</button><button type="button" class="btn sm ghost" onClick=${function () { S.ui.hideSample = true; commit('ui'); }}>הסתרה</button></span>
+      </div>` : null}
+      <div class="qhead">
+        <label class="qtitle"><span class="eyebrow">הצעה מס׳ ${q.no}</span>
+          <input class="title-in" value=${q.title} placeholder="שם ההצעה, למשל: פינת זולה לגן" onInput=${function (e) { q.title = e.target.value; commit('current'); }}/></label>
+      </div>
+      ${q.items.length ? html`<div class="strip" role="tablist" aria-label="מוצרים בהצעה">
+        ${q.items.map(function (it) {
+          var p = C.pricing.byId[it.id];
+          return html`<button key=${it.id} type="button" role="tab" aria-selected=${item && it.id === item.id} class=${'ichip' + (item && it.id === item.id ? ' on' : '')} onClick=${function () { selectItem(it.id); }}>
+            <span class="n">${it.name || 'מוצר'}</span><span class="m">${p ? p.Q : 0} יח׳ · ${money(p ? p.unit : 0)} ליח׳</span></button>`;
+        })}
+        <button type="button" class="ichip add" onClick=${function () { openModal({ type: 'picker' }); }}>+ מוצר</button>
+        ${SAMPLE ? html`<button type="button" class="ichip add" onClick=${function () { openModal({ type: 'ai', mode: 'create' }); }}>שרטוט מתמונה</button>` : null}
+      </div>` : null}
+      ${item ? html`<${ItemEditor} key=${item.id} item=${item} E=${E} P=${C.pricing.byId[item.id]}/>
+        <${PartsTable} item=${item} E=${E}/>
+        <${ParamEditor} key=${'pe-' + item.id} item=${item} E=${E}/>`
+      : html`<section class="panel">
+          <div class="panel-head"><div><h3 class="h-sec">מה בונים?</h3><p class="sub">בחרו תבנית ושנו מידות, התחילו מרשימת חיתוכים${SAMPLE ? ', או העלו תמונה של רהיט ו-Claude ישרטט מודל דומה' : ''}.</p></div>
+            ${SAMPLE ? html`<button type="button" class="btn primary" onClick=${function () { openModal({ type: 'ai', mode: 'create' }); }}>שרטוט מתמונה עם Claude</button>` : null}</div>
+          <${TemplateCards} onPick=${function (t) { addItemFromTemplate(t); }}/>
+        </section>`}
+    `;
+  }
+
+  function WoodTab(props) {
+    var C = props.C, W = C.wood, pr = S.prices;
+    function setP(p, k) { return function (e) { p[k] = e.target.value; if (k === 'price' || k === 'len' || k === 't' || k === 'w') delete p.sample; commit('prices'); }; }
+    var anySample = pr.profiles.some(function (p) { return p.sample; });
+    var missing = W.results.filter(function (r) { return r.missing; });
+    var withBeams = W.results.filter(function (r) { return !r.missing; });
+    return html`
+      <div class="two">
+        <section class="panel">
+          <div class="panel-head"><div><h3 class="h-sec">מחירון קורות</h3><p class="sub">המחיר שאתם משלמים לקורה אחת. כל חלק ברשימה מותאם אוטומטית לקורה עם אותו חתך (עובי × רוחב).</p></div>
+            <button type="button" class="btn sm" onClick=${function () { pr.profiles.push({ id: uid('pr'), t: '', w: '', len: '400', price: '', note: '' }); commit('prices'); }}>+ קורה</button></div>
+          ${anySample ? html`<p class="note" style="margin-bottom:8px"><span class="pill">דוגמה</span> מחירים לדוגמה בלבד. מחיר שתעדכנו יאבד את התווית.</p>` : null}
+          <div class="tscroll"><table class="grid">
+            <thead><tr><th>עובי</th><th>רוחב</th><th>אורך קורה (${CM})</th><th>מחיר לקורה (₪)</th><th>למטר</th><th>סוג עץ / ספק</th><th></th></tr></thead>
+            <tbody>${pr.profiles.map(function (p) {
+              var ppm = num(p.len) > 0 ? num(p.price) / (num(p.len) / 100) : 0;
+              return html`<tr key=${p.id}>
+                <td><input class="cell w-n" inputmode="decimal" value=${p.t} aria-label="עובי" onInput=${setP(p, 't')}/></td>
+                <td><input class="cell w-n" inputmode="decimal" value=${p.w} aria-label="רוחב" onInput=${setP(p, 'w')}/></td>
+                <td><input class="cell w-n" inputmode="decimal" value=${p.len} aria-label="אורך קורה" onInput=${setP(p, 'len')}/></td>
+                <td><div class="gap" style="flex-wrap:nowrap"><input class="cell w-money" inputmode="decimal" value=${p.price} aria-label="מחיר לקורה" placeholder="מחיר" onInput=${setP(p, 'price')}/>${p.sample ? html`<span class="pill">דוגמה</span>` : null}</div></td>
+                <td class="c-num">${money(ppm, true)}</td>
+                <td><input class="cell" style="min-width:110px" value=${p.note} aria-label="הערה" onInput=${setP(p, 'note')}/></td>
+                <td><button type="button" class="ibtn del" aria-label="מחיקת קורה" onClick=${function () { pr.profiles = pr.profiles.filter(function (x) { return x !== p; }); commit('prices'); }}>${Ico.trash()}</button></td>
+              </tr>`;
+            })}</tbody>
+          </table></div>
+        </section>
+        <section class="panel">
+          <h3 class="h-sec" style="margin-bottom:10px">איך לחשב את עלות העץ</h3>
+          <div class="radio" role="radiogroup">
+            <label><input type="radio" name="wmode" checked=${pr.mode !== 'beams'} onChange=${function () { pr.mode = 'meters'; commit('prices'); }}/>
+              <span><b>לפי מטר בפועל + פחת</b><br/><span class="note">משלמים רק על מה שנחתך, ועוד אחוז פחת. מתאים כשהשאריות נכנסות לעבודות הבאות.</span></span></label>
+            <label><input type="radio" name="wmode" checked=${pr.mode === 'beams'} onChange=${function () { pr.mode = 'beams'; commit('prices'); }}/>
+              <span><b>לפי קורות שלמות</b><br/><span class="note">משלמים על כל קורה שצריך לקנות לפי תכנית החיתוך.</span></span></label>
+          </div>
+          <div class="fields" style="margin-top:14px">
+            ${pr.mode !== 'beams' ? html`<label class="field">פחת (%)<input inputmode="decimal" value=${pr.waste} onInput=${function (e) { pr.waste = e.target.value; commit('prices'); }}/></label>` : null}
+            <label class="field">עובי מסור (${CM})<input inputmode="decimal" value=${pr.kerf} onInput=${function (e) { pr.kerf = e.target.value; commit('prices'); }}/></label>
+            <label class="field">קיצוץ קצוות לקורה (${CM})<input inputmode="decimal" value=${pr.trim} onInput=${function (e) { pr.trim = e.target.value; commit('prices'); }}/></label>
+          </div>
+        </section>
+      </div>
+      <section class="panel">
+        <div class="kpis">
+          <div class="kpi main"><span class="k">עלות העץ להצעה</span><span class="v">${money(W.total)}</span><span class="s">${pr.mode === 'beams' ? 'לפי קורות שלמות' : 'לפי מטר + ' + fmtDim(num(pr.waste)) + '% פחת'}</span></div>
+          <div class="kpi"><span class="k">קורות לקנייה</span><span class="v">${W.beams}</span><span class="s">בעלות ${money(W.buyCost)}</span></div>
+          <div class="kpi"><span class="k">לפי מטר בפועל</span><span class="v">${money(W.meterCost)}</span><span class="s">כולל פחת</span></div>
+        </div>
+        ${missing.length ? html`<div class="warnbox" style="margin-top:12px">
+          <b>לחלקים האלה אין קורה במחירון, ולכן הם לא מתומחרים:</b>
+          ${missing.map(function (r) {
+            return html`<div class="row"><span><b class="ltr">${sec(r.t, r.w)}</b> · ${r.count} חלקים (${r.pieces.map(function (p) { return p.code + ' ' + p.name; }).filter(function (v, i, a) { return a.indexOf(v) === i; }).join(', ')})</span>
+              <button type="button" class="btn sm" onClick=${function () { pr.profiles.push({ id: uid('pr'), t: fmtDim(r.t), w: fmtDim(r.w), len: '400', price: '', note: '' }); commit('prices'); toast('נוספה שורה למחירון. מלאו מחיר.'); }}>הוספה למחירון</button></div>`;
+          })}
+        </div>` : null}
+        ${withBeams.length ? withBeams.map(function (r) { return html`<${CutPlan} key=${r.key} r=${r}/>`; }) : (!missing.length ? html`<p class="note" style="margin-top:12px">אין עדיין חלקים בהצעה.</p>` : null)}
+      </section>`;
+  }
+
+  function CutPlan(props) {
+    var r = props.r, beams = r.pack.beams, shown = beams.slice(0, 30), pr = S.prices;
+    var legend = [];
+    r.pieces.forEach(function (p) {
+      var k = p.code + '|' + fmtDim(p.len), x = legend.find(function (z) { return z.k === k; });
+      if (!x) { x = { k: k, p: p, n: 0, names: [] }; legend.push(x); }
+      x.n += p.count;
+      if (p.name && x.names.indexOf(p.name) < 0) x.names.push(p.name);
+    });
+    return html`<div class="plan">
+      <div class="plan-head">
+        <h4><span class="ltr">${sec(r.t, r.w)}</span> <span class="plan-meta">· קורה ${fmtDim(r.stock)} ${CM} · ${r.noPrice ? 'אין מחיר' : money(r.price, true)}${r.prof.note ? ' · ' + r.prof.note : ''}</span>${r.sample ? html` <span class="pill">מחיר לדוגמה</span>` : null}</h4>
+        <span class="plan-meta">${beams.length} ${beams.length === 1 ? 'קורה' : 'קורות'} · ניצול ${Math.round(r.util * 100)}% · ${fmtDim(r.totalLen / 100)} מ׳ חיתוך</span>
+      </div>
+      <div class="legend">${legend.map(function (x) { return html`<span><span class="sw" style=${'background:' + x.p.color}></span><b>${x.p.code}</b> ${x.names.join(' + ')} · ${fmtDim(x.p.len)} ${CM} × ${x.n}</span>`; })}</div>
+      <div class="beams">${shown.map(function (b, i) {
+        return html`<div key=${i} class="beam" title=${'קורה ' + (i + 1)}>
+          ${b.pieces.map(function (pc) { return html`<div class="piece" style=${'flex:0 0 ' + (pc.len / r.stock * 100) + '%;background:' + pc.color + ';color:' + textOn(pc.color)} title=${pc.code + ' ' + pc.name + ' · ' + fmtDim(pc.len)}>${pc.code} ${fmtDim(pc.len)}</div>`; })}
+          <div class="beam-rest">${b.free > 2 ? 'שארית ' + fmtDim(b.free) : ''}</div>
+        </div>`;
+      })}</div>
+      ${beams.length > shown.length ? html`<p class="note">ועוד ${beams.length - shown.length} קורות</p>` : null}
+      ${r.pack.tooLong.length ? html`<div class="warnbox">חלקים ארוכים מהקורה (${fmtDim(r.stock - num(pr.trim))} ${CM} שמישים): ${r.pack.tooLong.map(function (p) { return p.code + ' ' + p.name + ' ' + fmtDim(p.len); }).join(', ')}. הגדילו את אורך הקורה במחירון או חלקו את החלק.</div>` : null}
+      <div class="costline"><span>לפי מטר + פחת: <b>${money(r.costMeters)}</b></span><span>קורות שלמות: <b>${money(r.costBeams)}</b></span><span>במחיר ההצעה: <b>${money(r.cost)}</b></span></div>
+    </div>`;
+  }
+
+  function RowsTable(props) {
+    return html`<div class="tscroll"><table class="grid"><thead><tr>${props.head.map(function (h) { return html`<th>${h}</th>`; })}</tr></thead><tbody>${props.children}</tbody>${props.foot || null}</table></div>`;
+  }
+
+  function ItemCosts(props) {
+    var item = props.item, P = props.P, rateDef = num(S.settings.rate);
+    function setM(m, k) { return function (e) { m[k] = e.target.value; if (k === 'price') delete m.sample; commit('current'); }; }
+    var matU = item.materials.reduce(function (a, m) { return a + num(m.qty) * num(m.price); }, 0);
+    var labU = item.labor.reduce(function (a, l) { return a + num(l.hours) * (isBlank(l.rate) ? rateDef : num(l.rate)); }, 0);
+    var hU = item.labor.reduce(function (a, l) { return a + num(l.hours); }, 0);
+    return html`<section class="panel">
+      <div class="panel-head"><h3 class="h-sec">${item.name || 'מוצר'} <span class="mut">× ${P.Q}</span></h3>
+        <span class="note">עלות ליחידה <b class="num">${money(P.directUnit)}</b> · מחיר ליחידה <b class="num">${money(P.unit)}</b></span></div>
+      <div class="cost-top"><span>עץ לפי המחירון</span><span><b>${money(P.Q ? P.wood / P.Q : 0)}</b> ליחידה · ${money(P.wood)} סה״כ</span></div>
+      <h4 class="h-min">חומרים נוספים <span class="mut">(ליחידה)</span></h4>
+      <${RowsTable} head=${['פריט', 'כמות', 'מחיר ליחידה (₪)', 'סה״כ', '']}
+        foot=${item.materials.length ? html`<tfoot><tr><td>סה״כ ליחידה</td><td></td><td></td><td class="c-num">${money(matU, true)}</td><td></td></tr></tfoot>` : null}>
+        ${item.materials.map(function (m) {
+          return html`<tr key=${m.id}>
+            <td><input class="cell w-name" value=${m.name} placeholder="למשל: ברגים, דבק, לכה" aria-label="פריט" onInput=${setM(m, 'name')}/></td>
+            <td><input class="cell w-n" inputmode="decimal" value=${m.qty} aria-label="כמות" onInput=${setM(m, 'qty')}/></td>
+            <td><div class="gap" style="flex-wrap:nowrap"><input class="cell w-money" inputmode="decimal" value=${m.price} aria-label="מחיר ליחידה" onInput=${setM(m, 'price')}/>${m.sample ? html`<span class="pill">דוגמה</span>` : null}</div></td>
+            <td class="c-num">${money(num(m.qty) * num(m.price), true)}</td>
+            <td><button type="button" class="ibtn del" aria-label="מחיקה" onClick=${function () { item.materials = item.materials.filter(function (x) { return x !== m; }); commit('current'); }}>${Ico.trash()}</button></td>
+          </tr>`;
+        })}
+      <//>
+      <button type="button" class="btn sm" style="margin-top:8px" onClick=${function () { item.materials.push({ id: uid('m'), name: '', qty: '1', price: '' }); commit('current'); }}>+ חומר</button>
+      <h4 class="h-min">שעות עבודה <span class="mut">(ליחידה)</span></h4>
+      <${RowsTable} head=${['שלב', 'שעות', '₪ לשעה', 'סה״כ', '']}
+        foot=${item.labor.length ? html`<tfoot><tr><td>סה״כ ליחידה</td><td class="c-num">${fmtHours(hU)}</td><td></td><td class="c-num">${money(labU, true)}</td><td></td></tr></tfoot>` : null}>
+        ${item.labor.map(function (l) {
+          var rate = isBlank(l.rate) ? rateDef : num(l.rate);
+          return html`<tr key=${l.id}>
+            <td><input class="cell w-name" value=${l.name} placeholder="למשל: חיתוך, הרכבה, צביעה" aria-label="שלב" onInput=${setM(l, 'name')}/></td>
+            <td><input class="cell w-n" inputmode="decimal" value=${l.hours} aria-label="שעות" onInput=${setM(l, 'hours')}/></td>
+            <td><input class="cell w-money" inputmode="decimal" value=${l.rate} placeholder=${String(rateDef)} aria-label="תעריף לשעה" onInput=${setM(l, 'rate')}/></td>
+            <td class="c-num">${money(num(l.hours) * rate, true)}</td>
+            <td><button type="button" class="ibtn del" aria-label="מחיקה" onClick=${function () { item.labor = item.labor.filter(function (x) { return x !== l; }); commit('current'); }}>${Ico.trash()}</button></td>
+          </tr>`;
+        })}
+      <//>
+      <button type="button" class="btn sm" style="margin-top:8px" onClick=${function () { item.labor.push({ id: uid('l'), name: '', hours: '1', rate: '' }); commit('current'); }}>+ שורת עבודה</button>
+    </section>`;
+  }
+
+  function PricingPanel() {
+    var q = S.quote, pr = q.pricing;
+    function set(k, g) { return function (e) { pr[k] = e.target.value; commit(g || 'current'); }; }
+    return html`<section class="panel">
+      <h3 class="h-sec" style="margin-bottom:12px">רווח ותוספות</h3>
+      <div class="field"><span>רווח</span>
+        <div class="row" style="justify-content:flex-start">
+          <span class="pctbox"><input class="cell" inputmode="decimal" value=${pr.profit} aria-label="אחוז רווח" onInput=${set('profit')}/>%</span>
+          <span class="seg" role="group" aria-label="איך מחושב הרווח">
+            <button type="button" class=${pr.profitMode !== 'margin' ? 'on' : ''} onClick=${function () { pr.profitMode = 'markup'; commit('current'); }}>על העלות</button>
+            <button type="button" class=${pr.profitMode === 'margin' ? 'on' : ''} onClick=${function () { pr.profitMode = 'margin'; commit('current'); }}>מתוך המחיר</button>
+          </span>
+        </div>
+        <span class="hint">${pr.profitMode === 'margin' ? 'הרווח הוא אחוז ממחיר המכירה (לפני מע״מ). 30% מתוך המחיר = עלות ÷ 0.7.' : 'הרווח מתווסף כאחוז על העלות הישירה. 30% על העלות = עלות × 1.3.'}</span>
+      </div>
+      <div class="field" style="margin-top:14px"><span>תוספות באחוזים</span>
+        ${(pr.extras || []).map(function (x) {
+          return html`<div key=${x.id} class="xrow">
+            <input class="cell" value=${x.label} aria-label="שם התוספת" onInput=${function (e) { x.label = e.target.value; commit('current'); }}/>
+            <span class="pctbox"><input class="cell" inputmode="decimal" value=${x.pct} aria-label="אחוז" onInput=${function (e) { x.pct = e.target.value; commit('current'); }}/>%</span>
+            <button type="button" class="ibtn del" aria-label="מחיקה" onClick=${function () { pr.extras = pr.extras.filter(function (z) { return z !== x; }); commit('current'); }}>${Ico.trash()}</button>
+          </div>`;
+        })}
+        <button type="button" class="linkbtn" style="align-self:flex-start" onClick=${function () { pr.extras = pr.extras || []; pr.extras.push({ id: uid('x'), label: 'תוספת', pct: '0' }); commit('current'); }}>+ תוספת באחוזים</button>
+        <span class="hint">מחושבות על המחיר אחרי הרווח, ונכללות במחיר ליחידה. אפשר לשנות את השם, למשל מס הכנסה, תקורה או עמלה.</span>
+      </div>
+      <div class="fields" style="margin-top:14px">
+        <label class="field">עיגול מחיר ליחידה
+          <select value=${String(pr.round)} onChange=${set('round')}>
+            <option value="0">ללא עיגול</option><option value="1">לשקל</option><option value="5">ל-5 ₪</option><option value="10">ל-10 ₪</option><option value="50">ל-50 ₪</option><option value="100">ל-100 ₪</option>
+          </select></label>
+        <label class="field">הנחה ללקוח (%)<input inputmode="decimal" value=${pr.discount} onInput=${set('discount')}/></label>
+        <label class="field">תעריף שעת עבודה (₪)<input inputmode="decimal" value=${S.settings.rate} onInput=${function (e) { S.settings.rate = e.target.value; commit('settings'); }}/></label>
+      </div>
+      <div class="row" style="margin-top:14px;justify-content:flex-start">
+        <label class="check"><input type="checkbox" checked=${!!pr.vatOn} onChange=${function (e) { pr.vatOn = e.target.checked; commit('current'); }}/> להוסיף מע״מ</label>
+        ${pr.vatOn ? html`<span class="pctbox"><input class="cell" inputmode="decimal" value=${pr.vat} aria-label="אחוז מע״מ" onInput=${set('vat')}/>%</span>` : null}
+      </div>
+    </section>`;
+  }
+
+  function Summary(props) {
+    var P = props.C.pricing, q = S.quote;
+    function R(label, v, cls) { return html`<div class=${'sum-row ' + (cls || '')}><span>${label}</span><span class="v">${v}</span></div>`; }
+    return html`<section class="panel sum">
+      <h3 class="h-sec" style="margin-bottom:8px">סיכום ההצעה</h3>
+      ${R('עץ', money(P.wood), 'sub')}
+      ${R('חומרים נוספים', money(P.mat), 'sub')}
+      ${R('עבודה · ' + fmtHours(P.hours) + ' שעות', money(P.labor), 'sub')}
+      ${R('עלות ישירה', money(P.direct), 'strong')}
+      ${R('רווח ' + fmtDim(num(q.pricing.profit)) + '% ' + (q.pricing.profitMode === 'margin' ? 'מתוך המחיר' : 'על העלות'), money(P.profit))}
+      ${(q.pricing.extras || []).filter(function (x) { return num(x.pct); }).length ? R('תוספות באחוזים', money(P.extraAmt)) : null}
+      ${Math.abs(P.rounding) >= 0.5 ? R('עיגול מחירים', money(P.rounding)) : null}
+      ${P.fixed ? R('תוספות קבועות', money(P.fixed)) : null}
+      ${P.discount ? R('הנחה ' + fmtDim(num(q.pricing.discount)) + '%', money(-P.discount)) : null}
+      ${R('סה״כ לפני מע״מ', money(P.beforeVat), 'strong')}
+      ${q.pricing.vatOn ? R('מע״מ ' + fmtDim(num(q.pricing.vat)) + '%', money(P.vat), 'sub') : null}
+      ${R('סה״כ ללקוח', money(P.total), 'total')}
+      <div class="okbox" style="margin-top:10px">רווח בפועל <b class="num">${money(P.realProfit)}</b> (${Math.round(P.marginPct * 100)}% מהמחיר לפני מע״מ), אחרי תשלום על ${fmtHours(P.hours)} שעות עבודה.</div>
+    </section>`;
+  }
+
+  function CostsTab(props) {
+    var C = props.C, q = S.quote;
+    return html`<div class="costs">
+      <div class="stack">
+        ${q.items.length ? q.items.map(function (it) { return html`<${ItemCosts} key=${it.id} item=${it} P=${C.pricing.byId[it.id]}/>`; }) : html`<section class="panel"><p class="note">אין עדיין מוצרים בהצעה. הוסיפו מוצר בלשונית "תכנון ושרטוט".</p></section>`}
+        <section class="panel">
+          <h3 class="h-sec">תוספות קבועות להצעה</h3>
+          <p class="sub" style="margin-bottom:10px">סכומים שנכנסים להצעה כמו שהם, בלי אחוז רווח. למשל הובלה או התקנה.</p>
+          ${(q.extras || []).map(function (x) {
+            return html`<div key=${x.id} class="xrow" style="margin-bottom:6px">
+              <input class="cell" value=${x.name} placeholder="למשל: הובלה" aria-label="שם" onInput=${function (e) { x.name = e.target.value; commit('current'); }}/>
+              <span class="pctbox"><input class="cell w-money" inputmode="decimal" value=${x.amount} aria-label="סכום" onInput=${function (e) { x.amount = e.target.value; commit('current'); }}/>₪</span>
+              <button type="button" class="ibtn del" aria-label="מחיקה" onClick=${function () { q.extras = q.extras.filter(function (z) { return z !== x; }); commit('current'); }}>${Ico.trash()}</button>
+            </div>`;
+          })}
+          <button type="button" class="btn sm" onClick=${function () { q.extras = q.extras || []; q.extras.push({ id: uid('e'), name: '', amount: '' }); commit('current'); }}>+ תוספת קבועה</button>
+        </section>
+        ${q.items.length ? html`<section class="panel">
+          <h3 class="h-sec" style="margin-bottom:10px">מחיר לכל מוצר</h3>
+          <${RowsTable} head=${['מוצר', 'כמות', 'עלות ליח׳', 'מחיר ליח׳', 'סה״כ', 'רווח']}>
+            ${C.pricing.items.map(function (p) { return html`<tr key=${p.id}><td>${p.name}</td><td class="c-num">${p.Q}</td><td class="c-num">${money(p.directUnit)}</td><td class="c-num"><b>${money(p.unit)}</b></td><td class="c-num">${money(p.line)}</td><td class="c-num">${money(p.profit + p.rounding)}</td></tr>`; })}
+          <//>
+        </section>` : null}
+      </div>
+      <div class="stack side">
+        <${PricingPanel}/>
+        <${Summary} C=${C}/>
+      </div>
+    </div>`;
+  }
+
+  function DocActions(props) {
+    return html`<div class="doc-actions">
+      ${!IN_VIEWER ? html`<button type="button" class="btn primary" onClick=${function () { printDoc(props.doc()); }}>הדפסה או PDF</button>` : null}
+      ${canSaveFiles() ? html`<button type="button" class=${'btn' + (IN_VIEWER ? ' primary' : '')} onClick=${function () { saveFile(props.name + '.html', docFile(props.name, props.doc()), 'text/html'); }}>הורדה כקובץ להדפסה</button>` : null}
+      ${canSaveFiles() ? html`<button type="button" class="btn" onClick=${function () { exportPNG(props.doc(), props.name + '.png'); }}>שמירה כתמונה</button>` : null}
+      ${props.text ? html`<button type="button" class="btn" onClick=${function () { copyText(props.text()); }}>העתקת טקסט לוואטסאפ</button>` : null}
+    </div>`;
+  }
+
+  function QuoteTab(props) {
+    var C = props.C, q = S.quote, cu = q.customer, b = S.settings.biz;
+    function setC(k) { return function (e) { cu[k] = e.target.value; commit('current'); }; }
+    function setB(k) { return function (e) { b[k] = e.target.value; commit('settings'); }; }
+    var doc = quoteDocHTML(C);
+    return html`<div class="qt">
+      <div class="stack">
+        <section class="panel">
+          <h3 class="h-sec" style="margin-bottom:10px">פרטי הלקוח</h3>
+          <div class="fields">
+            <label class="field">שם<input value=${cu.name} onInput=${setC('name')}/></label>
+            <label class="field">טלפון<input type="tel" inputmode="tel" value=${cu.phone} onInput=${setC('phone')}/></label>
+            <label class="field">אימייל<input type="email" value=${cu.email} onInput=${setC('email')}/></label>
+            <label class="field">כתובת<input value=${cu.address} onInput=${setC('address')}/></label>
+          </div>
+        </section>
+        <section class="panel">
+          <h3 class="h-sec" style="margin-bottom:10px">פרטי ההצעה</h3>
+          <div class="fields">
+            <label class="field">מספר הצעה<input inputmode="numeric" value=${q.no} onInput=${function (e) { q.no = e.target.value; commit('current'); }}/></label>
+            <label class="field">תאריך<input type="date" value=${q.date} onInput=${function (e) { q.date = e.target.value; commit('current'); }}/></label>
+            <label class="field">תוקף (ימים)<input inputmode="numeric" value=${q.validDays} onInput=${function (e) { q.validDays = e.target.value; commit('current'); }}/></label>
+          </div>
+          <label class="field" style="margin-top:10px">הנדון<input value=${q.title} onInput=${function (e) { q.title = e.target.value; commit('current'); }}/></label>
+          ${q.items.map(function (it) {
+            return html`<div key=${it.id} class="item-q">
+              <b>${it.name}</b>
+              <div class="fields">
+                <label class="field">תמונה בהצעה
+                  <select value=${it.img === 'photo' && !it.photo ? 'render' : it.img} onChange=${function (e) { it.img = e.target.value; commit('current'); }}>
+                    <option value="render">השרטוט</option>${it.photo ? html`<option value="photo">התמונה שצירפתם</option>` : null}<option value="none">בלי תמונה</option>
+                  </select></label>
+                <label class="field">תיאור קצר<input value=${it.note} placeholder="למשל: עץ אורן, גימור שמן טבעי" onInput=${function (e) { it.note = e.target.value; commit('current'); }}/></label>
+              </div>
+            </div>`;
+          })}
+          <label class="field" style="margin-top:12px">הערות ותנאים<textarea value=${q.terms} onInput=${function (e) { q.terms = e.target.value; commit('current'); }}></textarea></label>
+          <button type="button" class="linkbtn" style="margin-top:6px" onClick=${function () { S.settings.terms = q.terms; commit('settings'); toast('התנאים יופיעו בכל הצעה חדשה'); }}>להשתמש בתנאים האלה בכל הצעה חדשה</button>
+        </section>
+        <details class="panel adv">
+          <summary>פרטי העסק בראש ההצעה</summary>
+          <div class="fields" style="margin-top:12px">
+            <label class="field">שם העסק<input value=${b.name} onInput=${setB('name')}/></label>
+            <label class="field">שורת תיאור<input value=${b.line} onInput=${setB('line')}/></label>
+            <label class="field">טלפון<input type="tel" value=${b.phone} onInput=${setB('phone')}/></label>
+            <label class="field">אימייל<input type="email" value=${b.email} onInput=${setB('email')}/></label>
+            <label class="field">כתובת<input value=${b.address} onInput=${setB('address')}/></label>
+            <label class="field">ע.מ. / ח.פ.<input value=${b.taxId} onInput=${setB('taxId')}/></label>
+          </div>
+        </details>
+      </div>
+      <div class="docwrap">
+        <${DocActions} name=${'הצעת מחיר ' + q.no} doc=${function () { return quoteDocHTML(computeFor(S.quote)); }} text=${function () { return quoteText(computeFor(S.quote)); }}/>
+        <div dangerouslySetInnerHTML=${{ __html: doc }}></div>
+      </div>
+    </div>`;
+  }
+
+  function ShopTab(props) {
+    var C = props.C, doc = shopDocHTML(C);
+    return html`<div class="stack">
+      <section class="panel"><h3 class="h-sec">דף עבודה לנגרייה</h3><p class="sub">רשימת חיתוכים לכל מוצר, שרטוט עם מידות, קורות לקנייה ותכנית חיתוך. בלי מחירים, כדי שאפשר לתלות ליד שולחן העבודה.</p></section>
+      <div class="docwrap">
+        <${DocActions} name=${'דף עבודה ' + S.quote.no} doc=${function () { return shopDocHTML(computeFor(S.quote)); }}/>
+        <div dangerouslySetInnerHTML=${{ __html: doc }}></div>
+      </div>
+    </div>`;
+  }
+
+  function PriceBar(props) {
+    var P = props.C.pricing, W = props.C.wood, q = S.quote;
+    var warn = W.missingN > 0 ? W.missingN + ' חלקים בלי מחיר עץ' : (W.tooLong > 0 ? 'יש חלקים ארוכים מהקורה' : '');
+    return html`<div class="pricebar"><div class="wrap pb">
+      <div class="pb-total"><span class="k">סה״כ ללקוח</span><span class="v">${money(P.total)}</span><span class="k">${q.pricing.vatOn ? 'כולל מע״מ' : 'ללא מע״מ'}</span></div>
+      <div class="pb-meta">
+        <span>עלות <b>${money(P.direct)}</b></span>
+        <span>רווח <b>${money(P.realProfit)}</b></span>
+        <span class="opt">עץ <b>${money(P.wood)}</b></span>
+        <span class="opt"><b>${fmtHours(P.hours)}</b> שעות</span>
+        ${warn ? html`<span class="pb-warn">${warn}</span>` : null}
+      </div>
+      ${S.ui.tab !== 'quote' ? html`<button type="button" class="btn" onClick=${function () { setTab('quote'); }}>להצעה ללקוח</button>` : html`<button type="button" class="btn" onClick=${function () { setTab('costs'); }}>לעלויות ורווח</button>`}
+    </div></div>`;
+  }
+
+  /* ---------- dialogs ---------- */
+  function Modal(props) {
+    useEffect(function () {
+      function onKey(e) { if (e.key === 'Escape') closeModal(); }
+      document.addEventListener('keydown', onKey);
+      return function () { document.removeEventListener('keydown', onKey); };
+    }, []);
+    return html`<div class="overlay" onClick=${function (e) { if (e.target === e.currentTarget && !props.sticky) closeModal(); }}>
+      <div class=${'modal' + (props.wide ? ' wide' : '')} role="dialog" aria-modal="true" aria-label=${props.title}>
+        <div class="modal-head"><h3>${props.title}</h3><button type="button" class="ibtn" aria-label="סגירה" onClick=${closeModal}>${Ico.close()}</button></div>
+        ${props.children}
+      </div>
+    </div>`;
+  }
+  function ConfirmModal(props) {
+    var m = props.m;
+    return html`<${Modal} title=${m.title}>
+      <p>${m.text}</p>
+      <div class="modal-foot">
+        <button type="button" class=${'btn ' + (m.danger ? 'danger' : 'primary')} onClick=${function () { var f = m.onOk; closeModal(); if (f) f(); }}>${m.ok || 'אישור'}</button>
+        <button type="button" class="btn ghost" onClick=${closeModal}>ביטול</button>
+      </div>
+    <//>`;
+  }
+  function PickerModal() {
+    var st = useState(''), txt = st[0], setTxt = st[1];
+    var er = useState(''), err = er[0], setErr = er[1];
+    var fileRef = useRef(null);
+    function tryImport(obj) { try { importProductJSON(obj && obj.kind === 'nagriya-quotes' ? null : obj); } catch (e) { setErr('לא הצלחתי לקרוא את המוצר. ודאו שזה קובץ מוצר מהמחשבון.'); } }
+    return html`<${Modal} title="הוספת מוצר להצעה" wide=${true}>
+      ${SAMPLE ? html`<div class="banner" style="background:var(--surface-2);border-color:var(--line)"><span>יש לכם תמונה של רהיט? Claude ישרטט מודל דומה מקורות ולוחות.</span><button type="button" class="btn sm primary" onClick=${function () { openModal({ type: 'ai', mode: 'create' }); }}>שרטוט מתמונה</button></div>` : null}
+      <${TemplateCards} onPick=${function (t) { addItemFromTemplate(t); closeModal(); }}/>
+      <details class="adv">
+        <summary>ייבוא מוצר מקובץ או מטקסט</summary>
+        <p class="sub" style="margin-block:8px">מוצר שיוצא מהמחשבון, או מודל שקיבלתם מ-Claude בצ׳אט. הדביקו את הטקסט או בחרו קובץ JSON.</p>
+        <textarea class="copybox" style="min-height:120px" dir="ltr" value=${txt} onInput=${function (e) { setTxt(e.target.value); setErr(''); }} placeholder='{"name": "...", "params": [...], "parts": [...]}'></textarea>
+        ${err ? html`<p class="bad-t" style="font-size:.86rem">${err}</p>` : null}
+        <div class="actions" style="margin-top:8px">
+          <button type="button" class="btn sm primary" disabled=${!txt.trim()} onClick=${function () { var o; try { o = JSON.parse(txt.trim().replace(/^```(json)?|```$/g, '')); } catch (e) { setErr('הטקסט אינו JSON תקין.'); return; } tryImport(o); }}>ייבוא מהטקסט</button>
+          <button type="button" class="btn sm" onClick=${function () { fileRef.current && fileRef.current.click(); }}>בחירת קובץ</button>
+          <input type="file" accept=".json,application/json" hidden ref=${fileRef} onChange=${function (e) { var f = e.target.files[0]; e.target.value = ''; if (f) readJSONFile(f).then(tryImport, function () { setErr('הקובץ אינו JSON תקין.'); }); }}/>
+        </div>
+      </details>
+    <//>`;
+  }
+  function PasteModal(props) {
+    var item = S.quote.items.find(function (i) { return i.id === props.m.itemId; });
+    var st = useState(''), txt = st[0], setTxt = st[1];
+    if (!item) return null;
+    var parsed = parseCutList(txt, item.parts.map(function (p) { return String(p.code || '').toUpperCase(); }));
+    return html`<${Modal} title="הדבקת רשימת חיתוכים">
+      <p class="sub">שורה לכל חלק: כמות, שם ומידות בס״מ בסדר עובי × רוחב × אורך. אפשר להעתיק ישר מדף העבודה.</p>
+      <textarea class="copybox" value=${txt} onInput=${function (e) { setTxt(e.target.value); }} placeholder=${'2-A רגל ספסל 5X15X35\n5-B מושב + משענת 2X10X50\n2-C תומכי משענת 5X10X48'}></textarea>
+      ${txt.trim() ? html`<p class="note">${parsed.parts.length ? 'זוהו ' + parsed.parts.length + ' חלקים: ' + parsed.parts.map(function (p) { return p.n + '× ' + p.name + ' ' + lri(p.t + '×' + p.w + '×' + p.l); }).join(' · ') : 'לא זוהו חלקים עדיין.'}${parsed.skipped ? ' · ' + (parsed.skipped === 1 ? 'שורה אחת בלי מידות דולגה' : parsed.skipped + ' שורות בלי מידות דולגו') : ''}</p>` : null}
+      <p class="hint">החלקים ייכנסו לחישוב העץ מיד. כדי שיופיעו בשרטוט, מגדירים להם מיקום בכפתור ${Ico.move()} שבטבלה${SAMPLE ? ', או מבקשים מ-Claude לסדר אותם' : ''}.</p>
+      <div class="modal-foot">
+        <button type="button" class="btn primary" disabled=${!parsed.parts.length} onClick=${function () { item.parts = item.parts.concat(parsed.parts); commit('current'); closeModal(); toast('נוספו ' + parsed.parts.length + ' חלקים'); }}>הוספה לרשימה</button>
+        <button type="button" class="btn ghost" onClick=${closeModal}>ביטול</button>
+      </div>
+    <//>`;
+  }
+  function AIModal(props) {
+    var m = props.m, modify = m.mode === 'modify';
+    var item = modify ? S.quote.items.find(function (i) { return i.id === m.itemId; }) : null;
+    var fs = useState([]), files = fs[0], setFiles = fs[1];
+    var ts = useState([]), thumbs = ts[0], setThumbs = ts[1];
+    var ns = useState(''), notes = ns[0], setNotes = ns[1];
+    var bs = useState(false), busy = bs[0], setBusy = bs[1];
+    var es = useState(''), err = es[0], setErr = es[1];
+    var ss = useState(0), secs = ss[0], setSecs = ss[1];
+    var ctl = useRef(null), fileRef = useRef(null);
+    useEffect(function () {
+      if (!busy) return;
+      var t0 = Date.now(), iv = setInterval(function () { setSecs(Math.round((Date.now() - t0) / 1000)); }, 1000);
+      return function () { clearInterval(iv); };
+    }, [busy]);
+    useEffect(function () { return function () { if (ctl.current) ctl.current.abort(); }; }, []);
+    function pick(e) {
+      var list = Array.from(e.target.files || []).slice(0, SAMPLE_MAXIMG);
+      e.target.value = '';
+      setFiles(list);
+      Promise.all(list.map(function (f) { return fileToDataURL(f, 600, 0.75).catch(function () { return null; }); })).then(function (d) { setThumbs(d.filter(Boolean)); });
+    }
+    function run() {
+      if (!SAMPLE) return;
+      setErr(''); setBusy(true); setSecs(0);
+      var c = new AbortController(); ctl.current = c;
+      var imgs = files.slice();
+      if (modify && !imgs.length && item && item.photo) { var d = getImage(item.photo); var bl = d && dataURLtoBlob(d); if (bl) imgs.push(bl); }
+      var useImgs = SAMPLE_IMAGES && imgs.length > 0;
+      var prompt = buildAIPrompt(modify ? 'modify' : 'create', notes.trim(), item, useImgs);
+      var opts = { modelTier: 'complex', signal: c.signal, cache: false };
+      if (useImgs) opts.images = imgs.slice(0, SAMPLE_MAXIMG);
+      var call = typeof SAMPLE.json === 'function' ? SAMPLE.json(prompt, opts) : SAMPLE(prompt, opts).then(function (r) { var t = r.text, a = t.indexOf('{'), b = t.lastIndexOf('}'); return JSON.parse(t.slice(a, b + 1)); });
+      call.then(function (out) {
+        var t = normalizeTemplate(out);
+        if (modify && item) {
+          PREV[item.id] = { params: clone(item.params), parts: clone(item.parts) };
+          item.params = t.params;
+          item.parts = t.parts;
+          if (!item.materials.length && t.materials.length) item.materials = t.materials.map(function (x) { return Object.assign({ id: uid('m') }, x); });
+          S.ui.selPart = null; S.ui.photo = false;
+          commit('current', 'ui'); closeModal(); toast('השרטוט עודכן. אפשר לבטל בכפתור "ביטול השינוי האחרון".');
+        } else {
+          var first = files[0];
+          var finish = function (photoId) {
+            t.photo = photoId || null;
+            var it = addItemFromTemplate(t);
+            if (photoId) it.img = 'render';
+            S.ui.photo = false; closeModal(); toast('השרטוט מוכן. כוונו מידות בסליידרים ובטבלה.');
+          };
+          if (first) fileToDataURL(first).then(function (d) { finish(putImage(d)); }, function () { finish(null); });
+          else finish(null);
+        }
+      }, function (e) {
+        setBusy(false);
+        var code = e && e.code;
+        if (code === 'cancelled') return;
+        if (code === 'not_granted' || code === 'sampling_disabled' || code === 'not_declared' || code === 'capability_disabled' || code === 'capability_removed') { SAMPLE = null; }
+        setErr(AI_ERRORS[code] || (e && e.message === 'empty' ? 'Claude לא החזיר חלקים. נסו תמונה ברורה יותר או הוסיפו תיאור.' : 'משהו השתבש בדרך. נסו שוב.'));
+      });
+    }
+    var canRun = modify ? !!notes.trim() : (files.length > 0 || !!notes.trim());
+    return html`<${Modal} title=${modify ? 'שינוי השרטוט עם Claude' : 'שרטוט מתמונה עם Claude'} sticky=${busy}>
+      <p class="sub">${modify ? 'כתבו מה לשנות. Claude יעדכן את הפרמטרים ואת רשימת החלקים, ואת התוצאה אפשר לכוונן או לבטל.' : 'העלו תמונה של הרהיט, ואם יש גם רשימת חיתוכים או מידות. Claude ישרטט מודל דומה מקורות ולוחות, עם סליידרים לשינוי המידות.'}</p>
+      ${SAMPLE_IMAGES ? html`<div class="field"><span>${modify ? 'תמונה (לא חובה)' : 'תמונות של הרהיט (עד ' + SAMPLE_MAXIMG + ')'}</span>
+        <div class="gap"><button type="button" class="btn sm" disabled=${busy} onClick=${function () { fileRef.current && fileRef.current.click(); }}>${files.length ? 'החלפת תמונות' : 'בחירת תמונות'}</button>
+          <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple hidden ref=${fileRef} onChange=${pick}/>
+          ${modify && item && item.photo && !files.length ? html`<span class="hint">התמונה שצורפה למוצר תישלח</span>` : null}</div>
+        ${thumbs.length ? html`<div class="thumbs">${thumbs.map(function (s, i) { return html`<img key=${i} src=${s} alt=""/>`; })}</div>` : null}
+      </div>` : html`<p class="note">אי אפשר לשלוח תמונות מכאן, אבל אפשר לתאר את הרהיט במילים.</p>`}
+      <label class="field">${modify ? 'מה לשנות?' : 'תיאור, מידות או רשימת חיתוכים (לא חובה)'}
+        <textarea value=${notes} disabled=${busy} onInput=${function (e) { setNotes(e.target.value); }} placeholder=${modify ? 'למשל: להוסיף מדף תחתון, להגביה את המשענת ל-55, להחליף את הרגליים לקורות 7×7' : 'למשל: ספסל לגן ילדים באורך 120 וגובה ישיבה 30. או רשימה: 2 רגל 5x15x35'}></textarea></label>
+      ${err ? html`<div class="warnbox">${err}</div>` : null}
+      ${busy ? html`<div class="progress"><span class="spinner" aria-hidden="true"></span><span>Claude משרטט… ${secs} שניות. זה יכול לקחת עד דקה או שתיים.</span></div>` : null}
+      <div class="modal-foot">
+        ${busy ? html`<button type="button" class="btn" onClick=${function () { if (ctl.current) ctl.current.abort(); setBusy(false); }}>עצירה</button>`
+          : html`<button type="button" class="btn primary" disabled=${!canRun} onClick=${run}>${modify ? 'עדכון השרטוט' : 'שרטוט'}</button>`}
+        <button type="button" class="btn ghost" onClick=${function () { if (ctl.current) ctl.current.abort(); closeModal(); }}>סגירה</button>
+      </div>
+    <//>`;
+  }
+  function SavedModal() {
+    var list = S.saved.slice().sort(function (a, b) { return num(b.updatedAt) - num(a.updatedAt); });
+    return html`<${Modal} title="הצעות שמורות">
+      ${S.quote ? html`<div class="banner" style="background:var(--surface-2);border-color:var(--line)"><span>פתוחה עכשיו: הצעה מס׳ ${S.quote.no}${S.quote.title ? ' · ' + S.quote.title : ''}</span><button type="button" class="btn sm" onClick=${function () { saveCurrent(); }}>שמירה ברשימה</button></div>` : null}
+      ${list.length ? html`<div>${list.map(function (q) {
+        var d = q.updatedAt ? new Date(q.updatedAt) : null;
+        return html`<div key=${q.id} class="listrow">
+          <div><div class="t">מס׳ ${q.no} · ${q.title || 'ללא שם'}</div>
+            <div class="m">${q.customer && q.customer.name ? q.customer.name + ' · ' : ''}${q.items.length} מוצרים · ${money(q.summary ? q.summary.total : 0)}${d ? ' · עודכנה ' + d.toLocaleDateString('he-IL') : ''}</div></div>
+          <div class="actions">
+            <button type="button" class="btn sm primary" onClick=${function () { openSaved(q.id); }}>פתיחה</button>
+            <button type="button" class="btn sm" onClick=${function () { duplicateSaved(q.id); }}>שכפול</button>
+            <button type="button" class="btn sm danger" onClick=${function () { deleteSaved(q.id); }}>מחיקה</button>
+          </div>
+        </div>`;
+      })}</div>` : html`<p class="note">עוד לא נשמרו הצעות. לחצו "שמירה" בראש הדף כדי לשמור את ההצעה הפתוחה.</p>`}
+    <//>`;
+  }
+  function BackupModal() {
+    var fileRef = useRef(null);
+    var si = syncInfo();
+    return html`<${Modal} title="גיבוי ושחזור">
+      <p class="sub">${Cloud.state === 'synced' ? 'הנתונים מסונכרנים לחשבון Claude שלכם, ונשמרים גם במכשיר הזה.' : (si[1] + '. כדאי להוריד גיבוי מדי פעם, או כדי להעביר את המחירון והצעות למכשיר אחר.')}</p>
+      <div class="actions">
+        ${canSaveFiles() ? html`<button type="button" class="btn primary" onClick=${exportBackup}>הורדת גיבוי מלא</button>` : null}
+        <button type="button" class="btn" onClick=${function () { fileRef.current && fileRef.current.click(); }}>שחזור מקובץ גיבוי</button>
+        <input type="file" accept=".json,application/json" hidden ref=${fileRef} onChange=${function (e) {
+          var f = e.target.files[0]; e.target.value = '';
+          if (!f) return;
+          readJSONFile(f).then(function (d) {
+            if (!d || d.app !== 'nagriya-quotes') { toast('זה לא קובץ גיבוי של המחשבון'); return; }
+            confirmBox('לשחזר מהגיבוי?', 'המחירון, ההצעה הפתוחה, ההצעות השמורות והתבניות יוחלפו בנתונים מהקובץ.', 'שחזור', function () { importBackup(d); }, false);
+          }, function () { toast('לא הצלחתי לקרוא את הקובץ'); });
+        }}/>
+      </div>
+      <div class="listrow" style="border-bottom:0">
+        <span class="note">להתחיל מחדש עם הדוגמה של פינת הזולה ומחירי הדוגמה.</span>
+        <button type="button" class="btn sm danger" onClick=${function () {
+          confirmBox('לאפס לנתוני הדוגמה?', 'המחירון וההצעה הפתוחה יחזרו לדוגמה. הצעות שמורות ותבניות נשארות.', 'איפוס', function () {
+            S.prices = seedPrices(); S.quote = sampleQuote(); S.ui.sel = null; S.ui.hideSample = false;
+            commit('prices', 'current', 'ui');
+          });
+        }}>איפוס</button>
+      </div>
+    <//>`;
+  }
+  function TextModal(props) {
+    var ref = useRef(null);
+    useEffect(function () { if (ref.current) { ref.current.focus(); ref.current.select(); } }, []);
+    return html`<${Modal} title="העתקת הטקסט">
+      <p class="sub">הטקסט מסומן. העתיקו אותו (Ctrl+C או לחיצה ארוכה) והדביקו בוואטסאפ או במייל.</p>
+      <textarea ref=${ref} class="copybox" readonly value=${props.m.text}></textarea>
+    <//>`;
+  }
+  function ModalHost() {
+    var m = S.ui.modal;
+    if (!m) return null;
+    switch (m.type) {
+      case 'confirm': return html`<${ConfirmModal} m=${m}/>`;
+      case 'picker': return html`<${PickerModal}/>`;
+      case 'paste': return html`<${PasteModal} m=${m}/>`;
+      case 'ai': return SAMPLE ? html`<${AIModal} key=${m.mode + (m.itemId || '')} m=${m}/>` : null;
+      case 'saved': return html`<${SavedModal}/>`;
+      case 'backup': return html`<${BackupModal}/>`;
+      case 'text': return html`<${TextModal} m=${m}/>`;
+      default: return null;
+    }
+  }
+
+  function App() {
+    var st = useState(0), setT = st[1];
+    FORCE = function () { setT(function (x) { return x + 1; }); };
+    var C = computeFor(S.quote);
+    var tab = S.ui.tab;
+    return html`<div>
+      <${Header} C=${C}/>
+      <main class="wrap main">
+        ${tab === 'design' ? html`<${DesignTab} C=${C}/>` : null}
+        ${tab === 'wood' ? html`<${WoodTab} C=${C}/>` : null}
+        ${tab === 'costs' ? html`<${CostsTab} C=${C}/>` : null}
+        ${tab === 'quote' ? html`<${QuoteTab} C=${C}/>` : null}
+        ${tab === 'shop' ? html`<${ShopTab} C=${C}/>` : null}
+      </main>
+      <${PriceBar} C=${C}/>
+      <${ModalHost}/>
+      ${S.ui.toast ? html`<div class="toast" role="status">${S.ui.toast}</div>` : null}
+    </div>`;
+  }
+
+  appEl.innerHTML = '';
+  render(html`<${App}/>`, appEl);
+  cloudInit();
+  capsInit();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { snapCache.clear(); FORCE(); });
+})();
+</script>
+</body>
+</html>
