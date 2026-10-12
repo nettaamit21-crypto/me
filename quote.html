@@ -242,6 +242,13 @@
   .unplaced { display: flex; flex-direction: column; gap: 2px; border-top: 1px solid var(--line); padding-top: 8px; }
   .unplaced .row { padding: 4px 0; border-bottom: 1px dashed var(--line); font-size: .86rem; }
   .unplaced .row > span { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .photo-strip { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .pthumb { appearance: none; position: relative; flex: none; width: 72px; height: 54px; padding: 0; border: 2px solid transparent; border-radius: 6px; overflow: hidden; background: var(--sunk); cursor: pointer; color: var(--muted); }
+  .pthumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .pthumb.on { border-color: var(--oak); }
+  .pthumb.add { border: 1px dashed var(--oak); color: var(--oak); font-size: .82rem; font-weight: 500; display: grid; place-items: center; background: transparent; }
+  .pstar { position: absolute; bottom: 2px; inset-inline-start: 2px; background: var(--oak); color: var(--on-oak); font-size: .6rem; line-height: 1.5; padding: 0 4px; border-radius: 3px; }
+  .photo-strip .actions { margin-inline-start: auto; }
   .dimsline { font-size: .86rem; color: var(--muted); }
   .dimsline b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
 
@@ -777,7 +784,7 @@
       parts: clone(t.parts || []).map(function (p) { return Object.assign(part({}), p, { id: uid('p') }); }),
       materials: clone(t.materials || []).map(function (m) { return Object.assign({ name: '', qty: '1', price: '' }, m, { id: uid('m') }); }),
       labor: clone(t.labor || []).map(function (l) { return Object.assign({ name: '', hours: '0', rate: '' }, l, { id: uid('l') }); }),
-      photo: t.photo || null, img: 'render', note: ''
+      photo: t.photo || null, photos: Array.isArray(t.photos) ? t.photos.slice() : (t.photo ? [t.photo] : []), img: 'render', note: ''
     };
   }
   function templateFromItem(item) {
@@ -1079,7 +1086,7 @@
     if (g === 'current') return fixQuote(data);
     return data;
   }
-  function defaultUI() { return { tab: 'design', sel: null, selPart: null, dims: true, vivid: false, photo: false, place: {}, hideSample: false, build: false, step: '5', formulas: false, dropping: false }; }
+  function defaultUI() { return { tab: 'design', sel: null, selPart: null, dims: true, vivid: false, photo: false, place: {}, hideSample: false, build: false, step: '5', formulas: false, dropping: false, photoSel: null }; }
 
   var S = {
     prices: fixGroup('prices', LS.get('prices')),
@@ -1232,8 +1239,8 @@
   }
   function pushLocalImages() {
     var ids = new Set();
-    [S.quote].concat(S.saved).forEach(function (q) { (q.items || []).forEach(function (it) { if (it.photo) ids.add(it.photo); }); });
-    S.library.forEach(function (t) { if (t.photo) ids.add(t.photo); });
+    [S.quote].concat(S.saved).forEach(function (q) { (q.items || []).forEach(function (it) { itemPhotos(it).forEach(function (id) { ids.add(id); }); }); });
+    S.library.forEach(function (t) { itemPhotos(t).forEach(function (id) { ids.add(id); }); });
     ids.forEach(function (id) {
       var d = IMG[id] || LS.get('img:' + id);
       if (d && !LS.get('imgup:' + id)) cloudQueue('img:' + id, function () { return cloudCol('images').doc(id).set({ data: d, updatedAt: Date.now() }).then(function () { LS.set('imgup:' + id, 1); }); }, 300);
@@ -1274,7 +1281,7 @@
       SAMPLE = s;
       return s.limits().then(function (lim) {
         SAMPLE_IMAGES = !!(lim && lim.images);
-        if (lim && lim.images && lim.images.maxCount) SAMPLE_MAXIMG = Math.min(3, lim.images.maxCount);
+        if (lim && lim.images && lim.images.maxCount) SAMPLE_MAXIMG = Math.min(5, lim.images.maxCount);
       }, function () { /* text only */ });
     }).catch(function () { SAMPLE = null; }).then(function () { FORCE(); });
     window.claude.use('downloads').then(function (d) { DL = d; FORCE(); }).catch(function () { DL = null; });
@@ -1830,19 +1837,45 @@
     if (!out.length) Array.from(dt.items || []).forEach(function (it) { if (it.kind === 'file' && /^image\//.test(it.type)) { var f = it.getAsFile(); if (f) out.push(f); } });
     return out;
   }
-  function attachPhoto(item, file) {
-    if (!isImageFile(file)) { toast('הקובץ "' + (file && file.name || '') + '" אינו תמונה. אפשר להעלות JPG, PNG או WebP.', 6000); return; }
-    toast('מעלה את התמונה…');
-    fileToDataURL(file).then(function (d) {
-      item.photo = putImage(d); item.img = 'photo'; S.ui.photo = true; S.ui.build = false;
-      commit('current', 'ui');
-      toast('התמונה צורפה ל"' + (item.name || 'המוצר') + '"');
-    }, function () { toast(readFailMessage(file), 8000); });
+  /* A product can hold several photos; `photo` is the one that goes into the customer quote. */
+  function itemPhotos(it) {
+    var a = Array.isArray(it.photos) ? it.photos.slice() : [];
+    if (it.photo && a.indexOf(it.photo) < 0) a.unshift(it.photo);
+    return a;
+  }
+  function attachPhotos(item, files) {
+    files = Array.from(files || []);
+    var imgs = files.filter(isImageFile).slice(0, 12);
+    if (!imgs.length) { toast('הקובץ "' + (files[0] && files[0].name || '') + '" אינו תמונה. אפשר להעלות JPG, PNG או WebP.', 6000); return; }
+    toast(imgs.length > 1 ? 'מעלה ' + imgs.length + ' תמונות…' : 'מעלה את התמונה…');
+    var added = [], failed = [];
+    imgs.reduce(function (p, f) {
+      return p.then(function () { return fileToDataURL(f).then(function (d) { added.push(putImage(d)); }, function () { failed.push(f); }); });
+    }, Promise.resolve()).then(function () {
+      if (added.length) {
+        var had = itemPhotos(item).length > 0;
+        item.photos = itemPhotos(item).concat(added);
+        if (!item.photo) item.photo = added[0];
+        if (!had) item.img = 'photo';
+        S.ui.photo = true; S.ui.photoSel = added[0]; S.ui.build = false;
+        commit('current', 'ui');
+      }
+      var name = '"' + (item.name || 'המוצר') + '"';
+      if (!added.length) toast(readFailMessage(failed[0]), 8000);
+      else toast((added.length > 1 ? added.length + ' תמונות צורפו ל' + name : 'התמונה צורפה ל' + name) + (failed.length ? '. ' + failed.length + ' לא נפתחו (אולי HEIC).' : ''), failed.length ? 7000 : 2600);
+    });
+  }
+  function removePhoto(item, id) {
+    item.photos = itemPhotos(item).filter(function (x) { return x !== id; });
+    if (item.photo === id) item.photo = item.photos[0] || null;
+    if (!item.photos.length) { item.img = item.img === 'photo' ? 'render' : item.img; S.ui.photo = false; }
+    S.ui.photoSel = item.photo;
+    commit('current', 'ui');
   }
   function photoInto(files) {
     if (DROP_TARGET) { DROP_TARGET(files); return; }
     var it = selItem();
-    if (it && (S.ui.tab === 'design' || S.ui.tab === 'quote')) attachPhoto(it, files[0]);
+    if (it && (S.ui.tab === 'design' || S.ui.tab === 'quote')) attachPhotos(it, files);
     else toast('כדי לצרף תמונה, פתחו מוצר בלשונית "תכנון ושרטוט" וגררו אותה לשם.', 6000);
   }
   (function () {
@@ -1902,7 +1935,7 @@
   }
   function saveAsTemplate(item) {
     var t = templateFromItem(item);
-    t.id = uid('t'); t.desc = 'נשמר מתוך הצעה ' + S.quote.no; t.photo = item.photo || null; t.updatedAt = Date.now();
+    t.id = uid('t'); t.desc = 'נשמר מתוך הצעה ' + S.quote.no; t.photo = item.photo || null; t.photos = itemPhotos(item); t.updatedAt = Date.now();
     S.library.unshift(t); commit('library'); pushListItem('templates', t);
     toast('נשמר בתבניות שלי');
   }
@@ -2132,8 +2165,9 @@
   }
   function exportBackup() {
     var imgs = {};
-    [S.quote].concat(S.saved).forEach(function (q) { q.items.forEach(function (it) { if (it.photo) { var d = getImage(it.photo); if (d) imgs[it.photo] = d; } }); });
-    S.library.forEach(function (t) { if (t.photo) { var d = getImage(t.photo); if (d) imgs[t.photo] = d; } });
+    function keep(id) { var d = getImage(id); if (d) imgs[id] = d; }
+    [S.quote].concat(S.saved).forEach(function (q) { q.items.forEach(function (it) { itemPhotos(it).forEach(keep); }); });
+    S.library.forEach(function (t) { itemPhotos(t).forEach(keep); });
     var data = { app: 'nagriya-quotes', v: 1, exportedAt: new Date().toISOString(), prices: S.prices, settings: S.settings, quote: S.quote, saved: S.saved, library: S.library, images: imgs };
     saveFile('גיבוי-הצעות-' + todayISO() + '.json', JSON.stringify(data), 'application/json');
   }
@@ -2474,8 +2508,11 @@
     var item = props.item, E = props.E;
     var host = useRef(null), V = mainViewer();
     var build = !!S.ui.build;
-    var photo = item.photo ? getImage(item.photo) : null;
-    var showPhoto = S.ui.photo && !!photo && !build;
+    var photos = itemPhotos(item);
+    var curId = photos.indexOf(S.ui.photoSel) >= 0 ? S.ui.photoSel : (item.photo || photos[0] || null);
+    var photo = curId ? getImage(curId) : null;
+    var showPhoto = S.ui.photo && photos.length > 0 && !build;
+    var morePhotos = useRef(null);
     var list = build ? E.placedBoxes : E.boxes, layout = !build && E.layout;
     if (V) {
       V.onPick = function (pid) { S.ui.selPart = pid; FORCE(); };
@@ -2506,7 +2543,7 @@
       <div class=${'board' + (build ? ' building' : '')}>
         <div class="board-canvas" ref=${host} hidden=${showPhoto || !V}></div>
         ${!V ? html`<div class="board-canvas"><div class="board-empty">השרטוט התלת־ממדי לא נטען בדפדפן הזה. רשימת החיתוכים והמחירים עובדים כרגיל.</div></div>` : null}
-        ${showPhoto ? html`<img class="board-photo" src=${photo} alt=${'תמונה של ' + item.name}/>` : null}
+        ${showPhoto ? (photo ? html`<img class="board-photo" src=${photo} alt=${'תמונה של ' + item.name}/>` : html`<div class="board-canvas"><div class="board-empty">טוען תמונה…</div></div>`) : null}
         ${!showPhoto && layout ? html`<div class="board-note">לחלקים אין עדיין מיקום, לכן הם מוצגים פרוסים. לחצו "בנייה" כדי להרכיב מהם רהיט.</div>` : null}
         ${!showPhoto && build && list.length ? html`<div class="board-note">מצב בנייה · גוררים חלק כדי להזיז אותו · ${dragHint}</div>` : null}
         ${!showPhoto && !list.length && V ? html`<div class="board-empty">${build ? 'עוד אין חלקים בשרטוט. לחצו "+ חלק חדש" או "להוסיף לשרטוט" ליד חלק מהרשימה.' : 'הוסיפו חלקים לרשימה כדי לראות שרטוט'}</div>` : null}
@@ -2522,11 +2559,24 @@
         <div class="seg" role="group" aria-label="תצוגה">
           <button type="button" class=${S.ui.dims ? 'on' : ''} aria-pressed=${S.ui.dims} onClick=${function () { tog('dims'); }}>מידות</button>
           <button type="button" class=${S.ui.vivid ? 'on' : ''} aria-pressed=${S.ui.vivid} onClick=${function () { tog('vivid'); }}>צבע לכל חלק</button>
-          ${photo && !build ? html`<button type="button" class=${S.ui.photo ? 'on' : ''} aria-pressed=${S.ui.photo} onClick=${function () { tog('photo'); }}>תמונה</button>` : null}
+          ${photos.length && !build ? html`<button type="button" class=${S.ui.photo ? 'on' : ''} aria-pressed=${S.ui.photo} onClick=${function () { tog('photo'); }}>${photos.length > 1 ? 'תמונות (' + photos.length + ')' : 'תמונה'}</button>` : null}
           <button type="button" aria-label="הגדלה" onClick=${function () { if (V) V.zoomBy(1.25); }}>+</button>
           <button type="button" aria-label="הקטנה" onClick=${function () { if (V) V.zoomBy(0.8); }}>−</button>
         </div>
       </div>
+      ${showPhoto ? html`<div class="photo-strip">
+        ${photos.map(function (id, i) {
+          var src = getImage(id);
+          return html`<button key=${id} type="button" class=${'pthumb' + (id === curId ? ' on' : '')} aria-label=${'תמונה ' + (i + 1)} aria-pressed=${id === curId} onClick=${function () { S.ui.photoSel = id; FORCE(); }}>
+            ${src ? html`<img src=${src} alt=""/>` : html`<span>…</span>`}${id === item.photo ? html`<span class="pstar">בהצעה</span>` : null}</button>`;
+        })}
+        <button type="button" class="pthumb add" onClick=${function () { morePhotos.current && morePhotos.current.click(); }}>+ עוד</button>
+        <input type="file" accept="image/*" multiple hidden ref=${morePhotos} onChange=${function (e) { var f = Array.from(e.target.files || []); e.target.value = ''; if (f.length) attachPhotos(item, f); }}/>
+        <span class="actions">
+          ${curId && curId !== item.photo ? html`<button type="button" class="btn sm" onClick=${function () { item.photo = curId; item.img = 'photo'; commit('current'); toast('התמונה הזו תופיע בהצעה ללקוח'); }}>להציג אותה בהצעה</button>` : null}
+          ${curId ? html`<button type="button" class="btn sm danger" onClick=${function () { removePhoto(item, curId); }}>הסרת התמונה</button>` : null}
+        </span>
+      </div>` : null}
       ${build ? html`<${BuildPanel} item=${item} E=${E}/>` : html`<div class="row">
         ${E.dims ? html`<span class="dimsline">מידות כוללות <b class="ltr">${dimsText(E)}</b> ${CM} <span class="hint">(אורך × עומק × גובה)</span></span>` : html`<span class="dimsline">אין עדיין מידות כוללות</span>`}
         <span class="hint">גררו לסיבוב · לחיצה על חלק מסמנת אותו בטבלה · אפשר לגרור לכאן תמונה או להדביק אותה</span>
@@ -2813,9 +2863,9 @@
     var fixed = item.params.filter(function (p) { return p.type === 'const' || p.type === 'calc'; });
     var vatOn = S.quote.pricing.vatOn, vr = num(S.quote.pricing.vat) / 100;
     function onPhoto(e) {
-      var f = e.target.files && e.target.files[0];
+      var f = Array.from(e.target.files || []);
       e.target.value = '';
-      if (f) attachPhoto(item, f);
+      if (f.length) attachPhotos(item, f);
     }
     return html`<div class="design">
       <section class="panel config">
@@ -2833,8 +2883,8 @@
         <div class="actions">
           ${SAMPLE ? html`<button type="button" class="btn sm primary" onClick=${function () { openModal({ type: 'ai', mode: 'modify', itemId: item.id }); }}>שינוי בעזרת Claude</button>` : null}
           ${PREV[item.id] ? html`<button type="button" class="btn sm" onClick=${function () { var pv = PREV[item.id]; delete PREV[item.id]; item.params = pv.params; item.parts = pv.parts; commit('current'); toast('השינוי בוטל'); }}>ביטול השינוי האחרון</button>` : null}
-          <button type="button" class="btn sm" onClick=${function () { fileRef.current && fileRef.current.click(); }}>${item.photo ? 'החלפת תמונה' : 'צירוף תמונה'}</button>
-          <input type="file" accept="image/*" hidden ref=${fileRef} onChange=${onPhoto}/>
+          <button type="button" class="btn sm" onClick=${function () { fileRef.current && fileRef.current.click(); }}>${itemPhotos(item).length ? 'הוספת תמונות' : 'צירוף תמונות'}</button>
+          <input type="file" accept="image/*" multiple hidden ref=${fileRef} onChange=${onPhoto}/>
           <button type="button" class="btn sm" onClick=${function () { duplicateItem(item); }}>שכפול</button>
           <button type="button" class="btn sm" onClick=${function () { saveAsTemplate(item); }}>שמירה כתבנית</button>
           ${canSaveFiles() ? html`<button type="button" class="btn sm" onClick=${function () { saveFile((item.name || 'מוצר') + '.json', JSON.stringify(templateFromItem(item), null, 2), 'application/json'); }}>ייצוא מוצר</button>` : null}
@@ -3208,13 +3258,19 @@
               <b>${it.name}</b>
               <div class="fields">
                 <label class="field">תמונה בהצעה
-                  <select value=${it.img === 'photo' && !it.photo ? 'render' : it.img} onChange=${function (e) { it.img = e.target.value; commit('current'); }}>
-                    <option value="render">השרטוט</option>${it.photo ? html`<option value="photo">התמונה שצירפתם</option>` : null}<option value="none">בלי תמונה</option>
+                  <select value=${it.img === 'photo' && it.photo ? 'p:' + it.photo : (it.img === 'none' ? 'none' : 'render')} onChange=${function (e) { var v = e.target.value; if (v.indexOf('p:') === 0) { it.img = 'photo'; it.photo = v.slice(2); } else it.img = v; commit('current'); }}>
+                    <option value="render">השרטוט</option>
+                    ${itemPhotos(it).map(function (id, i, a) { return html`<option value=${'p:' + id}>${a.length > 1 ? 'תמונה ' + (i + 1) : 'התמונה שצירפתם'}</option>`; })}
+                    <option value="none">בלי תמונה</option>
                   </select></label>
                 <label class="field">תיאור קצר<input value=${it.note} placeholder="למשל: עץ אורן, גימור שמן טבעי" onInput=${function (e) { it.note = e.target.value; commit('current'); }}/></label>
               </div>
-              <label class="linkbtn" style="align-self:flex-start;cursor:pointer">${it.photo ? 'החלפת התמונה' : 'העלאת תמונה של המוצר'}
-                <input type="file" accept="image/*" hidden onChange=${function (e) { var f = e.target.files && e.target.files[0]; e.target.value = ''; if (f) attachPhoto(it, f); }}/></label>
+              ${itemPhotos(it).length > 1 ? html`<div class="photo-strip">${itemPhotos(it).map(function (id, i) {
+                var src = getImage(id), on = it.img === 'photo' && it.photo === id;
+                return html`<button key=${id} type="button" class=${'pthumb' + (on ? ' on' : '')} aria-label=${'להציג את תמונה ' + (i + 1) + ' בהצעה'} aria-pressed=${on} onClick=${function () { it.img = 'photo'; it.photo = id; commit('current'); }}>${src ? html`<img src=${src} alt=""/>` : html`<span>…</span>`}</button>`;
+              })}</div>` : null}
+              <label class="linkbtn" style="align-self:flex-start;cursor:pointer">${itemPhotos(it).length ? 'הוספת תמונות' : 'העלאת תמונות של המוצר'}
+                <input type="file" accept="image/*" multiple hidden onChange=${function (e) { var f = Array.from(e.target.files || []); e.target.value = ''; if (f.length) attachPhotos(it, f); }}/></label>
             </div>`;
           })}
           <label class="field" style="margin-top:12px">הערות ותנאים<textarea value=${q.terms} onInput=${function (e) { q.terms = e.target.value; commit('current'); }}></textarea></label>
@@ -3361,7 +3417,7 @@
       setErr(''); setBusy(true); setSecs(0);
       var c = new AbortController(); ctl.current = c;
       var picked = files.slice();
-      if (modify && !picked.length && item && item.photo) { var d = getImage(item.photo); var bl = d && dataURLtoBlob(d); if (bl) picked.push(bl); }
+      if (modify && !picked.length && item) itemPhotos(item).slice(0, SAMPLE_MAXIMG).forEach(function (id) { var d = getImage(id), bl = d && dataURLtoBlob(d); if (bl) picked.push(bl); });
       // Claude reads JPG, PNG, WebP and GIF; anything else the browser can open (HEIC on Safari, BMP…) goes over as JPG.
       Promise.all(picked.map(function (f) {
         return SEND_TYPES.indexOf(f.type) >= 0 ? f : fileToDataURL(f, 1600, 0.9).then(dataURLtoBlob, function () { throw { code: 'unreadable', file: f }; });
@@ -3384,15 +3440,14 @@
           S.ui.selPart = null; S.ui.photo = false;
           commit('current', 'ui'); closeModal(); toast('השרטוט עודכן. אפשר לבטל בכפתור "ביטול השינוי האחרון".');
         } else {
-          var first = files[0];
-          var finish = function (photoId) {
-            t.photo = photoId || null;
-            var it = addItemFromTemplate(t);
-            if (photoId) it.img = 'render';
+          var ids = [];
+          files.reduce(function (p, f) {
+            return p.then(function () { return fileToDataURL(f).then(function (d) { ids.push(putImage(d)); }, function () { /* skip unreadable */ }); });
+          }, Promise.resolve()).then(function () {
+            t.photo = ids[0] || null; t.photos = ids;
+            addItemFromTemplate(t);
             S.ui.photo = false; closeModal(); toast('השרטוט מוכן. כוונו מידות בסליידרים ובטבלה.');
-          };
-          if (first) fileToDataURL(first).then(function (d) { finish(putImage(d)); }, function () { finish(null); });
-          else finish(null);
+          });
         }
       }, function (e) {
         setBusy(false);
@@ -3408,7 +3463,7 @@
       ${SAMPLE_IMAGES ? html`<div class="field"><span>${modify ? 'תמונה (לא חובה)' : 'תמונות של הרהיט (עד ' + SAMPLE_MAXIMG + ')'}</span>
         <div class="gap"><button type="button" class="btn sm" disabled=${busy} onClick=${function () { fileRef.current && fileRef.current.click(); }}>${files.length ? 'החלפת תמונות' : 'בחירת תמונות'}</button>
           <input type="file" accept="image/*" multiple hidden ref=${fileRef} onChange=${pick}/>
-          ${modify && item && item.photo && !files.length ? html`<span class="hint">התמונה שצורפה למוצר תישלח</span>` : null}</div>
+          ${modify && item && itemPhotos(item).length && !files.length ? html`<span class="hint">${itemPhotos(item).length > 1 ? 'התמונות שצורפו למוצר יישלחו' : 'התמונה שצורפה למוצר תישלח'}</span>` : null}</div>
         ${thumbs.length ? html`<div class="thumbs">${thumbs.map(function (s, i) { return html`<img key=${i} src=${s} alt=""/>`; })}</div>` : null}
       </div>` : html`<p class="note">אי אפשר לשלוח תמונות מכאן, אבל אפשר לתאר את הרהיט במילים.</p>`}
       <label class="field">${modify ? 'מה לשנות?' : 'תיאור, מידות או רשימת חיתוכים (לא חובה)'}
