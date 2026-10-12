@@ -270,11 +270,38 @@
   .ev { font-size: .7rem; color: var(--faint); font-variant-numeric: tabular-nums; line-height: 1.3; }
   .expr .ev { direction: ltr; text-align: left; }
   .expr.bad .cell { border-color: var(--bad); background: var(--bad-bg); }
+  .exprbox { position: relative; display: flex; align-items: center; }
+  .expr.linked .cell { background: color-mix(in srgb, var(--oak) 11%, var(--sunk)); padding-right: 24px; }
+  .expr .linkmark { position: absolute; right: 3px; top: 50%; transform: translateY(-50%); }
+  .linkmark { appearance: none; border: 0; background: transparent; width: 22px; height: 22px; padding: 0; border-radius: 4px; display: inline-grid; place-items: center; color: var(--oak); cursor: pointer; }
+  .linkmark svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .linkmark.off { color: var(--faint); }
+  .linkmark.off:hover { color: var(--oak); }
+  .linkmark.inline { position: static; transform: none; width: 18px; height: 18px; vertical-align: middle; cursor: default; background: color-mix(in srgb, var(--oak) 11%, var(--sunk)); }
+  .expr .cell:has(+ .linkmark.off) { padding-right: 24px; }
   .expr.bad .ev, .ev.bad { color: var(--bad); }
   .sw { display: inline-block; width: 12px; height: 12px; border-radius: 3px; border: 1px solid rgba(0, 0, 0, .22); flex: none; }
   .codecell { display: flex; align-items: center; gap: 5px; }
   .rowbtns { display: flex; gap: 1px; justify-content: flex-end; }
   .place-row > td { background: var(--surface-2); }
+  @media (max-width: 640px) {
+    /* On a phone each part is a small card: name on top, then quantity and the three sizes side by side. */
+    table.parts-grid, table.parts-grid tbody { display: block; }
+    table.parts-grid thead { display: none; }
+    table.parts-grid tr.prow { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px 8px; padding: 10px 2px; border-bottom: 1px solid var(--line-2); }
+    table.parts-grid tr.prow > td { border: 0; padding: 0; min-width: 0; }
+    table.parts-grid td[data-label]::before { content: attr(data-label); display: block; font-size: .7rem; color: var(--muted); margin-bottom: 2px; }
+    table.parts-grid .c-name { grid-column: span 3; }
+    table.parts-grid .c-prof { grid-column: span 3; }
+    table.parts-grid .c-act { grid-column: 1 / -1; }
+    table.parts-grid tr.prow.sel { background: color-mix(in srgb, var(--oak) 9%, transparent); }
+    table.parts-grid tr.prow.sel > td { background: transparent; }
+    table.parts-grid .c-tot { padding-top: 0; }
+    table.parts-grid .cell, table.parts-grid .w-prof, table.parts-grid .w-name { width: 100%; min-width: 0; }
+    table.parts-grid .codecell .cell { width: 100%; }
+    table.parts-grid tr.place-row { display: block; }
+    table.parts-grid tr.place-row > td { display: block; }
+  }
   .place { display: flex; flex-wrap: wrap; gap: 10px 20px; align-items: flex-end; padding: 6px 2px; }
   .place fieldset { border: 0; padding: 0; margin: 0; display: flex; gap: 6px; align-items: flex-end; flex-wrap: wrap; }
   .place legend { font-size: .72rem; color: var(--muted); padding: 0; margin-bottom: 3px; }
@@ -996,7 +1023,7 @@
     if (g === 'current') return fixQuote(data);
     return data;
   }
-  function defaultUI() { return { tab: 'design', sel: null, selPart: null, dims: true, vivid: false, photo: false, place: {}, hideSample: false, build: false, step: '5' }; }
+  function defaultUI() { return { tab: 'design', sel: null, selPart: null, dims: true, vivid: false, photo: false, place: {}, hideSample: false, build: false, step: '5', formulas: false }; }
 
   var S = {
     prices: fixGroup('prices', LS.get('prices')),
@@ -1010,7 +1037,7 @@
 
   function groupData(g) { return g === 'prices' ? S.prices : g === 'settings' ? S.settings : g === 'current' ? S.quote : g === 'saved' ? S.saved : g === 'library' ? S.library : null; }
   function setGroup(g, v) { if (g === 'prices') S.prices = v; else if (g === 'settings') S.settings = v; else if (g === 'current') S.quote = v; }
-  function uiSnapshot() { return { tab: S.ui.tab, sel: S.ui.sel, dims: S.ui.dims, vivid: S.ui.vivid, photo: S.ui.photo, place: S.ui.place, hideSample: S.ui.hideSample, build: S.ui.build, step: S.ui.step }; }
+  function uiSnapshot() { return { tab: S.ui.tab, sel: S.ui.sel, dims: S.ui.dims, vivid: S.ui.vivid, photo: S.ui.photo, place: S.ui.place, hideSample: S.ui.hideSample, build: S.ui.build, step: S.ui.step, formulas: S.ui.formulas }; }
 
   var FORCE = function () {};
   var dirty = new Set(), saveTimer = null;
@@ -2241,7 +2268,9 @@
     move: function () { return html`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M3 12h18M12 3 9.5 5.5M12 3l2.5 2.5M12 21l-2.5-2.5M12 21l2.5-2.5M3 12l2.5-2.5M3 12l2.5 2.5M21 12l-2.5-2.5M21 12l-2.5 2.5"/></svg>`; },
     copy: function () { return html`<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></svg>`; },
     trash: function () { return html`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>`; },
-    close: function () { return html`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>`; }
+    close: function () { return html`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>`; },
+    link: function () { return html`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>`; },
+    relink: function () { return html`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4h4"/></svg>`; }
   };
   var TABS = [
     { id: 'design', label: 'תכנון ושרטוט' },
@@ -2438,9 +2467,9 @@
       ${pt.placed === false ? html`<div class="okbox row"><span>החלק הזה עוד לא בשרטוט.</span><button type="button" class="btn sm primary" onClick=${function () { placePart(item, E, r); }}>להוסיף לשרטוט</button></div>` : html`
       <div class="build-row">
         <span class="lbl">מידות</span>
-        <label class="f">עובי<${Expr} v=${pt.t} val=${r.f.t} err=${r.errs.t} on=${set('t')} label="עובי"/></label>
-        <label class="f">רוחב<${Expr} v=${pt.w} val=${r.f.w} err=${r.errs.w} on=${set('w')} label="רוחב"/></label>
-        <label class="f">אורך<${Expr} v=${pt.l} val=${r.f.l} err=${r.errs.l} on=${set('l')} label="אורך"/></label>
+        <label class="f">עובי<${Expr} v=${pt.t} val=${r.f.t} err=${r.errs.t} on=${set('t')} obj=${pt} k="t" label="עובי"/></label>
+        <label class="f">רוחב<${Expr} v=${pt.w} val=${r.f.w} err=${r.errs.w} on=${set('w')} obj=${pt} k="w" label="רוחב"/></label>
+        <label class="f">אורך<${Expr} v=${pt.l} val=${r.f.l} err=${r.errs.l} on=${set('l')} obj=${pt} k="l" label="אורך"/></label>
       </div>
       <div class="build-row">
         <span class="lbl">מצב</span>
@@ -2464,13 +2493,13 @@
       <div class="build-row">
         <span class="lbl">עותקים</span>
         ${nLiteral ? html`<${Stepper} id=${'bn-' + pt.id} label="מספר עותקים" min=${1} value=${pt.n} onChange=${function (v) { pt.n = String(Math.max(1, Math.round(num(v)) || 1)); commit('current'); }}/>`
-          : html`<${Expr} v=${pt.n} val=${r.f.n} err=${r.errs.n} on=${set('n')} cls="w-n" label="מספר עותקים"/>`}
+          : html`<${Expr} v=${pt.n} val=${r.f.n} err=${r.errs.n} on=${set('n')} obj=${pt} k="n" cls="w-n" label="מספר עותקים"/>`}
         ${r.n > 1 ? html`
           <label class="f">בכיוון
             <select class="cell" value=${String(ca)} onChange=${function (e) { setCopyAxis(item, pt, +e.target.value); }}>
               ${AXES.map(function (x, i) { return html`<option value=${String(i)}>${x.label}</option>`; })}
             </select></label>
-          <label class="f">מרחק מתחילת עותק לבא<${Expr} v=${pt[AXES[ca].step]} val=${r.f[AXES[ca].step]} err=${r.errs[AXES[ca].step]} on=${set(AXES[ca].step)} label="מרחק בין עותקים"/></label>
+          <label class="f">מרחק מתחילת עותק לבא<${Expr} v=${pt[AXES[ca].step]} val=${r.f[AXES[ca].step]} err=${r.errs[AXES[ca].step]} on=${set(AXES[ca].step)} obj=${pt} k=${AXES[ca].step} label="מרחק בין עותקים"/></label>
           <button type="button" class="btn sm" onClick=${function () { spreadCopies(item, E, r); }}>לפרוס על כל ${AXES[ca].noun}</button>` : null}
       </div>
       <div class="build-row">
@@ -2489,13 +2518,52 @@
     </section>`;
   }
 
+  /* Which size controls a formula follows, in words: "L-2*T" → "אורך, עובי רגל". */
+  function sliderDeps(src, it, names, seen) {
+    String(src || '').replace(/[A-Za-z_]\w*/g, function (k) {
+      if (FUNCS[k.toLowerCase()] || seen[k]) return k;
+      seen[k] = true;
+      var p = it && it.params.find(function (x) { return x.key === k; });
+      if (!p) return k;
+      if (p.type === 'range' || p.type === 'choice') { if (names.indexOf(p.label) < 0) names.push(p.label); }
+      else if (p.type === 'calc') sliderDeps(p.expr, it, names, seen);
+      return k;
+    });
+    return names;
+  }
+  /* The sliders a formula follows, in words: "D-2" → "שלבים במשטח, מרווח בין שלבים". Empty when only fixed sizes are involved. */
+  function followsText(src) { return sliderDeps(src, selItem(), [], {}).join(', '); }
+  function isLiteral(s) { return /^\s*-?\d+(\.\d+)?\s*$/.test(String(s == null ? '' : s)); }
+
+  /* A size cell. It always shows a number; a number that follows the sliders carries a link mark.
+     Typing a number fixes it (the formula is kept so it can be linked back). "Show formulas" reveals the formula itself. */
   function Expr(props) {
     var s = props.v == null ? '' : String(props.v);
-    var literal = /^\s*-?\d+(\.\d+)?\s*$/.test(s);
-    return html`<div class=${'expr' + (props.err ? ' bad' : '')}>
-      <input class=${'cell ltr ' + (props.cls || 'w-d')} dir="ltr" value=${s} aria-label=${props.label} title=${props.err || ''} spellcheck="false" autocomplete="off" autocapitalize="off"
-        onInput=${function (e) { props.on(e.target.value); }} onFocus=${props.onFocus}/>
-      ${props.err ? html`<span class="ev">${props.err}</span>` : (!literal ? html`<span class="ev">= ${fmtDim(props.val)}</span>` : null)}
+    var literal = isLiteral(s);
+    var showFormula = props.always || S.ui.formulas;
+    var obj = props.obj, k = props.k;
+    var saved = obj && k && obj.auto && obj.auto[k] != null && literal && followsText(obj.auto[k]) ? obj.auto[k] : null;
+    var linked = !literal && !props.err && s.trim() !== '' && !!followsText(s);
+    var shown = showFormula || literal || props.err ? s : fmtDim(props.val);
+    function onInput(e) {
+      var v = e.target.value;
+      if (!showFormula) {
+        v = v.replace(',', '.');
+        if (obj && k && !isLiteral(obj[k]) && !isBlank(obj[k])) { obj.auto = obj.auto || {}; if (obj.auto[k] == null) obj.auto[k] = obj[k]; }
+      }
+      props.on(v);
+    }
+    function relink() { if (!obj || !k || saved == null) return; obj[k] = saved; delete obj.auto[k]; commit('current'); }
+    return html`<div class=${'expr' + (props.err ? ' bad' : '') + (linked && !showFormula ? ' linked' : '')}>
+      <div class="exprbox">
+        <input class=${'cell ltr ' + (props.cls || 'w-d')} dir="ltr" value=${shown} aria-label=${props.label} title=${props.err || (linked ? 'משתנה לבד לפי: ' + followsText(s) : '')}
+          inputmode=${showFormula ? 'text' : 'decimal'} spellcheck="false" autocomplete="off" autocapitalize="off" onInput=${onInput} onFocus=${props.onFocus}/>
+        ${linked && !showFormula ? html`<button type="button" class="linkmark" aria-label=${'משתנה לבד לפי ' + followsText(s)} title=${'משתנה לבד לפי: ' + followsText(s)}
+          onClick=${function () { toast('המספר הזה משתנה לבד לפי: ' + followsText(s) + '. כדי לקבע אותו, מקלידים מספר.'); }}>${Ico.link()}</button>` : null}
+        ${saved != null && !showFormula ? html`<button type="button" class="linkmark off" aria-label="לחבר שוב לסליידרים" title=${'לחבר שוב לסליידרים (' + followsText(saved) + ')'}
+          onClick=${relink}>${Ico.relink()}</button>` : null}
+      </div>
+      ${props.err ? html`<span class="ev">${showFormula ? props.err : 'צריך להקליד מספר'}</span>` : (showFormula && !literal ? html`<span class="ev">= ${fmtDim(props.val)}</span>` : null)}
     </div>`;
   }
 
@@ -2507,29 +2575,29 @@
     var prof = r.ok ? findProfile(S.prices.profiles, r.f.t, r.f.w, pt.profile) : null;
     var auto = r.ok ? findProfile(S.prices.profiles, r.f.t, r.f.w, '') : null;
     var color = partColor(pt.code, r.idx, S.ui.vivid);
-    var rows = [html`<tr key=${pt.id} class=${sel ? 'sel' : ''} onMouseEnter=${function () { if (MAINV) MAINV.highlight(pt.id); }} onMouseLeave=${function () { if (MAINV) MAINV.highlight(S.ui.selPart); }}>
-      <td><div class="codecell"><span class="sw" style=${'background:' + color}></span><input class="cell w-code" value=${pt.code} maxlength="3" aria-label="קוד החלק" onInput=${function (e) { pt.code = e.target.value.toUpperCase(); commit('current'); }} onFocus=${focus}/></div></td>
-      <td><input class="cell w-name" value=${pt.name} aria-label="שם החלק" onInput=${function (e) { pt.name = e.target.value; commit('current'); }} onFocus=${focus}/></td>
-      <td><${Expr} v=${pt.n} val=${r.f.n} err=${r.errs.n} on=${set('n')} cls="w-n" label="כמות ליחידה" onFocus=${focus}/>${r.n2 > 1 ? html`<span class="ev">× ${r.n2} = ${r.qty}</span>` : null}</td>
-      <td><${Expr} v=${pt.t} val=${r.f.t} err=${r.errs.t} on=${set('t')} label="עובי" onFocus=${focus}/></td>
-      <td><${Expr} v=${pt.w} val=${r.f.w} err=${r.errs.w} on=${set('w')} label="רוחב" onFocus=${focus}/></td>
-      <td><${Expr} v=${pt.l} val=${r.f.l} err=${r.errs.l} on=${set('l')} label="אורך" onFocus=${focus}/></td>
-      <td>
+    var rows = [html`<tr key=${pt.id} class=${'prow' + (sel ? ' sel' : '')} onMouseEnter=${function () { if (MAINV) MAINV.highlight(pt.id); }} onMouseLeave=${function () { if (MAINV) MAINV.highlight(S.ui.selPart); }}>
+      <td class="c-code"><div class="codecell"><span class="sw" style=${'background:' + color}></span><input class="cell w-code" value=${pt.code} maxlength="3" aria-label="קוד החלק" onInput=${function (e) { pt.code = e.target.value.toUpperCase(); commit('current'); }} onFocus=${focus}/></div></td>
+      <td class="c-name"><input class="cell w-name" value=${pt.name} aria-label="שם החלק" onInput=${function (e) { pt.name = e.target.value; commit('current'); }} onFocus=${focus}/></td>
+      <td class="c-dim" data-label="כמות"><${Expr} v=${pt.n} val=${r.f.n} err=${r.errs.n} on=${set('n')} obj=${pt} k="n" cls="w-n" label="כמות ליחידה" onFocus=${focus}/>${r.n2 > 1 ? html`<span class="ev">× ${r.n2} = ${r.qty}</span>` : null}</td>
+      <td class="c-dim" data-label="עובי"><${Expr} v=${pt.t} val=${r.f.t} err=${r.errs.t} on=${set('t')} obj=${pt} k="t" label="עובי" onFocus=${focus}/></td>
+      <td class="c-dim" data-label="רוחב"><${Expr} v=${pt.w} val=${r.f.w} err=${r.errs.w} on=${set('w')} obj=${pt} k="w" label="רוחב" onFocus=${focus}/></td>
+      <td class="c-dim" data-label="אורך"><${Expr} v=${pt.l} val=${r.f.l} err=${r.errs.l} on=${set('l')} obj=${pt} k="l" label="אורך" onFocus=${focus}/></td>
+      <td class="c-prof" data-label="קורה מהמחירון">
         <select class="cell w-prof" value=${pt.profile || ''} aria-label="קורה" onChange=${function (e) { pt.profile = e.target.value; commit('current'); }}>
           <option value="">${auto ? 'אוטומטי · ' + lri(sec(num(auto.t), num(auto.w))) : 'אוטומטי'}</option>
           ${S.prices.profiles.map(function (p) { return html`<option value=${p.id}>${lri(sec(num(p.t), num(p.w)))} · ${fmtDim(num(p.len))} ${CM}</option>`; })}
         </select>
         ${r.ok && !prof ? html`<span class="ev bad">אין במחירון קורה ${lri(sec(r.f.t, r.f.w))}</span>` : null}
       </td>
-      <td class="c-num">${r.qty * Q}</td>
-      <td><div class="rowbtns">
+      <td class="c-num c-tot" data-label="להזמנה">${r.qty * Q}</td>
+      <td class="c-act"><div class="rowbtns">
         <button type="button" class=${'ibtn' + (S.ui.build && sel ? ' on' : '')} title="להזיז בשרטוט" aria-label="להזיז את החלק בשרטוט" onClick=${function () { startBuild(pt.id); }}>${Ico.move()}</button>
         <button type="button" class="ibtn" title="שכפול" aria-label="שכפול החלק" onClick=${function () { dupPart(item, pt, props.E); }}>${Ico.copy()}</button>
         <button type="button" class="ibtn del" title="מחיקה" aria-label="מחיקת החלק" onClick=${function () { delPart(item, pt); }}>${Ico.trash()}</button>
       </div></td>
     </tr>`];
     if (open) {
-      var ex = function (k, label) { return html`<label class="f">${label}<${Expr} v=${pt[k]} val=${r.f[k]} err=${r.errs[k]} on=${set(k)} label=${label}/></label>`; };
+      var ex = function (k, label) { return html`<label class="f">${label}<${Expr} v=${pt[k]} val=${r.f[k]} err=${r.errs[k]} on=${set(k)} obj=${pt} k=${k} label=${label}/></label>`; };
       rows.push(html`<tr key=${pt.id + '-pl'} class="place-row"><td colspan="9"><div class="place">
         <label class="check"><input type="checkbox" checked=${pt.placed !== false} onChange=${function (e) { pt.placed = e.target.checked; commit('current'); }}/> מופיע בשרטוט</label>
         <label class="f">כיוון החלק
@@ -2550,20 +2618,21 @@
     var vars = item.params.filter(function (p) { return KEY_RE.test(p.key || ''); });
     return html`<section class="panel">
       <div class="panel-head">
-        <div><h3 class="h-sec">רשימת חלקים וחיתוכים</h3><p class="sub">מידות בס״מ: עובי × רוחב × אורך. אפשר להקליד מספר או נוסחה, למשל <span class="var">L-10</span>.</p></div>
+        <div><h3 class="h-sec">רשימת חלקים וחיתוכים</h3><p class="sub">מידות בס״מ: עובי × רוחב × אורך. מספר עם הסימן <span class="linkmark inline">${Ico.link()}</span> משתנה לבד כשמזיזים את הסליידרים. כדי לקבע מידה, פשוט מקלידים מספר אחר.</p></div>
         <div class="actions">
           <button type="button" class="btn sm" onClick=${function () { addPart(item, E); }}>+ חלק</button>
           <button type="button" class="btn sm" onClick=${function () { openModal({ type: 'paste', itemId: item.id }); }}>הדבקת רשימת חיתוכים</button>
         </div>
       </div>
       ${E.unplaced > 0 && !E.layout ? html`<p class="note" style="margin-bottom:8px">${E.unplaced === 1 ? 'חלק אחד' : E.unplaced + ' חלקים'} ללא מיקום בשרטוט. הם נכנסים לחישוב העץ אבל לא מצוירים. <button type="button" class="linkbtn" onClick=${function () { startBuild(null); }}>למקם אותם בשרטוט</button></p>` : null}
-      ${item.parts.length ? html`<div class="tscroll"><table class="grid">
+      ${item.parts.length ? html`<div class="tscroll"><table class="grid parts-grid">
         <thead><tr><th>קוד</th><th>שם החלק</th><th>כמות</th><th>עובי</th><th>רוחב</th><th>אורך</th><th>קורה מהמחירון</th><th>להזמנה</th><th aria-label="פעולות"></th></tr></thead>
         <tbody>${E.parts.map(function (r) { return html`<${PartRow} key=${r.pt.id} r=${r} item=${item} Q=${Q} E=${E}/>`; })}</tbody>
       </table></div>` : html`<div class="okbox">אין עדיין חלקים. הוסיפו חלק, או הדביקו רשימת חיתוכים כמו בדף העבודה (למשל <span class="ltr">2-A רגל ספסל 5X15X35</span>).</div>`}
-      <div class="vars"><span>פרמטרים לנוסחאות:</span>
+      <label class="check" style="margin-top:10px;font-size:.8rem;color:var(--muted)"><input type="checkbox" checked=${!!S.ui.formulas} onChange=${function (e) { S.ui.formulas = e.target.checked; commit('ui'); }}/> הצגת הנוסחאות שמאחורי המספרים (למתקדמים)</label>
+      ${S.ui.formulas ? html`<div class="vars"><span>פרמטרים לנוסחאות:</span>
         ${vars.map(function (p) { return html`<span title=${p.label}><span class="var">${p.key} = ${fmtDim(E.vars[p.key])}</span> ${p.label}</span>`; })}
-      </div>
+      </div>` : null}
     </section>`;
   }
 
@@ -2593,7 +2662,7 @@
             <td>${p.type === 'range' ? html`<input class="cell w-n" inputmode="decimal" value=${p.min} aria-label="מינימום" onChange=${setNum(p, 'min')}/>` : null}</td>
             <td>${p.type === 'range' ? html`<input class="cell w-n" inputmode="decimal" value=${p.max} aria-label="מקסימום" onChange=${setNum(p, 'max')}/>` : null}</td>
             <td>${p.type === 'range' ? html`<input class="cell w-n" inputmode="decimal" value=${p.step} aria-label="קפיצה" onChange=${setNum(p, 'step')}/>` : null}</td>
-            <td>${p.type === 'calc' ? html`<${Expr} v=${p.expr} val=${E.vars[p.key]} err=${E.paramErr[p.key]} on=${function (v) { p.expr = v; commit('current'); }} label="נוסחה"/>`
+            <td>${p.type === 'calc' ? html`<${Expr} v=${p.expr} val=${E.vars[p.key]} err=${E.paramErr[p.key]} on=${function (v) { p.expr = v; commit('current'); }} always=${true} label="נוסחה"/>`
               : html`<input class="cell w-n" inputmode="decimal" value=${p.value} aria-label="ערך" onChange=${setNum(p, 'value')}/>`}</td>
             <td>${p.type === 'choice' ? html`<input class="cell" style="min-width:150px" value=${optsText(p)} aria-label="אפשרויות" onChange=${function (e) { setOpts(p, e.target.value); }}/>` : null}</td>
             <td><button type="button" class="ibtn del" aria-label="מחיקת פרמטר" onClick=${function () { item.params.splice(i, 1); commit('current'); }}>${Ico.trash()}</button></td>
