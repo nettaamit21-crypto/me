@@ -422,6 +422,8 @@
   .progress { display: flex; align-items: center; gap: 10px; font-size: .9rem; }
   .spinner { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--line-2); border-top-color: var(--oak); animation: spin 0.9s linear infinite; flex: none; }
   @keyframes spin { to { transform: rotate(360deg); } }
+  .dropzone { position: fixed; inset: 10px; z-index: 90; border: 3px dashed var(--oak); border-radius: 14px; background: color-mix(in srgb, var(--paper) 82%, transparent); display: grid; place-items: center; pointer-events: none; }
+  .dropzone span { background: var(--oak); color: var(--on-oak); padding: 10px 18px; border-radius: 10px; font-size: 1.05rem; font-weight: 500; max-width: 80%; text-align: center; }
   .toast { position: fixed; bottom: calc(80px + env(safe-area-inset-bottom, 0px)); inset-inline-start: 50%; transform: translateX(50%); z-index: 80; background: var(--ink); color: var(--paper); padding: 8px 16px; border-radius: 20px; font-size: .88rem; box-shadow: var(--shadow); max-width: calc(100vw - 32px); text-align: center; }
   .copybox { width: 100%; min-height: 220px; font-family: var(--ui); font-size: .88rem; border: 1px solid var(--line-2); border-radius: 6px; padding: 10px; background: var(--surface); }
 
@@ -523,7 +525,9 @@
   /* =========================================================
      Formula engine — numbers, + − × ÷, parentheses, parameter keys
      ========================================================= */
-  var FUNCS = { min: Math.min, max: Math.max, round: Math.round, floor: Math.floor, ceil: Math.ceil, abs: Math.abs, sqrt: Math.sqrt };
+  var DEG = Math.PI / 180;
+  var FUNCS = { min: Math.min, max: Math.max, round: Math.round, floor: Math.floor, ceil: Math.ceil, abs: Math.abs, sqrt: Math.sqrt,
+    sin: function (d) { return Math.sin(d * DEG); }, cos: function (d) { return Math.cos(d * DEG); }, tan: function (d) { return Math.tan(d * DEG); } };
   var exprCache = new Map();
   function compileExpr(src) {
     if (exprCache.has(src)) return exprCache.get(src);
@@ -614,7 +618,7 @@
     return pal[((k % pal.length) + pal.length) % pal.length];
   }
   function part(o) {
-    return Object.assign({ id: uid('p'), code: 'A', name: '', n: '1', n2: '1', t: '2', w: '10', l: '50', orient: 'X-flat', x: '0', y: '0', z: '0', dx: '0', dy: '0', dz: '0', dx2: '0', dy2: '0', dz2: '0', placed: true, profile: '' }, o);
+    return Object.assign({ id: uid('p'), code: 'A', name: '', n: '1', n2: '1', t: '2', w: '10', l: '50', orient: 'X-flat', x: '0', y: '0', z: '0', dx: '0', dy: '0', dz: '0', dx2: '0', dy2: '0', dz2: '0', tilt: '0', tiltAxis: 'x', placed: true, profile: '' }, o);
   }
   var CM = 'ס״מ';
   var FARM_LABEL = 'תשלום לחווה';
@@ -714,6 +718,48 @@
       labor: [{ name: 'חיתוך והרכבה', hours: '1.5', rate: '' }, { name: 'גימור', hours: '0.5', rate: '' }]
     },
     {
+      id: 'swing', name: 'נדנדת עץ עם מתקן', desc: 'ספסל נדנדה משלבים עם משענת וידיות, תלוי בשרשראות על מתקן עם רגליים משופעות.',
+      params: [
+        { key: 'L', label: 'אורך הנדנדה', type: 'range', min: 100, max: 180, step: 1, value: 140, unit: CM },
+        { key: 'SH', label: 'גובה מושב', type: 'range', min: 35, max: 55, step: 1, value: 45, unit: CM },
+        { key: 'SD', label: 'עומק מושב', type: 'range', min: 45, max: 60, step: 1, value: 50, unit: CM },
+        { key: 'H', label: 'גובה המתקן', type: 'range', min: 180, max: 240, step: 1, value: 210, unit: CM },
+        { key: 'A', label: 'שיפוע הרגליים', type: 'range', min: 5, max: 25, step: 1, value: 15, unit: '°' },
+        { key: 'T', label: 'עובי מסגרת', type: 'const', value: 5 },
+        { key: 'W', label: 'רוחב קורת מסגרת', type: 'const', value: 10 },
+        { key: 'ST', label: 'עובי שלב', type: 'const', value: 2 },
+        { key: 'SW', label: 'רוחב שלב', type: 'const', value: 5 },
+        { key: 'G', label: 'מרווח בין שלבים', type: 'const', value: 1 },
+        { key: 'C', label: 'מרווח בין הנדנדה לרגליים', type: 'const', value: 25 },
+        { key: 'BH', label: 'גובה משענת מעל המושב', type: 'const', value: 50 },
+        { key: 'AH', label: 'גובה ידית מעל המושב', type: 'const', value: 22 },
+        { key: 'X0', label: 'תחילת הנדנדה', type: 'calc', expr: 'T+C' },
+        { key: 'Ys', label: 'אמצע המתקן', type: 'calc', expr: 'SD/2' },
+        { key: 'LL', label: 'אורך רגל', type: 'calc', expr: '(H-15-W*sin(A))/cos(A)' }
+      ],
+      parts: [
+        part({ code: 'A', name: 'רגל קדמית', n: '2', t: 'T', w: 'W', l: 'LL', orient: 'Z-side', y: 'Ys-LL/2*sin(A)-W/2', z: 'LL/2*cos(A)+W/2*sin(A)-LL/2', dx: 'L+2*C+T', tilt: 'A' }),
+        part({ code: 'A', name: 'רגל אחורית', n: '2', t: 'T', w: 'W', l: 'LL', orient: 'Z-side', y: 'Ys+LL/2*sin(A)-W/2', z: 'LL/2*cos(A)+W/2*sin(A)-LL/2', dx: 'L+2*C+T', tilt: '-A' }),
+        part({ code: 'B', name: 'קורה עליונה', n: '1', t: 'T', w: '15', l: 'L+2*C+2*T+20', orient: 'X-edge', x: '-10', y: 'Ys-T/2', z: 'H-15' }),
+        part({ code: 'C', name: 'קורת בסיס', n: '2', t: 'T', w: 'W', l: '2*LL*sin(A)+W+20', orient: 'Y-edge', x: 'T', y: 'Ys-LL*sin(A)-W/2-10', dx: 'L+2*C-T' }),
+        part({ code: 'D', name: 'קורת מושב צד', n: '3', t: 'T', w: 'W', l: 'SD-T', orient: 'Y-edge', x: 'X0', y: 'T', z: 'SH-ST-W', dx: '(L-T)/2' }),
+        part({ code: 'E', name: 'קורת מושב קדמית', n: '1', t: 'T', w: 'W', l: 'L', orient: 'X-edge', x: 'X0', z: 'SH-ST-W' }),
+        part({ code: 'F', name: 'שלב מושב', n: 'floor((SD+G)/(SW+G))', t: 'ST', w: 'SW', l: 'L', orient: 'X-flat', x: 'X0', z: 'SH-ST', dy: 'SW+G' }),
+        part({ code: 'F', name: 'שלב משענת', n: '8', t: 'ST', w: 'SW', l: 'L', orient: 'X-edge', x: 'X0', y: 'SD-W-ST', z: 'SH+3', dz: 'SW+G' }),
+        part({ code: 'G', name: 'עמוד משענת', n: '2', t: 'T', w: 'W', l: 'BH+ST+W', orient: 'Z-side', x: 'X0-T', y: 'SD-W', z: 'SH-ST-W', dx: 'L+T' }),
+        part({ code: 'H', name: 'עמוד ידית', n: '2', t: 'T', w: 'T', l: 'AH+ST+W', orient: 'Z-front', x: 'X0-T', z: 'SH-ST-W', dx: 'L+T' }),
+        part({ code: 'I', name: 'ידית', n: '2', t: 'T', w: 'W', l: 'SD-W-ST+5', orient: 'Y-flat', x: 'X0-T', y: '-5', z: 'SH+AH', dx: 'L' })
+      ],
+      materials: [
+        { name: 'שרשרת מגולוונת (מטר)', qty: '6', price: '18', sample: true },
+        { name: 'וו עין וקרבינר', qty: '4', price: '12', sample: true },
+        { name: 'בורג 5×70', qty: '40', price: '0.45', sample: true },
+        { name: 'בורג 4×40', qty: '120', price: '0.25', sample: true },
+        { name: 'שמן לעץ חוץ', qty: '1', price: '45', sample: true }
+      ],
+      labor: [{ name: 'חיתוך והכנה', hours: '4', rate: '' }, { name: 'הרכבה', hours: '4', rate: '' }, { name: 'שיוף ושמן', hours: '2', rate: '' }]
+    },
+    {
       id: 'blank', name: 'מוצר חדש', desc: 'מתחילים מאפס: מקלידים או מדביקים רשימת חיתוכים.',
       params: [{ key: 'L', label: 'אורך', type: 'range', min: 20, max: 300, step: 1, value: 100, unit: CM }],
       parts: [],
@@ -759,6 +805,8 @@
       function get(k, d) { var raw = pt[k]; var r = ev(isBlank(raw) ? d : raw, vars); f[k] = r.v; if (r.err) errs[k] = r.err; }
       get('n', '1'); get('n2', '1'); get('t', ''); get('w', ''); get('l', '');
       POS_KEYS.forEach(function (k) { get(k, '0'); });
+      get('tilt', '0');
+      var tilt = errs.tilt ? 0 : Math.round(f.tilt * 100) / 100, tx = pt.tiltAxis === 'y' ? 0 : tilt, ty = pt.tiltAxis === 'y' ? tilt : 0;
       ['t', 'w', 'l'].forEach(function (k) { if (!errs[k] && !(f[k] > 0)) errs[k] = 'צריך להיות גדול מ-0'; });
       if (!errs.n && f.n < 0) errs.n = 'כמות שלילית';
       var n = Number.isFinite(f.n) ? Math.max(0, Math.round(f.n)) : 0;
@@ -770,7 +818,7 @@
           var s = orientFn(pt.orient)(f.t, f.w, f.l);
           for (var j = 0; j < n2; j++) for (var i = 0; i < n; i++) {
             if (boxes.length >= 900) break;
-            boxes.push({ x: f.x + i * f.dx + j * f.dx2, y: f.y + i * f.dy + j * f.dy2, z: f.z + i * f.dz + j * f.dz2, sx: s[0], sy: s[1], sz: s[2], pid: pt.id, code: pt.code, idx: idx });
+            boxes.push({ x: f.x + i * f.dx + j * f.dx2, y: f.y + i * f.dy + j * f.dy2, z: f.z + i * f.dz + j * f.dz2, sx: s[0], sy: s[1], sz: s[2], rx: tx, ry: ty, pid: pt.id, code: pt.code, idx: idx });
           }
         }
       } else if (ok && qty > 0) unplaced++;
@@ -798,25 +846,33 @@
     }
     return out;
   }
+  /* The space a part takes up, as [minX, minY, minZ, maxX, maxY, maxZ]. A slanted part turns about its middle,
+     around the length axis (rx: top leans back) or the depth axis (ry: top leans right). */
+  function aabb(b) {
+    var hx = b.sx / 2, hy = b.sy / 2, hz = b.sz / 2, cx = b.x + hx, cy = b.y + hy, cz = b.z + hz, c, s;
+    if (b.rx) { c = Math.abs(Math.cos(b.rx * DEG)); s = Math.abs(Math.sin(b.rx * DEG)); hy = (b.sy * c + b.sz * s) / 2; hz = (b.sy * s + b.sz * c) / 2; }
+    else if (b.ry) { c = Math.abs(Math.cos(b.ry * DEG)); s = Math.abs(Math.sin(b.ry * DEG)); hx = (b.sx * c + b.sz * s) / 2; hz = (b.sx * s + b.sz * c) / 2; }
+    return [cx - hx, cy - hy, cz - hz, cx + hx, cy + hy, cz + hz];
+  }
   function bboxOf(boxes) {
     if (!boxes.length) return null;
     var mn = [Infinity, Infinity, Infinity], mx = [-Infinity, -Infinity, -Infinity];
     boxes.forEach(function (b) {
-      mn[0] = Math.min(mn[0], b.x); mn[1] = Math.min(mn[1], b.y); mn[2] = Math.min(mn[2], b.z);
-      mx[0] = Math.max(mx[0], b.x + b.sx); mx[1] = Math.max(mx[1], b.y + b.sy); mx[2] = Math.max(mx[2], b.z + b.sz);
+      var a = aabb(b);
+      for (var k = 0; k < 3; k++) { mn[k] = Math.min(mn[k], a[k]); mx[k] = Math.max(mx[k], a[k + 3]); }
     });
     return { min: mn, max: mx };
   }
   function colorList(list, vivid) { return list.map(function (b) { return Object.assign({}, b, { color: partColor(b.code, b.idx, vivid) }); }); }
   function boxesSig(list, vivid) {
     return (vivid ? 'v' : 'w') + list.map(function (b) {
-      return [b.x, b.y, b.z, b.sx, b.sy, b.sz].map(function (v) { return Math.round(v * 10); }).join(',') + b.code + b.pid;
+      return [b.x, b.y, b.z, b.sx, b.sy, b.sz, b.rx || 0, b.ry || 0].map(function (v) { return Math.round(v * 10); }).join(',') + b.code + b.pid;
     }).join(';');
   }
   function coloredBoxes(E, vivid) { return E.boxes.map(function (b) { return Object.assign({}, b, { color: partColor(b.code, b.idx, vivid) }); }); }
   function modelSig(E, vivid) {
     return (vivid ? 'v' : 'w') + (E.layout ? 'L' : 'A') + E.boxes.map(function (b) {
-      return [b.x, b.y, b.z, b.sx, b.sy, b.sz].map(function (v) { return Math.round(v * 10); }).join(',') + b.code + b.pid;
+      return [b.x, b.y, b.z, b.sx, b.sy, b.sz, b.rx || 0, b.ry || 0].map(function (v) { return Math.round(v * 10); }).join(',') + b.code + b.pid;
     }).join(';');
   }
 
@@ -1023,7 +1079,7 @@
     if (g === 'current') return fixQuote(data);
     return data;
   }
-  function defaultUI() { return { tab: 'design', sel: null, selPart: null, dims: true, vivid: false, photo: false, place: {}, hideSample: false, build: false, step: '5', formulas: false }; }
+  function defaultUI() { return { tab: 'design', sel: null, selPart: null, dims: true, vivid: false, photo: false, place: {}, hideSample: false, build: false, step: '5', formulas: false, dropping: false }; }
 
   var S = {
     prices: fixGroup('prices', LS.get('prices')),
@@ -1031,7 +1087,7 @@
     quote: LS.get('current') ? fixQuote(LS.get('current')) : sampleQuote(),
     saved: (LS.get('saved') || []).map(fixQuote),
     library: LS.get('library') || [],
-    ui: Object.assign(defaultUI(), LS.get('ui') || {}, { modal: null, toast: null })
+    ui: Object.assign(defaultUI(), LS.get('ui') || {}, { modal: null, toast: null, dropping: false })
   };
   if (!S.ui.place || typeof S.ui.place !== 'object') S.ui.place = {};
 
@@ -1335,6 +1391,8 @@
       var g = new T.BoxGeometry(Math.max(b.sx, 0.01), Math.max(b.sz, 0.01), Math.max(b.sy, 0.01));
       var mesh = new T.Mesh(g, new T.MeshLambertMaterial({ color: b.color }));
       mesh.position.set(b.x + b.sx / 2 - cx, b.z + b.sz / 2, -(b.y + b.sy / 2 - cy));
+      if (b.rx) mesh.rotation.x = -b.rx * DEG;
+      else if (b.ry) mesh.rotation.z = -b.ry * DEG;
       mesh.castShadow = true; mesh.receiveShadow = true; mesh.userData = { pid: b.pid };
       mesh.add(new T.LineSegments(new T.EdgesGeometry(g), this.edgeMat));
       this.model.add(mesh);
@@ -1502,7 +1560,7 @@
   Viewer.prototype.snapAxis = function (a, raw, mv, thr) {
     var lo = mv.mine.min[a], hi = mv.mine.max[a], best = null, bestErr = thr;
     var cands = a === 2 ? [0] : [];
-    mv.others.forEach(function (o) { var s = [o.x, o.y, o.z][a], len = [o.sx, o.sy, o.sz][a]; cands.push(s, s + len); });
+    mv.others.forEach(function (o) { var q = aabb(o); cands.push(q[a], q[a + 3]); });
     cands.forEach(function (c) {
       [c - lo, c - hi].forEach(function (dd) { var err = Math.abs(dd - raw); if (err < bestErr) { bestErr = err; best = dd; } });
     });
@@ -1638,7 +1696,11 @@
     return {
       name: t.name, description: t.desc,
       params: t.params.map(function (p) { var o = Object.assign({}, p); delete o.hint; return o; }),
-      parts: t.parts.map(function (p) { var o = {}; ['code', 'name', 'n', 'n2', 't', 'w', 'l', 'orient'].concat(POS_KEYS).forEach(function (k) { o[k] = p[k]; }); return o; }),
+      parts: t.parts.map(function (p) {
+        var o = {}; ['code', 'name', 'n', 'n2', 't', 'w', 'l', 'orient'].concat(POS_KEYS).forEach(function (k) { o[k] = p[k]; });
+        if (!isBlank(p.tilt) && String(p.tilt).trim() !== '0') { o.tilt = p.tilt; o.tiltAxis = p.tiltAxis || 'x'; }
+        return o;
+      }),
       materials: (t.materials || []).map(function (m) { return { name: m.name, qty: num(m.qty) }; }),
       laborHours: (t.labor || []).reduce(function (a, l) { return a + num(l.hours); }, 0)
     };
@@ -1660,8 +1722,9 @@
     L.push('- "Z-front": length up, width along x, thickness along y (leg, post)');
     L.push('- "Z-side": length up, width along y, thickness along x');
     L.push('x, y, z = the part\'s left-front-bottom corner. "n" copies are placed at (x+i*dx, y+i*dy, z+i*dz) for i = 0..n-1. Set "n2" above 1 to repeat that whole row at offsets (dx2, dy2, dz2); for four legs use n=2 along x and n2=2 along y. Parts must not overlap, and every part must rest on or be fixed to another part or the floor.');
+    L.push('SLANTED PARTS: "tilt" (degrees, optional) leans a part by turning it about its own middle; "tiltAxis":"x" leans it front/back (positive = top toward the back), "tiltAxis":"y" leans it sideways (positive = top toward the right). x, y, z still describe the part before it is turned. Use it for A-frame or splayed legs.');
     L.push('');
-    L.push('EXPRESSIONS: every numeric field of a part, and the "expr" of a calc parameter, is a STRING with an arithmetic expression over parameter keys, e.g. "L-2*T", "H-ST", "nS*(SW+gap)-gap". Allowed: numbers, + - * / ( ), min(), max(), round(), floor(), ceil(). Write sizes and positions as expressions so the piece stays consistent when the user moves a slider.');
+    L.push('EXPRESSIONS: every numeric field of a part, and the "expr" of a calc parameter, is a STRING with an arithmetic expression over parameter keys, e.g. "L-2*T", "H-ST", "nS*(SW+gap)-gap". Allowed: numbers, + - * / ( ), min(), max(), round(), floor(), ceil(), and sin(), cos(), tan() in degrees. Write sizes and positions as expressions so the piece stays consistent when the user moves a slider.');
     L.push('');
     L.push('PARAMETERS ("params", evaluated in order, keys are short ASCII names):');
     L.push('- {"key","label","type":"range","min","max","step","value","unit":"ס״מ"}: a slider for a main overall size. Always give one for the length "L", and for height and depth where it makes sense.');
@@ -1723,6 +1786,7 @@
         orient: ORIENT_MAP[x.orient] ? x.orient : 'X-flat', placed: x.placed !== false
       });
       POS_KEYS.forEach(function (k) { o[k] = str(x[k], '0'); });
+      o.tilt = str(x.tilt, '0'); o.tiltAxis = x.tiltAxis === 'y' ? 'y' : 'x';
       return o;
     });
     if (!parts.length) throw new Error('empty');
@@ -1745,11 +1809,64 @@
   /* =========================================================
      Mutations
      ========================================================= */
-  function toast(msg) {
+  function toast(msg, ms) {
     S.ui.toast = msg; FORCE();
     clearTimeout(toast.t);
-    toast.t = setTimeout(function () { S.ui.toast = null; FORCE(); }, 2600);
+    toast.t = setTimeout(function () { S.ui.toast = null; FORCE(); }, ms || 2600);
   }
+
+  /* ---------- photos in: file picker, drag and drop, paste ---------- */
+  var SEND_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+  var DROP_TARGET = null;
+  function isImageFile(f) { return !!f && (/^image\//.test(f.type || '') || /\.(jpe?g|png|webp|gif|bmp|avif|heic|heif)$/i.test(f.name || '')); }
+  function readFailMessage(f) {
+    if (f && (/hei[cf]/i.test(f.type || '') || /\.hei[cf]$/i.test(f.name || ''))) return 'תמונות HEIC מאייפון לא נפתחות בדפדפן הזה. צלמו מסך של התמונה, או שמרו אותה כ-JPG, ונסו שוב.';
+    return 'הדפדפן לא הצליח לפתוח את התמונה. נסו לשמור אותה כ-JPG או לצלם מסך שלה ולהעלות שוב.';
+  }
+  function filesFromTransfer(dt) {
+    var out = [];
+    if (!dt) return out;
+    Array.from(dt.files || []).forEach(function (f) { if (isImageFile(f)) out.push(f); });
+    if (!out.length) Array.from(dt.items || []).forEach(function (it) { if (it.kind === 'file' && /^image\//.test(it.type)) { var f = it.getAsFile(); if (f) out.push(f); } });
+    return out;
+  }
+  function attachPhoto(item, file) {
+    if (!isImageFile(file)) { toast('הקובץ "' + (file && file.name || '') + '" אינו תמונה. אפשר להעלות JPG, PNG או WebP.', 6000); return; }
+    toast('מעלה את התמונה…');
+    fileToDataURL(file).then(function (d) {
+      item.photo = putImage(d); item.img = 'photo'; S.ui.photo = true; S.ui.build = false;
+      commit('current', 'ui');
+      toast('התמונה צורפה ל"' + (item.name || 'המוצר') + '"');
+    }, function () { toast(readFailMessage(file), 8000); });
+  }
+  function photoInto(files) {
+    if (DROP_TARGET) { DROP_TARGET(files); return; }
+    var it = selItem();
+    if (it && (S.ui.tab === 'design' || S.ui.tab === 'quote')) attachPhoto(it, files[0]);
+    else toast('כדי לצרף תמונה, פתחו מוצר בלשונית "תכנון ושרטוט" וגררו אותה לשם.', 6000);
+  }
+  (function () {
+    var depth = 0;
+    function carriesImage(e) { var t = Array.from((e.dataTransfer && e.dataTransfer.types) || []); return t.indexOf('Files') >= 0 || t.indexOf('text/uri-list') >= 0; }
+    document.addEventListener('dragenter', function (e) { if (!carriesImage(e)) return; depth++; if (!S.ui.dropping) { S.ui.dropping = true; FORCE(); } });
+    document.addEventListener('dragleave', function (e) { if (!carriesImage(e)) return; depth = Math.max(0, depth - 1); if (!depth && S.ui.dropping) { S.ui.dropping = false; FORCE(); } });
+    document.addEventListener('dragover', function (e) { if (carriesImage(e)) e.preventDefault(); });
+    document.addEventListener('drop', function (e) {
+      if (!carriesImage(e)) return;
+      e.preventDefault(); depth = 0; S.ui.dropping = false; FORCE();
+      var files = filesFromTransfer(e.dataTransfer);
+      if (files.length) { photoInto(files); return; }
+      var any = Array.from(e.dataTransfer.files || [])[0];
+      if (any) { toast('הקובץ "' + any.name + '" אינו תמונה. אפשר להעלות JPG, PNG או WebP.', 6000); return; }
+      toast('גררתם תמונה ישר מאתר אינטרנט. שמרו אותה קודם במחשב (לחיצה ימנית ← שמירת התמונה), ואז גררו את הקובץ או לחצו "צירוף תמונה".', 9000);
+    });
+    document.addEventListener('paste', function (e) {
+      var files = filesFromTransfer(e.clipboardData);
+      if (!files.length) return;
+      e.preventDefault();
+      photoInto(files);
+    });
+  })();
   function openModal(m) { S.ui.modal = m; FORCE(); }
   function closeModal() { S.ui.modal = null; FORCE(); }
   function confirmBox(title, text, okLabel, onOk, danger) { openModal({ type: 'confirm', title: title, text: text, ok: okLabel, onOk: onOk, danger: danger !== false }); }
@@ -1861,16 +1978,16 @@
     var mine = partBoxes(E, pid);
     if (!mine.length) return;
     var others = E.placedBoxes.filter(function (b) { return b.pid !== pid; }), eps = 0.01, delta;
-    if (toFloor) delta = -Math.min.apply(null, mine.map(function (b) { return b.z; }));
+    if (toFloor) delta = -Math.min.apply(null, mine.map(function (b) { return aabb(b)[2]; }));
     else {
       delta = -Infinity;
       mine.forEach(function (b) {
-        var support = 0;
+        var m = aabb(b), support = 0;
         others.forEach(function (o) {
-          var top = o.z + o.sz;
-          if (o.x < b.x + b.sx - eps && o.x + o.sx > b.x + eps && o.y < b.y + b.sy - eps && o.y + o.sy > b.y + eps && top <= b.z + eps) support = Math.max(support, top);
+          var q = aabb(o);
+          if (q[0] < m[3] - eps && q[3] > m[0] + eps && q[1] < m[4] - eps && q[4] > m[1] + eps && q[5] <= m[2] + eps) support = Math.max(support, q[5]);
         });
-        delta = Math.max(delta, support - b.z);
+        delta = Math.max(delta, support - m[2]);
       });
     }
     delta = Math.round(delta * 100) / 100;
@@ -2412,7 +2529,7 @@
       </div>
       ${build ? html`<${BuildPanel} item=${item} E=${E}/>` : html`<div class="row">
         ${E.dims ? html`<span class="dimsline">מידות כוללות <b class="ltr">${dimsText(E)}</b> ${CM} <span class="hint">(אורך × עומק × גובה)</span></span>` : html`<span class="dimsline">אין עדיין מידות כוללות</span>`}
-        <span class="hint">גררו לסיבוב · לחיצה על חלק מסמנת אותו בטבלה</span>
+        <span class="hint">גררו לסיבוב · לחיצה על חלק מסמנת אותו בטבלה · אפשר לגרור לכאן תמונה או להדביק אותה</span>
       </div>`}
     </div>`;
   }
@@ -2476,6 +2593,15 @@
         <span class="state">${ORIENT_MAP[o][1]}</span>
         <button type="button" class="btn sm" onClick=${function () { reorient(item, r, TURN[o]); }}>סיבוב 90°</button>
         <button type="button" class="btn sm" onClick=${function () { reorient(item, r, STAND[o]); }}>${standLabel}</button>
+      </div>
+      <div class="build-row">
+        <span class="lbl">הטיה</span>
+        <button type="button" class="btn sm" aria-label="להטות פחות" onClick=${function () { pushUndo(item); pt.tilt = bumpExpr(pt.tilt, -5); commit('current'); }}>${lri('−5°')}</button>
+        <${Expr} v=${pt.tilt == null ? '0' : pt.tilt} val=${r.f.tilt} err=${r.errs.tilt} on=${set('tilt')} obj=${pt} k="tilt" cls="w-n" label="זווית הטיה במעלות"/>
+        <button type="button" class="btn sm" aria-label="להטות יותר" onClick=${function () { pushUndo(item); pt.tilt = bumpExpr(pt.tilt, 5); commit('current'); }}>${lri('+5°')}</button>
+        <select class="cell" style="width:auto" value=${pt.tiltAxis === 'y' ? 'y' : 'x'} aria-label="כיוון ההטיה" onChange=${function (e) { pushUndo(item); pt.tiltAxis = e.target.value; commit('current'); }}>
+          <option value="x">קדימה ואחורה</option><option value="y">לצדדים</option>
+        </select>
       </div>
       <div class="build-row">
         <span class="lbl">הזזה</span>
@@ -2607,6 +2733,8 @@
         <fieldset><legend>מיקום הפינה השמאלית־קדמית־תחתונה</legend>${ex('x', 'X אורך')}${ex('y', 'Y עומק')}${ex('z', 'Z גובה')}</fieldset>
         <fieldset><legend>מרחק בין עותקים</legend>${ex('dx', 'X')}${ex('dy', 'Y')}${ex('dz', 'Z')}</fieldset>
         <fieldset><legend>שורה נוספת של עותקים</legend>${ex('n2', 'כמה שורות')}${ex('dx2', 'X')}${ex('dy2', 'Y')}${ex('dz2', 'Z')}</fieldset>
+        <fieldset><legend>הטיה (מעלות)</legend>${ex('tilt', 'זווית')}
+          <label class="f">כיוון<select class="cell" value=${pt.tiltAxis === 'y' ? 'y' : 'x'} onChange=${function (e) { pt.tiltAxis = e.target.value; commit('current'); }}><option value="x">קדימה ואחורה</option><option value="y">לצדדים</option></select></label></fieldset>
         <button type="button" class="linkbtn" onClick=${function () { S.ui.place[pt.id] = false; commit('ui'); }}>סגירה</button>
       </div></td></tr>`);
     }
@@ -2687,8 +2815,7 @@
     function onPhoto(e) {
       var f = e.target.files && e.target.files[0];
       e.target.value = '';
-      if (!f) return;
-      fileToDataURL(f).then(function (d) { item.photo = putImage(d); item.img = 'photo'; S.ui.photo = true; commit('current', 'ui'); toast('התמונה צורפה למוצר'); }, function () { toast('לא הצלחתי לקרוא את התמונה'); });
+      if (f) attachPhoto(item, f);
     }
     return html`<div class="design">
       <section class="panel config">
@@ -3086,6 +3213,8 @@
                   </select></label>
                 <label class="field">תיאור קצר<input value=${it.note} placeholder="למשל: עץ אורן, גימור שמן טבעי" onInput=${function (e) { it.note = e.target.value; commit('current'); }}/></label>
               </div>
+              <label class="linkbtn" style="align-self:flex-start;cursor:pointer">${it.photo ? 'החלפת התמונה' : 'העלאת תמונה של המוצר'}
+                <input type="file" accept="image/*" hidden onChange=${function (e) { var f = e.target.files && e.target.files[0]; e.target.value = ''; if (f) attachPhoto(it, f); }}/></label>
             </div>`;
           })}
           <label class="field" style="margin-top:12px">הערות ותנאים<textarea value=${q.terms} onInput=${function (e) { q.terms = e.target.value; commit('current'); }}></textarea></label>
@@ -3215,18 +3344,31 @@
       return function () { clearInterval(iv); };
     }, [busy]);
     useEffect(function () { return function () { if (ctl.current) ctl.current.abort(); }; }, []);
-    function pick(e) {
-      var list = Array.from(e.target.files || []).slice(0, SAMPLE_MAXIMG);
-      e.target.value = '';
+    function addFiles(all) {
+      var list = all.filter(isImageFile).slice(0, SAMPLE_MAXIMG);
+      if (!list.length) { setErr(all.length ? 'הקובץ אינו תמונה. אפשר להעלות JPG, PNG או WebP.' : ''); return; }
+      setErr('');
       setFiles(list);
-      Promise.all(list.map(function (f) { return fileToDataURL(f, 600, 0.75).catch(function () { return null; }); })).then(function (d) { setThumbs(d.filter(Boolean)); });
+      Promise.all(list.map(function (f) { return fileToDataURL(f, 600, 0.75).catch(function () { return null; }); })).then(function (d) {
+        setThumbs(d.filter(Boolean));
+        if (d.some(function (x) { return !x; })) setErr(readFailMessage(list[d.indexOf(null)]));
+      });
     }
+    function pick(e) { var all = Array.from(e.target.files || []); e.target.value = ''; addFiles(all); }
+    useEffect(function () { DROP_TARGET = function (l) { addFiles(l); }; return function () { DROP_TARGET = null; }; }, []);
     function run() {
       if (!SAMPLE) return;
       setErr(''); setBusy(true); setSecs(0);
       var c = new AbortController(); ctl.current = c;
-      var imgs = files.slice();
-      if (modify && !imgs.length && item && item.photo) { var d = getImage(item.photo); var bl = d && dataURLtoBlob(d); if (bl) imgs.push(bl); }
+      var picked = files.slice();
+      if (modify && !picked.length && item && item.photo) { var d = getImage(item.photo); var bl = d && dataURLtoBlob(d); if (bl) picked.push(bl); }
+      // Claude reads JPG, PNG, WebP and GIF; anything else the browser can open (HEIC on Safari, BMP…) goes over as JPG.
+      Promise.all(picked.map(function (f) {
+        return SEND_TYPES.indexOf(f.type) >= 0 ? f : fileToDataURL(f, 1600, 0.9).then(dataURLtoBlob, function () { throw { code: 'unreadable', file: f }; });
+      })).then(function (imgs) { send(imgs); }, function (e) { setBusy(false); setErr(readFailMessage(e && e.file)); });
+    }
+    function send(imgs) {
+      var c = ctl.current;
       var useImgs = SAMPLE_IMAGES && imgs.length > 0;
       var prompt = buildAIPrompt(modify ? 'modify' : 'create', notes.trim(), item, useImgs);
       var opts = { modelTier: 'complex', signal: c.signal, cache: false };
@@ -3265,7 +3407,7 @@
       <p class="sub">${modify ? 'כתבו מה לשנות. Claude יעדכן את הפרמטרים ואת רשימת החלקים, ואת התוצאה אפשר לכוונן או לבטל.' : 'העלו תמונה של הרהיט, ואם יש גם רשימת חיתוכים או מידות. Claude ישרטט מודל דומה מקורות ולוחות, עם סליידרים לשינוי המידות.'}</p>
       ${SAMPLE_IMAGES ? html`<div class="field"><span>${modify ? 'תמונה (לא חובה)' : 'תמונות של הרהיט (עד ' + SAMPLE_MAXIMG + ')'}</span>
         <div class="gap"><button type="button" class="btn sm" disabled=${busy} onClick=${function () { fileRef.current && fileRef.current.click(); }}>${files.length ? 'החלפת תמונות' : 'בחירת תמונות'}</button>
-          <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple hidden ref=${fileRef} onChange=${pick}/>
+          <input type="file" accept="image/*" multiple hidden ref=${fileRef} onChange=${pick}/>
           ${modify && item && item.photo && !files.length ? html`<span class="hint">התמונה שצורפה למוצר תישלח</span>` : null}</div>
         ${thumbs.length ? html`<div class="thumbs">${thumbs.map(function (s, i) { return html`<img key=${i} src=${s} alt=""/>`; })}</div>` : null}
       </div>` : html`<p class="note">אי אפשר לשלוח תמונות מכאן, אבל אפשר לתאר את הרהיט במילים.</p>`}
@@ -3366,6 +3508,7 @@
       <${PriceBar} C=${C}/>
       <${ModalHost}/>
       ${S.ui.toast ? html`<div class="toast" role="status">${S.ui.toast}</div>` : null}
+      ${S.ui.dropping ? html`<div class="dropzone" aria-hidden="true"><span>${DROP_TARGET ? 'שחררו כדי להוסיף את התמונה לשרטוט' : (selItem() && (S.ui.tab === 'design' || S.ui.tab === 'quote') ? 'שחררו כדי לצרף את התמונה ל"' + (selItem().name || 'המוצר') + '"' : 'פתחו מוצר בלשונית "תכנון ושרטוט" כדי לצרף תמונה')}</span></div>` : null}
     </div>`;
   }
 
