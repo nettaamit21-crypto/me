@@ -286,6 +286,17 @@ def wood_texture(w, h, seed=3):
     return Image.fromarray(np.clip(img, 0, 255).astype('uint8')).filter(ImageFilter.GaussianBlur(0.8))
 
 
+def artwork():
+    """Icon followed by the lettering, as [(name, shape)] in cap units, in reading order."""
+    letters = lettering()
+    icon = cheese_icon()
+    text_left = min(g.bounds[0] for _, g in letters)
+    shift = icon.bounds[2] + ICON_GAP - text_left
+    letters = [(ch, affinity.translate(g, shift, 0)) for ch, g in letters]
+    names = [f'letter-{i + 1}-{ch}' for i, (ch, _) in enumerate(letters)]
+    return [('cheese-icon', icon)] + [(n, g) for n, (_, g) in zip(names, letters)]
+
+
 # ---------------------------------------------------------------- main
 
 def main():
@@ -297,14 +308,7 @@ def main():
     size.add_argument('--cap-height', type=float, help='height of the capital letters, mm')
     args = ap.parse_args()
 
-    letters = lettering()
-    icon = cheese_icon()
-    text_left = min(g.bounds[0] for _, g in letters)
-    shift = icon.bounds[2] + ICON_GAP - text_left
-    letters = [(ch, affinity.translate(g, shift, 0)) for ch, g in letters]
-
-    names = [f'letter-{i + 1}-{ch}' for i, (ch, _) in enumerate(letters)]
-    art = [('cheese-icon', icon)] + [(n, g) for n, (_, g) in zip(names, letters)]
+    art = artwork()
     x0, y0, x1, y1 = unary_union([g for _, g in art]).bounds
     cap_mm = args.cap_height or args.art_width / (x1 - x0) * 100
     s = cap_mm / 100
