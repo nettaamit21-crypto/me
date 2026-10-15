@@ -16,7 +16,7 @@ from PIL import Image, ImageDraw, ImageFont
 from shapely import affinity
 from shapely.ops import unary_union
 
-from make_sign import HERE, artwork, fill_time_minutes, wood_texture, write_svg
+from make_sign import HERE, artwork, fill_time_minutes, wood_texture, write_dxf, write_plt, write_svg
 
 FONT_UI = '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf'
 
@@ -65,7 +65,8 @@ def main():
     ap.add_argument('--max-part-width', type=float, required=True, help='widest strip the laser can engrave')
     ap.add_argument('--out', required=True)
     args = ap.parse_args()
-    os.makedirs(args.out, exist_ok=True)
+    other = os.path.join(args.out, 'other-formats')
+    os.makedirs(other, exist_ok=True)
 
     bh, cap = args.board_height, args.cap_height
     s = cap / 100
@@ -84,11 +85,16 @@ def main():
     for k, part in enumerate(parts, 1):
         x0, y0, x1, y1 = unary_union([g for _, g in part]).bounds
         local = [(n, affinity.translate(g, -x0, -y0)) for n, g in part]
-        name = f'gvinage-part{k}.svg' if len(parts) > 1 else 'gvinage.svg'
-        write_svg(os.path.join(args.out, name), x1 - x0, y1 - y0, local)
+        name = f'gvinage-part{k}' if len(parts) > 1 else 'gvinage'
+        w, h = x1 - x0, y1 - y0
+        # main file: DXF R12 (LaserCut 5.3, RDWorks); the rest for other software
+        write_dxf(os.path.join(args.out, name + '.dxf'), h, local, version='R12')
+        write_dxf(os.path.join(other, name + '-dxf2000.dxf'), h, local, version='R2000')
+        write_plt(os.path.join(other, name + '.plt'), h, local)
+        write_svg(os.path.join(other, name + '.svg'), w, h, local)
         info.append(dict(file=name, letters=''.join(n[-1] if n.startswith('letter') else '[icon]' for n, _ in part),
                          w=x1 - x0, h=y1 - y0, mark_x=x0, mark_y=bh - y1, bounds=(x0, y0, x1, y1),
-                         t100=fill_time_minutes(local, 100, 0.1), t150=fill_time_minutes(local, 150, 0.15)))
+                         t250=fill_time_minutes(local, 250, 0.1), t150=fill_time_minutes(local, 150, 0.15)))
 
     # the board drawn only as long as the artwork needs, with the same margin at both ends
     margin = 40
@@ -139,7 +145,7 @@ def main():
     for p in info:
         print(f"{p['file']}: {p['letters']}  {p['w']:.1f} x {p['h']:.1f} mm  "
               f"start mark (bottom-left) x={p['mark_x']:+.1f} mm from centre, y={p['mark_y']:.1f} mm above bottom  "
-              f"fill ~{p['t100']:.0f} min @100mm/s 0.1  ~{p['t150']:.0f} min @150mm/s 0.15")
+              f"fill ~{p['t250']:.0f} min @250mm/s 0.1  ~{p['t150']:.0f} min @150mm/s 0.15")
 
 
 if __name__ == '__main__':

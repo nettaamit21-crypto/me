@@ -248,19 +248,41 @@ def write_svg(path, width, height, art, board=None, art_color='#000000', board_f
         f.write('\n'.join(parts) + '\n')
 
 
-def write_dxf(path, height, art, board=None):
-    doc = ezdxf.new('R2010', units=ezdxf.units.MM)
-    doc.layers.add('ENGRAVE', color=7)
+def write_dxf(path, height, art, board=None, version='R2010'):
+    """Closed polylines in mm. R12 uses old-style POLYLINE entities, which older laser software reads best."""
+    doc = ezdxf.new(version) if version == 'R12' else ezdxf.new(version, units=ezdxf.units.MM)
     msp = doc.modelspace()
+
+    def add(points, layer, color):
+        # DXF is y-up: flip so the sign is not upside down
+        points = [(x, height - y) for x, y in points]
+        attribs = {'layer': layer, 'color': color}
+        if version == 'R12':
+            msp.add_polyline2d(points, close=True, dxfattribs=attribs)
+        else:
+            msp.add_lwpolyline(points, close=True, dxfattribs=attribs)
+
+    doc.layers.add('ENGRAVE', color=7)
     if board is not None:
         doc.layers.add('BOARD', color=1)
-        msp.add_lwpolyline([(x, height - y) for x, y in board.exterior.coords[:-1]], close=True,
-                           dxfattribs={'layer': 'BOARD'})
+        add(board.exterior.coords[:-1], 'BOARD', 1)
     for _, geom in art:
         for r in rings(geom):
-            # DXF is y-up: flip so the sign is not upside down
-            msp.add_lwpolyline([(x, height - y) for x, y in r[:-1]], close=True, dxfattribs={'layer': 'ENGRAVE'})
+            add(r[:-1], 'ENGRAVE', 7)
     doc.saveas(path)
+
+
+def write_plt(path, height, art):
+    """HPGL, 40 units per mm, y up."""
+    cmds = ['IN;', 'SP1;']
+    for _, geom in art:
+        for r in rings(geom):
+            pts = [(round(x * 40), round((height - y) * 40)) for x, y in r]
+            cmds.append(f'PU{pts[0][0]},{pts[0][1]};')
+            cmds.append('PD' + ','.join(f'{x},{y}' for x, y in pts[1:]) + ';')
+    cmds += ['PU;', 'SP0;']
+    with open(path, 'w') as f:
+        f.write('\n'.join(cmds) + '\n')
 
 
 def fill_time_minutes(art, speed, interval, overscan=5.0):
