@@ -287,6 +287,67 @@ def write_dxf_minimal(path, height, art):
         f.write('\n'.join(out) + '\n')
 
 
+def write_ai(path, width, height, art):
+    """Legacy Adobe Illustrator 8 file (PostScript text), the kind designers 'save down' for laser software.
+    Coordinates in points, y up; letters with holes are compound paths."""
+    pt = 72 / 25.4
+    bw, bh = width * pt, height * pt
+    out = ['%!PS-Adobe-3.0',
+           '%%Creator: Adobe Illustrator(R) 8.0',
+           '%%AI8_CreatorVersion: 8',
+           '%%For: (GVINAGE) ()',
+           f'%%Title: ({os.path.basename(path)})',
+           f'%%BoundingBox: 0 0 {math.ceil(bw)} {math.ceil(bh)}',
+           f'%%HiResBoundingBox: 0 0 {bw:.4f} {bh:.4f}',
+           '%%DocumentProcessColors: Black',
+           '%AI5_FileFormat 4.0',
+           '%AI3_ColorUsage: Black&White',
+           f'%AI3_TemplateBox: {bw / 2:.0f} {bh / 2:.0f} {bw / 2:.0f} {bh / 2:.0f}',
+           f'%AI3_TileBox: 0 0 {bw:.0f} {bh:.0f}',
+           '%AI3_DocumentPreview: None',
+           f'%AI5_ArtSize: {bw:.0f} {bh:.0f}',
+           '%AI5_RulerUnits: 1',
+           '%AI5_ArtFlags: 1 0 0 1 0 0 1 0 0',
+           '%AI5_TargetResolution: 800',
+           '%AI5_NumLayers: 1',
+           '%%EndComments',
+           '%%BeginProlog',
+           '%%EndProlog',
+           '%%BeginSetup',
+           '%%EndSetup',
+           '%AI5_BeginLayer',
+           '1 1 1 1 0 0 1 0 79 128 255 0 50 Lb',
+           '(Layer 1) Ln',
+           '0 A',
+           '0 R',
+           '0 0 0 1 K',
+           '0 O',
+           '0 0 0 1 k',
+           '800 Ar',
+           '0 J 0 j 0.1 w 4 M []0 d',
+           '0 D',
+           '1 XR']
+
+    def ring_ops(r):
+        pts = [(x * pt, (height - y) * pt) for x, y in r[:-1]]
+        ops = [f'{pts[0][0]:.3f} {pts[0][1]:.3f} m']
+        ops += [f'{x:.3f} {y:.3f} l' for x, y in pts[1:]]
+        return ops + ['b']
+
+    for _, geom in art:
+        for p in polygons(geom):
+            rs = [list(p.exterior.coords)] + [list(i.coords) for i in p.interiors]
+            if len(rs) > 1:
+                out.append('*u')
+            for r in rs:
+                out += ring_ops(r)
+            if len(rs) > 1:
+                out.append('*U')
+    out += ['LB', '%AI5_EndLayer--', '%%PageTrailer', 'showpage', '%%Trailer', '%%EOF']
+    with open(path, 'w', newline='\r\n') as f:
+        f.write('\n'.join(out) + '\n')
+
+
 def write_plt(path, height, art):
     """HPGL, 40 units per mm, y up, one command per line (as CorelDRAW writes it)."""
     cmds = ['IN;', 'PA;', 'SP1;']
