@@ -272,17 +272,44 @@ def write_dxf(path, height, art, board=None, version='R2010'):
     doc.saveas(path)
 
 
+def write_dxf_minimal(path, height, art):
+    """Bare-bones DXF R12: only an ENTITIES section with closed POLYLINEs, CRLF line ends.
+    The most widely readable variant, for old laser software."""
+    out = ['0', 'SECTION', '2', 'ENTITIES']
+    for _, geom in art:
+        for r in rings(geom):
+            out += ['0', 'POLYLINE', '8', '0', '66', '1', '70', '1', '10', '0.0', '20', '0.0', '30', '0.0']
+            for x, y in r[:-1]:
+                out += ['0', 'VERTEX', '8', '0', '10', f'{x:.3f}', '20', f'{height - y:.3f}', '30', '0.0']
+            out += ['0', 'SEQEND', '8', '0']
+    out += ['0', 'ENDSEC', '0', 'EOF']
+    with open(path, 'w', newline='\r\n') as f:
+        f.write('\n'.join(out) + '\n')
+
+
 def write_plt(path, height, art):
-    """HPGL, 40 units per mm, y up."""
-    cmds = ['IN;', 'SP1;']
+    """HPGL, 40 units per mm, y up, one command per line (as CorelDRAW writes it)."""
+    cmds = ['IN;', 'PA;', 'SP1;']
     for _, geom in art:
         for r in rings(geom):
             pts = [(round(x * 40), round((height - y) * 40)) for x, y in r]
             cmds.append(f'PU{pts[0][0]},{pts[0][1]};')
-            cmds.append('PD' + ','.join(f'{x},{y}' for x, y in pts[1:]) + ';')
+            cmds += [f'PD{x},{y};' for x, y in pts[1:]]
     cmds += ['PU;', 'SP0;']
-    with open(path, 'w') as f:
+    with open(path, 'w', newline='\r\n') as f:
         f.write('\n'.join(cmds) + '\n')
+
+
+def write_bitmap(path, width, height, art, px_per_mm=10):
+    """Black-on-white 1-bit bitmap with its resolution stored, so it imports at the right size."""
+    tmp = os.path.join(HERE, '_tmp.svg')
+    write_svg(tmp, width, height, art)
+    from io import BytesIO
+    png = cairosvg.svg2png(url=tmp, output_width=round(width * px_per_mm), output_height=round(height * px_per_mm),
+                           background_color='white')
+    os.remove(tmp)
+    dpi = px_per_mm * 25.4
+    Image.open(BytesIO(png)).convert('L').point(lambda v: 255 if v > 127 else 0, '1').save(path, dpi=(dpi, dpi))
 
 
 def fill_time_minutes(art, speed, interval, overscan=5.0):

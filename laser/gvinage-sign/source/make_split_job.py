@@ -16,7 +16,8 @@ from PIL import Image, ImageDraw, ImageFont
 from shapely import affinity
 from shapely.ops import unary_union
 
-from make_sign import HERE, artwork, fill_time_minutes, wood_texture, write_dxf, write_plt, write_svg
+from make_sign import (HERE, artwork, fill_time_minutes, wood_texture, write_bitmap, write_dxf, write_dxf_minimal,
+                       write_plt, write_svg)
 
 FONT_UI = '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf'
 
@@ -87,10 +88,11 @@ def main():
         local = [(n, affinity.translate(g, -x0, -y0)) for n, g in part]
         name = f'gvinage-part{k}' if len(parts) > 1 else 'gvinage'
         w, h = x1 - x0, y1 - y0
-        # main file: DXF R12 (LaserCut 5.3, RDWorks); the rest for other software
-        write_dxf(os.path.join(args.out, name + '.dxf'), h, local, version='R12')
+        # for LaserCut 5.3: bare DXF R12, PLT and a 254 dpi bitmap; the rest for other software
+        write_dxf_minimal(os.path.join(args.out, name + '.dxf'), h, local)
+        write_plt(os.path.join(args.out, name + '.plt'), h, local)
+        write_bitmap(os.path.join(args.out, name + '.bmp'), w, h, local)
         write_dxf(os.path.join(other, name + '-dxf2000.dxf'), h, local, version='R2000')
-        write_plt(os.path.join(other, name + '.plt'), h, local)
         write_svg(os.path.join(other, name + '.svg'), w, h, local)
         info.append(dict(file=name, letters=''.join(n[-1] if n.startswith('letter') else '[icon]' for n, _ in part),
                          w=x1 - x0, h=y1 - y0, mark_x=x0, mark_y=bh - y1, bounds=(x0, y0, x1, y1),
