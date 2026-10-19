@@ -425,7 +425,10 @@
   .listrow .t { font-weight: 500; }
   .listrow .m { font-size: .8rem; color: var(--muted); }
   .thumbs { display: flex; gap: 8px; flex-wrap: wrap; }
-  .thumbs img { width: 84px; height: 64px; object-fit: cover; border-radius: 4px; border: 1px solid var(--line-2); }
+  .thumbs img { width: 84px; height: 64px; object-fit: cover; border-radius: 4px; border: 1px solid var(--line-2); display: block; }
+  .shot { position: relative; display: inline-block; }
+  .shot-x { position: absolute; top: -6px; inset-inline-end: -6px; width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--line-2); background: var(--surface); color: var(--ink); display: grid; place-items: center; padding: 0; cursor: pointer; }
+  .shot-x svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; }
   .progress { display: flex; align-items: center; gap: 10px; font-size: .9rem; }
   .spinner { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--line-2); border-top-color: var(--oak); animation: spin 0.9s linear infinite; flex: none; }
   @keyframes spin { to { transform: rotate(360deg); } }
@@ -460,6 +463,7 @@
   var html = HP.html, render = HP.render, useState = HP.useState, useEffect = HP.useEffect, useRef = HP.useRef;
   var HAS3D = !!window.THREE;
   var IN_VIEWER = !!(window.claude && typeof window.claude.use === 'function');
+  var IS_TOUCH = !!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
   var H2C_URL = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
   var FONTS_URL = 'https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=Heebo:wght@300;400;500;600;700&display=swap';
 
@@ -2858,7 +2862,7 @@
 
   function ItemEditor(props) {
     var item = props.item, E = props.E, P = props.P;
-    var fileRef = useRef(null);
+    var fileRef = useRef(null), camRef = useRef(null);
     var sliders = item.params.filter(function (p) { return p.type === 'range' || p.type === 'choice'; });
     var fixed = item.params.filter(function (p) { return p.type === 'const' || p.type === 'calc'; });
     var vatOn = S.quote.pricing.vatOn, vr = num(S.quote.pricing.vat) / 100;
@@ -2885,6 +2889,8 @@
           ${PREV[item.id] ? html`<button type="button" class="btn sm" onClick=${function () { var pv = PREV[item.id]; delete PREV[item.id]; item.params = pv.params; item.parts = pv.parts; commit('current'); toast('השינוי בוטל'); }}>ביטול השינוי האחרון</button>` : null}
           <button type="button" class="btn sm" onClick=${function () { fileRef.current && fileRef.current.click(); }}>${itemPhotos(item).length ? 'הוספת תמונות' : 'צירוף תמונות'}</button>
           <input type="file" accept="image/*" multiple hidden ref=${fileRef} onChange=${onPhoto}/>
+          ${IS_TOUCH ? html`<button type="button" class="btn sm" onClick=${function () { camRef.current && camRef.current.click(); }}>צילום</button>
+            <input type="file" accept="image/*" capture="environment" hidden ref=${camRef} onChange=${onPhoto}/>` : null}
           <button type="button" class="btn sm" onClick=${function () { duplicateItem(item); }}>שכפול</button>
           <button type="button" class="btn sm" onClick=${function () { saveAsTemplate(item); }}>שמירה כתבנית</button>
           ${canSaveFiles() ? html`<button type="button" class="btn sm" onClick=${function () { saveFile((item.name || 'מוצר') + '.json', JSON.stringify(templateFromItem(item), null, 2), 'application/json'); }}>ייצוא מוצר</button>` : null}
@@ -2947,7 +2953,7 @@
             <span class="n">${it.name || 'מוצר'}</span><span class="m">${p ? p.Q : 0} יח׳ · ${money(p ? p.unit : 0)} ליח׳</span></button>`;
         })}
         <button type="button" class="ichip add" onClick=${function () { openModal({ type: 'picker' }); }}>+ מוצר</button>
-        ${SAMPLE ? html`<button type="button" class="ichip add" onClick=${function () { openModal({ type: 'ai', mode: 'create' }); }}>שרטוט מתמונה</button>` : null}
+        ${SAMPLE ? html`<button type="button" class="ichip add" onClick=${function () { openModal({ type: 'ai', mode: 'create' }); }}>${IS_TOUCH ? 'צילום ושרטוט' : 'שרטוט מתמונה'}</button>` : null}
       </div>` : null}
       ${item ? html`<${ItemEditor} key=${item.id} item=${item} E=${E} P=${C.pricing.byId[item.id]}/>
         <${PartsTable} item=${item} E=${E}/>
@@ -3387,13 +3393,14 @@
   function AIModal(props) {
     var m = props.m, modify = m.mode === 'modify';
     var item = modify ? S.quote.items.find(function (i) { return i.id === m.itemId; }) : null;
-    var fs = useState([]), files = fs[0], setFiles = fs[1];
-    var ts = useState([]), thumbs = ts[0], setThumbs = ts[1];
+    // Each shot is {f: the file, src: a small preview}. Shots add up, so several phone photos can be taken one after another.
+    var sh = useState([]), shots = sh[0], setShots = sh[1];
+    var files = shots.map(function (x) { return x.f; });
     var ns = useState(''), notes = ns[0], setNotes = ns[1];
     var bs = useState(false), busy = bs[0], setBusy = bs[1];
     var es = useState(''), err = es[0], setErr = es[1];
     var ss = useState(0), secs = ss[0], setSecs = ss[1];
-    var ctl = useRef(null), fileRef = useRef(null);
+    var ctl = useRef(null), fileRef = useRef(null), camRef = useRef(null);
     useEffect(function () {
       if (!busy) return;
       var t0 = Date.now(), iv = setInterval(function () { setSecs(Math.round((Date.now() - t0) / 1000)); }, 1000);
@@ -3401,13 +3408,18 @@
     }, [busy]);
     useEffect(function () { return function () { if (ctl.current) ctl.current.abort(); }; }, []);
     function addFiles(all) {
-      var list = all.filter(isImageFile).slice(0, SAMPLE_MAXIMG);
+      var list = all.filter(isImageFile);
       if (!list.length) { setErr(all.length ? 'הקובץ אינו תמונה. אפשר להעלות JPG, PNG או WebP.' : ''); return; }
       setErr('');
-      setFiles(list);
       Promise.all(list.map(function (f) { return fileToDataURL(f, 600, 0.75).catch(function () { return null; }); })).then(function (d) {
-        setThumbs(d.filter(Boolean));
-        if (d.some(function (x) { return !x; })) setErr(readFailMessage(list[d.indexOf(null)]));
+        var bad = list.filter(function (f, i) { return !d[i]; });
+        var ok = list.map(function (f, i) { return { f: f, src: d[i] }; }).filter(function (x) { return x.src; });
+        setShots(function (prev) {
+          var next = prev.concat(ok);
+          if (next.length > SAMPLE_MAXIMG) setErr('אפשר לשלוח עד ' + SAMPLE_MAXIMG + ' תמונות. נשמרו הראשונות.');
+          return next.slice(0, SAMPLE_MAXIMG);
+        });
+        if (bad.length) setErr(readFailMessage(bad[0]));
       });
     }
     function pick(e) { var all = Array.from(e.target.files || []); e.target.value = ''; addFiles(all); }
@@ -3460,11 +3472,20 @@
     var canRun = modify ? !!notes.trim() : (files.length > 0 || !!notes.trim());
     return html`<${Modal} title=${modify ? 'שינוי השרטוט עם Claude' : 'שרטוט מתמונה עם Claude'} sticky=${busy}>
       <p class="sub">${modify ? 'כתבו מה לשנות. Claude יעדכן את הפרמטרים ואת רשימת החלקים, ואת התוצאה אפשר לכוונן או לבטל.' : 'העלו תמונה של הרהיט, ואם יש גם רשימת חיתוכים או מידות. Claude ישרטט מודל דומה מקורות ולוחות, עם סליידרים לשינוי המידות.'}</p>
-      ${SAMPLE_IMAGES ? html`<div class="field"><span>${modify ? 'תמונה (לא חובה)' : 'תמונות של הרהיט (עד ' + SAMPLE_MAXIMG + ')'}</span>
-        <div class="gap"><button type="button" class="btn sm" disabled=${busy} onClick=${function () { fileRef.current && fileRef.current.click(); }}>${files.length ? 'החלפת תמונות' : 'בחירת תמונות'}</button>
+      ${SAMPLE_IMAGES ? html`<div class="field"><span>${modify ? 'תמונות (לא חובה)' : 'תמונות של הרהיט (עד ' + SAMPLE_MAXIMG + ')'}</span>
+        <div class="gap">
+          ${IS_TOUCH ? html`<button type="button" class="btn sm primary" disabled=${busy || shots.length >= SAMPLE_MAXIMG} onClick=${function () { camRef.current && camRef.current.click(); }}>${shots.length ? 'צילום נוסף' : 'צילום'}</button>
+            <input type="file" accept="image/*" capture="environment" hidden ref=${camRef} onChange=${pick}/>` : null}
+          <button type="button" class="btn sm" disabled=${busy || shots.length >= SAMPLE_MAXIMG} onClick=${function () { fileRef.current && fileRef.current.click(); }}>${IS_TOUCH ? 'מהגלריה' : (shots.length ? 'הוספת תמונות' : 'בחירת תמונות')}</button>
           <input type="file" accept="image/*" multiple hidden ref=${fileRef} onChange=${pick}/>
-          ${modify && item && itemPhotos(item).length && !files.length ? html`<span class="hint">${itemPhotos(item).length > 1 ? 'התמונות שצורפו למוצר יישלחו' : 'התמונה שצורפה למוצר תישלח'}</span>` : null}</div>
-        ${thumbs.length ? html`<div class="thumbs">${thumbs.map(function (s, i) { return html`<img key=${i} src=${s} alt=""/>`; })}</div>` : null}
+          ${modify && item && itemPhotos(item).length && !shots.length ? html`<span class="hint">${itemPhotos(item).length > 1 ? 'התמונות שצורפו למוצר יישלחו' : 'התמונה שצורפה למוצר תישלח'}</span>` : null}
+          ${!IS_TOUCH && !shots.length ? html`<span class="hint">אפשר גם לגרור תמונות לכאן</span>` : null}
+        </div>
+        ${shots.length ? html`<div class="thumbs">${shots.map(function (x, i) {
+          return html`<span key=${i} class="shot"><img src=${x.src} alt=${'תמונה ' + (i + 1)}/>
+            <button type="button" class="shot-x" aria-label=${'הסרת תמונה ' + (i + 1)} disabled=${busy} onClick=${function () { setShots(function (prev) { return prev.filter(function (_, j) { return j !== i; }); }); }}>${Ico.close()}</button></span>`;
+        })}</div>` : null}
+        ${IS_TOUCH && !modify && !shots.length ? html`<span class="hint">טיפ: צלמו מהצד ומלפנים, עם קצת מקום מסביב לרהיט. אם יש מטר, צלמו אותו ליד.</span>` : null}
       </div>` : html`<p class="note">אי אפשר לשלוח תמונות מכאן, אבל אפשר לתאר את הרהיט במילים.</p>`}
       <label class="field">${modify ? 'מה לשנות?' : 'תיאור, מידות או רשימת חיתוכים (לא חובה)'}
         <textarea value=${notes} disabled=${busy} onInput=${function (e) { setNotes(e.target.value); }} placeholder=${modify ? 'למשל: להוסיף מדף תחתון, להגביה את המשענת ל-55, להחליף את הרגליים לקורות 7×7' : 'למשל: ספסל לגן ילדים באורך 120 וגובה ישיבה 30. או רשימה: 2 רגל 5x15x35'}></textarea></label>
