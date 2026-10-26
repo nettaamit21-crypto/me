@@ -133,6 +133,9 @@
   .facts dt { font-size: .85rem; color: var(--ink-2); }
   .facts dd { margin: 0; font-weight: 600; line-height: 1.45; }
   .facts dd small { display: block; font-weight: 400; color: var(--ink-2); font-size: .85rem; }
+  .facts .wide { grid-column: 1 / -1; }
+  .facts .when { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .15rem 1.4rem; }
+  @media (max-width: 520px) { .facts .when { grid-template-columns: 1fr; } }
   .build h4 { margin: 0 0 .4rem; font-size: 1rem; font-weight: 600; }
   .build p { color: var(--ink); }
   .note { color: var(--ink-2); font-size: .96rem; }
@@ -279,7 +282,7 @@
 
   <nav class="quick" aria-label="הסדנאות בקצרה">
     <div class="wrap">
-      <a href="#couples"><b>סדנה זוגית</b><span>3 שעות, שישי ושבת</span></a>
+      <a href="#couples"><b>סדנה זוגית</b><span>3 שעות, כמעט כל יום</span></a>
       <a href="#family"><b>סדנה משפחתית</b><span>ילדים מגיל 3</span></a>
       <a href="#groups"><b>סדנה לקבוצות</b><span class="num">6 עד 16 משתתפים</span></a>
       <a href="#parent-child"><b>הורה וילד</b><span>בקרוב</span></a>
@@ -304,8 +307,8 @@
           <dl class="facts">
             <div><dt>כמה זמן</dt><dd>3 שעות</dd></div>
             <div><dt>כמה זוגות</dt><dd>עד 3 זוגות בסדנה</dd></div>
-            <div><dt>מתי</dt><dd class="num">שישי 8:30 עד 11:30<br>שבת 10:00 עד 13:00</dd></div>
             <div><dt>מחיר</dt><dd class="num" data-price data-regular="1,000 ₪ לזוג" data-until="2027-01-15">850 ₪ לזוג<small>מחיר השקה עד 15.1.2027, אחר כך 1,000 ₪</small></dd></div>
+            <div class="wide"><dt>מתי</dt><dd class="num when"><span>ראשון, שלישי וחמישי · 14:00 או 17:00</span><span>רביעי · 10:00, 14:00 או 17:00</span><span>שישי · 8:30</span><span>שבת · 10:00 או 14:00</span></dd></div>
           </dl>
           <p>את החיתוכים במסור אני מכין מראש. אתם משייפים, קודחים, מרכיבים וצובעים, ולומדים הכול במקום.</p>
           <div class="build">
@@ -317,12 +320,12 @@
         </div>
       </article>
 
-      <article class="special" id="hanukkah" data-until="2026-12-04">
+      <article class="special" id="hanukkah" data-until="2026-12-12">
         <div>
           <p class="label">סדנה מיוחדת לחנוכה</p>
           <h3>חנוכייה מעץ אקליפטוס</h3>
-          <p>עד חנוכה אפשר לבנות אצלנו חנוכייה מעץ אקליפטוס. החנוכייה הראשונה שבניתם יחד.</p>
-          <p class="meta num">עד 4.12 · 3 שעות · שישי ושבת בבוקר · 850 ₪ לזוג</p>
+          <p>עד סוף חנוכה אפשר לבנות אצלנו חנוכייה מעץ אקליפטוס, כולל גביעי מתכת לנרות. החנוכייה הראשונה שבניתם יחד.</p>
+          <p class="meta num">עד 12.12 · 3 שעות · באותם מועדים של הסדנה הזוגית · 850 ₪ לזוג</p>
         </div>
         <a class="btn btn-main" data-wa="היי נטע, אני רוצה לשריין את סדנת החנוכייה" href="#contact"><svg class="i"><use href="#i-wa"/></svg>לשריין סדנת חנוכה</a>
       </article>
@@ -346,9 +349,10 @@
             <li>גיבוש לעובדים, חברים או משפחה מורחבת</li>
             <li class="num">6 עד 16 משתתפים, ואפשר לדבר על התאמות</li>
             <li>שעתיים</li>
+            <li class="num">ראשון, שלישי, חמישי ושבת ב־14:00, רביעי ב־10:00, 14:00 או 17:00</li>
           </ul>
           <p class="price num">180 ₪ למשתתף <small>כולל מע"מ</small></p>
-          <p>כל אחד בונה אדנית ולוקח אותה הביתה. אפשר גם לבנות יחד סט אדניות למקום שממנו הגעתם. בחוות רום יש גם סדנת קרמיקה, כך שאפשר לבנות לקבוצה יום פעילות שלם בחווה.</p>
+          <p>כל אחד בונה אדנית ולוקח אותה הביתה. אפשר גם לבנות יחד סט אדניות למקום שממנו הגעתם. אפשר גם לשלב עם סדנת הקרמיקה בחווה, ליום פעילות שלם.</p>
           <a class="more" data-wa="היי נטע, אני רוצה לתאם סדנה לקבוצה" href="#contact">לתאם סדנה לקבוצה</a>
         </article>
 
