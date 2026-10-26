@@ -3,160 +3,158 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>סדנאות נגרות בחוות רום, הר כמון | הנגרייה של נטע עמית</title>
-<meta name="description" content="סדנה זוגית, סדנה משפחתית, הורה וילד וסדנאות לקבוצות בנגרייה בחוות רום שעל הר כמון. לא צריך ניסיון בנגרות: בונים בעצמכם מעץ וחוזרים הביתה עם מה שבניתם.">
-<meta name="theme-color" content="#FAF3E8">
+<title>הנגרייה בחוות רום · סדנאות נגרות בהר כמון</title>
+<meta name="description" content="סדנה זוגית, סדנה משפחתית וסדנאות לקבוצות בנגרייה בחוות רום שעל הר כמון. לא צריך ניסיון בנגרות: בונים בעצמכם מעץ וחוזרים הביתה עם מה שבניתם.">
+<meta name="theme-color" content="#17484A">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="he_IL">
-<meta property="og:title" content="סדנאות נגרות בחוות רום, הר כמון">
+<meta property="og:title" content="הנגרייה בחוות רום · סדנאות נגרות">
 <meta property="og:description" content="כל אחד יכול לבנות משהו מדהים, כשיש לו את המקום הנכון ומישהו לצידו. סדנאות לזוגות, משפחות וקבוצות.">
 <meta property="og:url" content="https://nettaamit21-crypto.github.io/me/">
-<meta property="og:image" content="https://nettaamit21-crypto.github.io/me/images/sign.jpg">
+<meta property="og:image" content="https://nettaamit21-crypto.github.io/me/images/og.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Suez+One&family=Assistant:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700&family=Assistant:wght@400;600;700&display=swap">
 <style>
-  /* Layout: photo-led and warm. Hero with the workshop sign, workshops as the main event, the farm and products in between, the rehab story as one short dark band. */
+  /* Layout: quiet and clean. A deep teal opening with the real wooden letters, then workshops on an off-white page, product shots on one soft backdrop, and teal again for the rehab story and the footer. */
   :root {
-    --bg: #FAF3E8;
-    --bg-2: #F2E4CF;
-    --card: #FFFAF2;
-    --ink: #2E2016;
-    --ink-2: #6F5947;
-    --clay: #B4542C;
-    --clay-ink: #FFF8EF;
-    --clay-hover: #96431F;
-    --honey: #C98A3C;
-    --olive: #66713C;
-    --on-olive: #FFF8EF;
-    --walnut: #3B2A1E;
-    --on-walnut: #F8EBDB;
-    --on-walnut-2: #D9C2A6;
-    --rule: rgba(46, 32, 22, .13);
-    --shadow: 0 18px 40px -26px rgba(91, 52, 22, .55);
+    --bg: #F4F6F3;
+    --surface: #FFFFFF;
+    --mist: #E7EFEC;
+    --ink: #13211F;
+    --ink-2: #51645F;
+    --teal: #17484A;
+    --on-teal: #EEF4F1;
+    --on-teal-2: #A9C3BC;
+    --accent: #1F6B6E;
+    --accent-hover: #17585A;
+    --on-accent: #FFFFFF;
+    --rule: rgba(19, 33, 31, .12);
 
-    --display: "Suez One", "Assistant", "Arial Hebrew", serif;
+    --display: "Frank Ruhl Libre", "David Libre", "Times New Roman", serif;
     --body: "Assistant", "Arial Hebrew", Arial, sans-serif;
-    --max: 1160px;
+    --max: 1120px;
     --gutter: clamp(16px, 5vw, 48px);
-    --radius: 18px;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --bg: #1E1611; --bg-2: #271D16; --card: #2D2219; --ink: #F4E8D8; --ink-2: #C9B39B;
-      --clay: #E0845A; --clay-ink: #241309; --clay-hover: #EB9C77; --honey: #E2AA62; --olive: #A9B47A; --on-olive: #1E1611;
-      --walnut: #140F0B; --on-walnut: #F4E8D8; --on-walnut-2: #C9B39B;
-      --rule: rgba(244, 232, 216, .14); --shadow: 0 18px 40px -26px rgba(0, 0, 0, .8);
+      --bg: #0E1817; --surface: #142220; --mist: #1A2A28; --ink: #E7EFEC; --ink-2: #A6B9B3;
+      --teal: #0B2A2B; --on-teal: #E7EFEC; --on-teal-2: #A6B9B3;
+      --accent: #7CC2BD; --accent-hover: #96D1CC; --on-accent: #0E1817; --rule: rgba(231, 239, 236, .13);
       color-scheme: dark;
     }
   }
   :root[data-theme="dark"] {
-    --bg: #1E1611; --bg-2: #271D16; --card: #2D2219; --ink: #F4E8D8; --ink-2: #C9B39B;
-    --clay: #E0845A; --clay-ink: #241309; --clay-hover: #EB9C77; --honey: #E2AA62; --olive: #A9B47A; --on-olive: #1E1611;
-    --walnut: #140F0B; --on-walnut: #F4E8D8; --on-walnut-2: #C9B39B;
-    --rule: rgba(244, 232, 216, .14); --shadow: 0 18px 40px -26px rgba(0, 0, 0, .8);
+    --bg: #0E1817; --surface: #142220; --mist: #1A2A28; --ink: #E7EFEC; --ink-2: #A6B9B3;
+    --teal: #0B2A2B; --on-teal: #E7EFEC; --on-teal-2: #A6B9B3;
+    --accent: #7CC2BD; --accent-hover: #96D1CC; --on-accent: #0E1817; --rule: rgba(231, 239, 236, .13);
     color-scheme: dark;
   }
 
   * { box-sizing: border-box; }
   [hidden] { display: none !important; }
-  html { scroll-behavior: smooth; scroll-padding-top: 76px; }
+  html { scroll-behavior: smooth; scroll-padding-top: 72px; }
   body {
     margin: 0; background: var(--bg); color: var(--ink);
-    font-family: var(--body); font-size: 17.5px; line-height: 1.65;
+    font-family: var(--body); font-size: 17.5px; line-height: 1.7;
     direction: rtl; text-align: right; -webkit-font-smoothing: antialiased;
   }
   img { max-width: 100%; height: auto; display: block; }
   a { color: inherit; }
-  h1, h2, h3 { font-family: var(--display); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+  h1, h2, h3 { font-family: var(--display); font-weight: 500; line-height: 1.2; margin: 0; text-wrap: balance; }
   p { margin: 0; }
   .wrap { max-width: var(--max); margin-inline: auto; padding-inline: var(--gutter); }
-  .kicker { font-weight: 700; font-size: .92rem; color: var(--clay); letter-spacing: .01em; }
+  .label { font-size: .88rem; font-weight: 600; color: var(--accent); letter-spacing: .01em; }
   .muted { color: var(--ink-2); }
   .num { font-variant-numeric: tabular-nums; }
-  :focus-visible { outline: 3px solid var(--honey); outline-offset: 3px; }
-  svg.i { width: 1.15em; height: 1.15em; flex: none; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  svg.i { width: 1.1em; height: 1.1em; flex: none; }
 
-  .btn { display: inline-flex; align-items: center; justify-content: center; gap: .55em; padding: .8em 1.5em; border-radius: 999px; font: inherit; font-weight: 700; font-size: 1rem; line-height: 1.2; text-decoration: none; border: 2px solid transparent; cursor: pointer; transition: background .15s, color .15s, border-color .15s; }
-  .btn-main { background: var(--clay); color: var(--clay-ink); }
-  .btn-main:hover { background: var(--clay-hover); }
-  .btn-line { border-color: currentColor; color: var(--ink); background: transparent; }
-  .btn-line:hover { color: var(--clay); }
-  .more { font-weight: 700; color: var(--clay); text-decoration: none; border-bottom: 2px solid color-mix(in srgb, var(--clay) 35%, transparent); padding-bottom: 1px; }
-  .more:hover { border-bottom-color: var(--clay); }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: .5em; padding: .78em 1.4em; border-radius: 6px; font: inherit; font-weight: 600; font-size: .98rem; line-height: 1.2; text-decoration: none; border: 1.5px solid transparent; cursor: pointer; transition: background .15s, color .15s, border-color .15s; }
+  .btn-main { background: var(--accent); color: var(--on-accent); }
+  .btn-main:hover { background: var(--accent-hover); }
+  .btn-line { border-color: var(--rule); color: var(--ink); background: transparent; }
+  .btn-line:hover { border-color: var(--accent); color: var(--accent); }
+  .more { font-weight: 600; color: var(--accent); text-decoration: none; border-bottom: 1px solid currentColor; padding-bottom: 1px; }
 
   /* ---------- Header ---------- */
-  .top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 30; background: color-mix(in srgb, var(--bg) 90%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--rule); }
-  .top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 64px; }
-  .brand { text-decoration: none; display: flex; align-items: baseline; gap: .45rem; }
-  .brand b { font-family: var(--display); font-weight: 400; font-size: 1.55rem; line-height: 1; }
-  .brand span { font-size: .9rem; color: var(--ink-2); }
-  .top nav ul { display: flex; gap: 1.5rem; list-style: none; margin: 0; padding: 0; font-weight: 600; font-size: .98rem; }
+  .top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 30; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--rule); }
+  .top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 62px; }
+  .brand { text-decoration: none; display: flex; align-items: center; gap: .6rem; }
+  .brand img { height: 26px; width: auto; }
+  .brand span { font-size: .88rem; color: var(--ink-2); }
+  .top nav ul { display: flex; gap: 1.6rem; list-style: none; margin: 0; padding: 0; font-size: .96rem; }
   .top nav a { text-decoration: none; color: var(--ink-2); }
-  .top nav a:hover { color: var(--clay); }
-  .top .btn { padding: .55em 1.1em; font-size: .92rem; }
+  .top nav a:hover { color: var(--accent); }
+  .top .btn { padding: .5em 1em; font-size: .9rem; }
   @media (max-width: 900px) { .top nav { display: none; } }
+  @media (max-width: 380px) { .brand span { display: none; } }
 
   /* ---------- Hero ---------- */
-  .hero { padding-block: clamp(1.5rem, 5vw, 4.5rem) clamp(2.5rem, 5vw, 4rem); }
-  .hero-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: clamp(1.8rem, 5vw, 4.5rem); align-items: center; }
-  .season { display: inline-flex; align-items: center; gap: .5em; background: color-mix(in srgb, var(--honey) 18%, var(--card)); color: var(--ink); border: 1px solid color-mix(in srgb, var(--honey) 45%, transparent); border-radius: 999px; padding: .3em .95em; font-size: .9rem; font-weight: 600; margin-bottom: 1.1rem; }
-  .season::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--honey); flex: none; }
-  .hero h1 { font-size: clamp(2.35rem, 6.4vw, 4.4rem); margin-block: .5rem .4rem; }
-  .hero .line2 { font-family: var(--display); font-size: clamp(1.3rem, 2.8vw, 1.9rem); color: var(--clay); line-height: 1.3; }
-  .hero .intro { margin-top: 1.3rem; max-width: 42ch; font-size: clamp(1.05rem, 1.5vw, 1.18rem); }
-  .hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .9rem 1.4rem; margin-top: 1.8rem; }
-  .hero-photo { position: relative; margin: 0; }
-  .hero-photo img { width: 100%; aspect-ratio: 5 / 5.6; object-fit: cover; border-radius: var(--radius); box-shadow: var(--shadow); }
-  .sticker { position: absolute; bottom: -14px; inset-inline-start: -14px; background: var(--olive); color: var(--on-olive); font-family: var(--display); font-size: 1.05rem; line-height: 1.2; padding: .75em 1.1em; border-radius: 14px; transform: rotate(-4deg); box-shadow: var(--shadow); text-align: center; }
-  .quick { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: clamp(2.2rem, 5vw, 3.5rem); }
-  .quick a { display: inline-flex; gap: .5em; align-items: baseline; text-decoration: none; background: var(--card); border: 1px solid var(--rule); border-radius: 999px; padding: .5em 1.05em; font-weight: 700; font-size: .95rem; }
-  .quick a span { font-weight: 400; color: var(--ink-2); }
-  .quick a:hover { border-color: var(--clay); }
-  @media (max-width: 820px) {
-    .hero-grid { grid-template-columns: 1fr; }
-    .hero-photo { order: -1; }
-    .hero-photo img { aspect-ratio: 4 / 3.1; object-position: 50% 62%; }
-    .sticker { bottom: -12px; inset-inline-start: auto; inset-inline-end: 14px; font-size: .95rem; }
+  .hero { background: var(--teal); color: var(--on-teal); padding-block: clamp(3rem, 8vw, 6rem) clamp(3rem, 7vw, 5rem); text-align: center; }
+  .hero .label { color: var(--on-teal-2); }
+  .wordmark { width: min(560px, 88%); margin: 1.4rem auto 2rem; filter: drop-shadow(-3px 8px 10px rgba(0, 0, 0, .35)); }
+  .hero h1 { font-size: clamp(1.9rem, 4.6vw, 3rem); }
+  .hero .intro { max-width: 46ch; margin: 1.1rem auto 0; color: var(--on-teal-2); font-size: clamp(1.02rem, 1.5vw, 1.15rem); }
+  .hero .rehab-note { margin-top: .9rem; font-size: .95rem; color: var(--on-teal-2); }
+  .hero .rehab-note a { color: var(--on-teal); }
+  .hero-actions { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: .9rem 1.4rem; margin-top: 2rem; }
+  .hero .btn-main { background: var(--on-teal); color: var(--teal); }
+  .hero .btn-main:hover { background: #FFFFFF; }
+  .hero .more { color: var(--on-teal); }
+
+  .quick { border-bottom: 1px solid var(--rule); background: var(--surface); }
+  .quick .wrap { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .quick a { text-decoration: none; padding: 1.1rem 1.2rem; display: flex; flex-direction: column; gap: .1rem; }
+  .quick a + a { border-inline-start: 1px solid var(--rule); }
+  .quick a:first-child { padding-inline-start: 0; }
+  .quick b { font-family: var(--display); font-weight: 500; font-size: 1.12rem; }
+  .quick span { font-size: .9rem; color: var(--ink-2); }
+  .quick a:hover b { color: var(--accent); }
+  @media (max-width: 760px) {
+    .quick .wrap { grid-template-columns: 1fr 1fr; }
+    .quick a:nth-child(3) { border-inline-start: 0; padding-inline-start: 0; }
+    .quick a:nth-child(n+3) { border-top: 1px solid var(--rule); }
   }
 
   /* ---------- Sections ---------- */
-  section { padding-block: clamp(3.5rem, 8vw, 6.5rem); }
-  .head { display: flex; flex-direction: column; gap: .7rem; max-width: 640px; margin-bottom: clamp(2rem, 4vw, 3rem); }
-  .head h2 { font-size: clamp(2rem, 4.6vw, 3.1rem); }
-  .head p { color: var(--ink-2); font-size: 1.08rem; }
+  section { padding-block: clamp(3.5rem, 8vw, 6rem); }
+  .head { max-width: 620px; display: flex; flex-direction: column; gap: .6rem; margin-bottom: clamp(2rem, 4vw, 2.8rem); }
+  .head h2 { font-size: clamp(1.9rem, 4.2vw, 2.7rem); }
+  .head p { color: var(--ink-2); }
 
   /* Workshops */
-  .workshops { background: var(--bg-2); }
-  .feature { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); background: var(--card); border-radius: calc(var(--radius) + 6px); overflow: hidden; box-shadow: var(--shadow); }
-  .feature figure { margin: 0; position: relative; min-height: 100%; background: var(--bg-2); }
-  .feature figure img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; }
-  .feature figcaption { position: absolute; inset-inline-start: 12px; bottom: 12px; background: color-mix(in srgb, var(--card) 88%, transparent); border-radius: 10px; padding: .35em .8em; font-size: .85rem; color: var(--ink-2); max-width: calc(100% - 24px); }
+  .feature { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; overflow: hidden; }
+  .feature figure { margin: 0; background: #E7EFEC; position: relative; min-height: 100%; }
+  .feature figure img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: 50% 55%; }
   .feature-body { padding: clamp(1.4rem, 4vw, 2.6rem); display: flex; flex-direction: column; gap: 1.1rem; }
-  .badge { align-self: flex-start; background: color-mix(in srgb, var(--clay) 14%, transparent); color: var(--clay); font-weight: 700; font-size: .85rem; border-radius: 999px; padding: .2em .85em; }
-  .badge.new { background: color-mix(in srgb, var(--olive) 18%, transparent); color: var(--olive); }
-  .feature h3 { font-size: clamp(1.9rem, 3.6vw, 2.5rem); }
+  .feature h3 { font-size: clamp(1.7rem, 3.2vw, 2.2rem); }
   .facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .9rem 1.4rem; margin: 0; padding: 1rem 0; border-block: 1px solid var(--rule); }
-  .facts dt { font-size: .85rem; color: var(--ink-2); font-weight: 600; }
-  .facts dd { margin: 0; font-weight: 700; line-height: 1.4; }
+  .facts dt { font-size: .85rem; color: var(--ink-2); }
+  .facts dd { margin: 0; font-weight: 600; line-height: 1.45; }
   .facts dd small { display: block; font-weight: 400; color: var(--ink-2); font-size: .85rem; }
-  .choose h4 { margin: 0 0 .55rem; font-size: 1rem; }
-  .chips { display: flex; flex-wrap: wrap; gap: .45rem; list-style: none; margin: 0; padding: 0; }
-  .chips li { background: var(--bg); border: 1px solid var(--rule); border-radius: 999px; padding: .25em .85em; font-size: .93rem; }
-  .chips li.hot { border-color: var(--honey); background: color-mix(in srgb, var(--honey) 16%, var(--bg)); font-weight: 600; }
-  .note { font-size: .95rem; color: var(--ink-2); border-inline-start: 3px solid var(--honey); padding-inline-start: .8rem; }
+  .build h4 { margin: 0 0 .4rem; font-size: 1rem; font-weight: 600; }
+  .build p { color: var(--ink); }
+  .note { color: var(--ink-2); font-size: .96rem; }
   @media (max-width: 820px) {
     .feature { grid-template-columns: 1fr; }
-    .feature figure img { position: static; aspect-ratio: 4 / 3.4; height: auto; object-position: 50% 40%; }
+    .feature figure img { position: static; aspect-ratio: 4 / 3; height: auto; }
   }
 
-  .cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(1rem, 2.4vw, 1.6rem); margin-top: clamp(1rem, 2.4vw, 1.6rem); }
-  .card { background: var(--card); border-radius: var(--radius); padding: clamp(1.3rem, 3vw, 1.8rem); display: flex; flex-direction: column; gap: .8rem; border: 1px solid var(--rule); }
-  .card h3 { font-size: 1.6rem; }
-  .card ul.lines { list-style: none; margin: 0; padding: 0; display: grid; gap: .3rem; font-size: .97rem; }
-  .card ul.lines li { display: flex; gap: .6rem; align-items: baseline; }
-  .card ul.lines li::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--honey); flex: none; transform: translateY(-.15em); }
-  .card .price { font-weight: 700; font-size: 1.05rem; }
+  .special { margin-top: clamp(1rem, 2.4vw, 1.4rem); background: var(--mist); border-radius: 10px; padding: clamp(1.3rem, 3.5vw, 2rem) clamp(1.3rem, 4vw, 2.6rem); display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1rem 2rem; align-items: center; }
+  .special h3 { font-size: clamp(1.4rem, 2.6vw, 1.75rem); margin-top: .2rem; }
+  .special p { color: var(--ink-2); margin-top: .4rem; max-width: 60ch; }
+  .special .meta { color: var(--ink); font-weight: 600; margin-top: .5rem; }
+  @media (max-width: 760px) { .special { grid-template-columns: 1fr; } }
+
+  .cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(1rem, 2.4vw, 1.4rem); margin-top: clamp(1rem, 2.4vw, 1.4rem); }
+  .card { background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: clamp(1.3rem, 3vw, 1.8rem); display: flex; flex-direction: column; gap: .7rem; }
+  .card h3 { font-size: 1.45rem; }
+  .card .soon { color: var(--ink-2); font-size: .88rem; }
+  .card ul { list-style: none; margin: 0; padding: 0; display: grid; gap: .25rem; font-size: .97rem; }
+  .card li { padding-inline-start: 1rem; position: relative; }
+  .card li::before { content: ""; position: absolute; inset-inline-start: 0; top: .72em; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+  .card .price { font-weight: 600; }
   .card .price small { font-weight: 400; color: var(--ink-2); font-size: .85rem; }
   .card p { color: var(--ink-2); font-size: .97rem; }
   .card p.price { color: var(--ink); }
@@ -164,78 +162,78 @@
   @media (max-width: 900px) { .cards { grid-template-columns: 1fr; } }
 
   /* Place */
-  .place-grid { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: clamp(1.8rem, 5vw, 4.5rem); align-items: center; }
-  .mosaic { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .7rem; }
-  .mosaic img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 12px; box-shadow: var(--shadow); }
-  .mosaic .m-wide { grid-column: 1 / -1; aspect-ratio: 4 / 3; border-radius: var(--radius); }
+  .place { background: var(--surface); border-block: 1px solid var(--rule); }
+  .place-grid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: clamp(1.8rem, 5vw, 4rem); align-items: center; }
+  .mosaic { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .6rem; }
+  .mosaic img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 6px; }
+  .mosaic .m-wide { grid-column: 1 / -1; aspect-ratio: 16 / 10; }
   .place .head { margin-bottom: 1.2rem; }
-  .place-links { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: 1.6rem; }
-  .place-links .btn { padding: .6em 1.2em; font-size: .95rem; }
+  .place-links { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1.4rem; }
+  .place-links .btn { padding: .55em 1.1em; font-size: .93rem; }
   @media (max-width: 820px) { .place-grid { grid-template-columns: 1fr; } }
 
   /* Products */
-  .products { background: var(--bg-2); }
-  .prod-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, .75fr); gap: clamp(1rem, 2.4vw, 1.6rem); }
-  .prod-grid figure { margin: 0; }
-  .prod-grid img { width: 100%; object-fit: cover; border-radius: var(--radius); box-shadow: var(--shadow); }
-  .prod-grid .wide img { aspect-ratio: 4 / 3; }
-  .prod-grid .tall { position: relative; }
-  .prod-grid .tall img { position: absolute; inset: 0; height: 100%; }
-  .prod-body { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1.2rem 2rem; align-items: end; margin-top: clamp(1.4rem, 3vw, 2rem); }
-  .prod-actions { display: flex; flex-wrap: wrap; gap: .7rem; }
-  @media (max-width: 820px) { .prod-body { grid-template-columns: 1fr; } }
-  @media (max-width: 560px) { .prod-grid { grid-template-columns: 1fr; } .prod-grid .tall img { position: static; aspect-ratio: 4 / 3.6; object-position: 50% 40%; } }
+  .prod { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, .55fr) minmax(0, .55fr); gap: clamp(1rem, 2.4vw, 1.4rem); align-items: stretch; }
+  .prod-text { display: flex; flex-direction: column; gap: .8rem; justify-content: center; }
+  .prod-text h2 { font-size: clamp(1.9rem, 4.2vw, 2.7rem); }
+  .prod-text p { color: var(--ink-2); }
+  .prod-text .list { color: var(--ink); }
+  .prod-actions { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: .6rem; }
+  .prod figure { margin: 0; }
+  .prod figure img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; aspect-ratio: 4 / 5; }
+  @media (max-width: 900px) { .prod { grid-template-columns: 1fr 1fr; } .prod-text { grid-column: 1 / -1; } }
 
   /* Same table (rehab) */
-  .same { background: var(--walnut); color: var(--on-walnut); padding-block: clamp(3rem, 7vw, 5rem); }
-  .same-grid { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: clamp(1.2rem, 5vw, 4.5rem); align-items: start; }
-  .same .kicker { color: var(--honey); }
-  .same h2 { font-size: clamp(2rem, 4.4vw, 2.9rem); margin-top: .5rem; }
-  .same p { color: var(--on-walnut-2); }
+  .same { background: var(--teal); color: var(--on-teal); }
+  .same-grid { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: clamp(1.2rem, 5vw, 4rem); align-items: start; }
+  .same .label { color: var(--on-teal-2); }
+  .same h2 { font-size: clamp(1.9rem, 4.2vw, 2.7rem); margin-top: .4rem; }
+  .same p { color: var(--on-teal-2); }
   .same p + p { margin-top: .9rem; }
-  .same p strong { color: var(--on-walnut); font-weight: 600; }
-  .same .closing { color: var(--on-walnut); font-family: var(--display); font-size: 1.25rem; line-height: 1.4; margin-top: 1.3rem; }
+  .same p strong { color: var(--on-teal); font-weight: 600; }
+  .same .closing { color: var(--on-teal); font-family: var(--display); font-size: 1.25rem; line-height: 1.45; margin-top: 1.3rem; }
   @media (max-width: 820px) { .same-grid { grid-template-columns: 1fr; } }
 
   /* FAQ */
-  .faq-list { display: grid; gap: .6rem; max-width: 820px; }
-  .faq-list details { background: var(--card); border: 1px solid var(--rule); border-radius: 14px; padding: 0 1.2rem; }
-  .faq-list summary { cursor: pointer; list-style: none; padding: 1rem 0; font-weight: 700; font-size: 1.05rem; display: flex; justify-content: space-between; gap: 1rem; align-items: center; }
+  .faq-list { max-width: 780px; border-top: 1px solid var(--rule); }
+  .faq-list details { border-bottom: 1px solid var(--rule); }
+  .faq-list summary { cursor: pointer; list-style: none; padding: 1.05rem 0; font-weight: 600; font-size: 1.05rem; display: flex; justify-content: space-between; gap: 1rem; align-items: center; }
   .faq-list summary::-webkit-details-marker { display: none; }
-  .faq-list summary::after { content: "+"; font-family: var(--body); font-size: 1.4rem; line-height: 1; color: var(--clay); font-weight: 400; }
+  .faq-list summary::after { content: "+"; font-size: 1.35rem; line-height: 1; color: var(--accent); font-weight: 400; }
   .faq-list details[open] summary::after { content: "−"; }
   .faq-list details p { padding-bottom: 1.1rem; color: var(--ink-2); }
 
   /* Contact */
-  .contact { background: var(--bg-2); }
-  .contact-box { background: var(--card); border-radius: calc(var(--radius) + 6px); padding: clamp(1.6rem, 5vw, 3.2rem); box-shadow: var(--shadow); display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: clamp(1.6rem, 4vw, 3.5rem); align-items: center; }
-  .contact h2 { font-size: clamp(2.2rem, 5vw, 3.3rem); }
+  .contact { background: var(--mist); }
+  .contact-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: clamp(1.6rem, 4vw, 3.5rem); align-items: center; }
+  .contact h2 { font-size: clamp(2rem, 4.6vw, 3rem); margin-top: .4rem; }
   .contact p { color: var(--ink-2); margin-top: .8rem; max-width: 46ch; }
-  .contact-actions { display: grid; gap: .7rem; }
+  .contact-actions { display: grid; gap: .6rem; }
   .contact-actions .btn { width: 100%; }
-  .contact-actions .addr { font-size: .95rem; text-align: center; margin-top: .3rem; }
-  @media (max-width: 820px) { .contact-box { grid-template-columns: 1fr; } }
+  .contact-actions .btn-line { background: var(--surface); }
+  .contact-actions .addr { font-size: .93rem; text-align: center; margin-top: .3rem; }
+  @media (max-width: 820px) { .contact-grid { grid-template-columns: 1fr; } }
 
   /* Footer */
-  footer { background: var(--walnut); color: var(--on-walnut-2); padding-block: 2.4rem calc(2.4rem + env(safe-area-inset-bottom, 0px)); font-size: .95rem; }
-  footer .wrap { display: flex; flex-wrap: wrap; gap: 1rem 2rem; justify-content: space-between; align-items: baseline; }
-  footer .brand b { color: var(--on-walnut); }
-  footer .motto { font-family: var(--display); color: var(--on-walnut); font-size: 1.1rem; }
-  footer a { color: var(--on-walnut); }
+  footer { background: var(--teal); color: var(--on-teal-2); padding-block: 2.4rem calc(2.4rem + env(safe-area-inset-bottom, 0px)); font-size: .93rem; }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 1rem 2rem; justify-content: space-between; align-items: center; }
+  footer img { height: 30px; width: auto; }
+  footer .motto { font-family: var(--display); color: var(--on-teal); font-size: 1.08rem; }
+  footer a { color: var(--on-teal); }
 
   /* Mobile booking dock */
   .dock { display: none; }
   @media (max-width: 760px) {
     .dock { display: flex; gap: .6rem; position: fixed; inset-inline: 0; bottom: 0; z-index: 40; padding: .6rem max(16px, env(safe-area-inset-right, 0px)) calc(.6rem + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); background: color-mix(in srgb, var(--bg) 94%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-top: 1px solid var(--rule); }
     .dock .btn-main { flex: 1; }
-    .dock .btn-line { width: 52px; padding: 0; }
+    .dock .btn-line { width: 50px; padding: 0; background: var(--surface); }
     footer { padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px)); }
   }
 
   @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .btn { transition: none; } }
 </style>
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"LocalBusiness","name":"הנגרייה בחוות רום","description":"סדנאות נגרות לזוגות, משפחות וקבוצות, ונגרייה שיקומית","url":"https://nettaamit21-crypto.github.io/me/","email":"nettaamit21@gmail.com","image":"https://nettaamit21-crypto.github.io/me/images/sign.jpg","address":{"@type":"PostalAddress","streetAddress":"חוות רום, הר כמון","addressCountry":"IL"}}
+{"@context":"https://schema.org","@type":"LocalBusiness","name":"הנגרייה בחוות רום","description":"סדנאות נגרות לזוגות, משפחות וקבוצות, ונגרייה שיקומית","url":"https://nettaamit21-crypto.github.io/me/","telephone":"+972528666104","email":"nettaamit21@gmail.com","image":"https://nettaamit21-crypto.github.io/me/images/og.jpg","address":{"@type":"PostalAddress","streetAddress":"חוות רום, הר כמון","addressCountry":"IL"}}
 </script>
 </head>
 <body>
@@ -249,7 +247,7 @@
 
 <header class="top">
   <div class="wrap">
-    <a class="brand" href="#top"><b>הנגרייה</b><span>בחוות רום</span></a>
+    <a class="brand" href="#top"><img src="images/wordmark.webp" width="1304" height="336" alt="הנגרייה"><span>בחוות רום</span></a>
     <nav aria-label="ניווט">
       <ul>
         <li><a href="#workshops">הסדנאות</a></li>
@@ -267,48 +265,41 @@
   <!-- ===== Hero ===== -->
   <div class="hero">
     <div class="wrap">
-      <div class="hero-grid">
-        <div>
-          <p class="season" data-until="2026-12-04">עד חנוכה: בונים בסדנה הזוגית חנוכייה מעץ אקליפטוס</p>
-          <p class="kicker">סדנאות נגרות · חוות רום, הר כמון</p>
-          <h1>כל אחד יכול לבנות משהו מדהים</h1>
-          <p class="line2">כשיש לו את המקום הנכון ומישהו לצידו.</p>
-          <p class="intro">אני נטע עמית, נגר. בנגרייה שלי בחוות רום זוגות, משפחות וקבוצות בונים בעצמם מעץ, בשקט של ההר, וחוזרים הביתה עם משהו שעשו בידיים.</p>
-          <div class="hero-actions">
-            <a class="btn btn-main" data-wa="היי נטע, אני רוצה להזמין סדנה" href="#contact"><svg class="i"><use href="#i-wa"/></svg>להזמנת סדנה בוואטסאפ</a>
-            <a class="more" href="#workshops">לכל הסדנאות</a>
-          </div>
-        </div>
-        <figure class="hero-photo">
-          <img src="images/sign.jpg" width="576" height="660" alt="השלט &quot;הנגרייה&quot; באותיות עץ על קיר הנגרייה בחוות רום, באור של שקיעה">
-          <span class="sticker">לא צריך<br>ניסיון בנגרות</span>
-        </figure>
+      <p class="label">סדנאות נגרות · חוות רום, הר כמון</p>
+      <img class="wordmark" src="images/wordmark.webp" width="1304" height="336" alt="הנגרייה">
+      <h1>כל אחד יכול לבנות משהו מדהים,<br>כשיש לו את המקום הנכון ומישהו לצידו.</h1>
+      <p class="intro">אני נטע עמית, נגר. בנגרייה שלי בחוות רום זוגות, משפחות וקבוצות בונים בעצמם מעץ, בשקט של ההר, וחוזרים הביתה עם משהו שעשו בידיים. לא צריך ניסיון בנגרות.</p>
+      <p class="rehab-note">הנגרייה היא גם נגרייה שיקומית. <a href="#same-table">על זה בהמשך</a></p>
+      <div class="hero-actions">
+        <a class="btn btn-main" data-wa="היי נטע, אני רוצה להזמין סדנה" href="#contact"><svg class="i"><use href="#i-wa"/></svg>להזמנת סדנה בוואטסאפ</a>
+        <a class="more" href="#workshops">לכל הסדנאות</a>
       </div>
-      <nav class="quick" aria-label="הסדנאות בקצרה">
-        <a href="#couples">סדנה זוגית <span>3 שעות</span></a>
-        <a href="#family">סדנה משפחתית <span>ילדים מגיל 3</span></a>
-        <a href="#parent-child">הורה וילד <span>בקרוב</span></a>
-        <a href="#groups">קבוצות <span class="num">7 עד 10</span></a>
-      </nav>
     </div>
   </div>
 
+  <nav class="quick" aria-label="הסדנאות בקצרה">
+    <div class="wrap">
+      <a href="#couples"><b>סדנה זוגית</b><span>3 שעות, שישי ושבת</span></a>
+      <a href="#family"><b>סדנה משפחתית</b><span>ילדים מגיל 3</span></a>
+      <a href="#groups"><b>סדנה לקבוצות</b><span class="num">6 עד 16 משתתפים</span></a>
+      <a href="#parent-child"><b>הורה וילד</b><span>בקרוב</span></a>
+    </div>
+  </nav>
+
   <!-- ===== Workshops ===== -->
-  <section id="workshops" class="workshops">
+  <section id="workshops">
     <div class="wrap">
       <div class="head">
-        <p class="kicker">הסדנאות</p>
+        <p class="label">הסדנאות</p>
         <h2>בונים בעצמכם, ואני לצידכם.</h2>
         <p>צלילה ליצירה ועשייה בשקט של הר כמון. אני מנחה כל סדנה בעצמי, ובסופה לוקחים הביתה את מה שבניתם.</p>
       </div>
 
       <article class="feature" id="couples">
         <figure>
-          <img src="images/wine-rack.jpg" width="662" height="1400" loading="lazy" alt="מתלה עץ לבקבוק יין ולכוסות תלוי על קיר, עם בקבוקים וכוסות">
-          <figcaption>מתלה ליין ולכוסות, אחת האפשרויות</figcaption>
+          <img src="images/tile-cars.jpg" width="1400" height="1100" alt="מכוניות עץ צבועות בכתום ובכחול, אחד הדברים שזוגות בונים בסדנה">
         </figure>
         <div class="feature-body">
-          <span class="badge" data-until="2027-01-15">מחיר השקה</span>
           <h3>סדנה זוגית</h3>
           <dl class="facts">
             <div><dt>כמה זמן</dt><dd>3 שעות</dd></div>
@@ -316,27 +307,30 @@
             <div><dt>מתי</dt><dd class="num">שישי 8:30 עד 11:30<br>שבת 10:00 עד 13:00</dd></div>
             <div><dt>מחיר</dt><dd class="num" data-price data-regular="1,000 ₪ לזוג" data-until="2027-01-15">850 ₪ לזוג<small>מחיר השקה עד 15.1.2027, אחר כך 1,000 ₪</small></dd></div>
           </dl>
-          <p>את החיתוכים במסור אני מכין מראש. אתם משייפים, קודחים, מרכיבים וצובעים. לא צריך ניסיון בנגרות, לומדים הכול במקום.</p>
-          <div class="choose">
+          <p>את החיתוכים במסור אני מכין מראש. אתם משייפים, קודחים, מרכיבים וצובעים, ולומדים הכול במקום.</p>
+          <div class="build">
             <h4>בוחרים מה לבנות</h4>
-            <ul class="chips">
-              <li class="hot" data-until="2026-12-04">חנוכייה מעץ אקליפטוס (עד חנוכה)</li>
-              <li>מדף תבלינים</li>
-              <li>מתלה לבקבוק יין ולכוסות</li>
-              <li>זוג מכוניות עץ לילדים</li>
-              <li>אדנית או מעמד לעציצים</li>
-            </ul>
+            <p>מדף תבלינים · מתלה לבקבוק יין ולכוסות · זוג מכוניות עץ לילדים · אדנית או מעמד לעציצים</p>
           </div>
           <p class="note">מתארחים בצימר או בגלמפינג באזור? זו חוויה זוגית בצפון שמסתיימת במתנה לילדים או במשהו לבית, שבניתם בעצמכם.</p>
           <div><a class="btn btn-main" data-wa="היי נטע, אני רוצה לשריין סדנה זוגית" href="#contact"><svg class="i"><use href="#i-wa"/></svg>לשריין סדנה זוגית</a></div>
         </div>
       </article>
 
+      <article class="special" id="hanukkah" data-until="2026-12-04">
+        <div>
+          <p class="label">סדנה מיוחדת לחנוכה</p>
+          <h3>חנוכייה מעץ אקליפטוס</h3>
+          <p>עד חנוכה אפשר לבנות אצלנו חנוכייה מעץ אקליפטוס. החנוכייה הראשונה שבניתם יחד.</p>
+          <p class="meta num">עד 4.12 · 3 שעות · שישי ושבת בבוקר · 850 ₪ לזוג</p>
+        </div>
+        <a class="btn btn-main" data-wa="היי נטע, אני רוצה לשריין את סדנת החנוכייה" href="#contact"><svg class="i"><use href="#i-wa"/></svg>לשריין סדנת חנוכה</a>
+      </article>
+
       <div class="cards">
         <article class="card" id="family">
-          <span class="badge">מחיר השקה</span>
           <h3>סדנה משפחתית</h3>
-          <ul class="lines">
+          <ul>
             <li>שעה וחצי עד שעתיים</li>
             <li>4 עד 10 משתתפים, ילדים מגיל 3</li>
             <li class="num">ראשון ושלישי 16:30 עד 18:30</li>
@@ -346,28 +340,28 @@
           <a class="more" data-wa="היי נטע, אני רוצה לשריין סדנה משפחתית" href="#contact">לשריין סדנה משפחתית</a>
         </article>
 
+        <article class="card" id="groups">
+          <h3>סדנה לקבוצות</h3>
+          <ul>
+            <li>גיבוש לעובדים, חברים או משפחה מורחבת</li>
+            <li class="num">6 עד 16 משתתפים, ואפשר לדבר על התאמות</li>
+            <li>שעתיים</li>
+          </ul>
+          <p class="price num">180 ₪ למשתתף <small>כולל מע"מ</small></p>
+          <p>כל אחד בונה אדנית ולוקח אותה הביתה. אפשר גם לבנות יחד סט אדניות למקום שממנו הגעתם. בחוות רום יש גם סדנת קרמיקה, כך שאפשר לבנות לקבוצה יום פעילות שלם בחווה.</p>
+          <a class="more" data-wa="היי נטע, אני רוצה לתאם סדנה לקבוצה" href="#contact">לתאם סדנה לקבוצה</a>
+        </article>
+
         <article class="card" id="parent-child">
-          <span class="badge new">חדש · נפתח בקרוב</span>
           <h3>הורה וילד</h3>
-          <ul class="lines">
+          <p class="soon">נפתח בקרוב</p>
+          <ul>
             <li>4 מפגשים, בכל מפגש מוצר אחר</li>
             <li>מכונית, בית לציפורים, ארגז כלים</li>
             <li>ובסוף שרפרף עם השם של הילד</li>
           </ul>
           <p>הימים, השעות, הגילאים והמחיר ייקבעו בקרוב. כתבו לי, ואעדכן אתכם ראשונים.</p>
           <a class="more" data-wa="היי נטע, אשמח לעדכון כשנפתחת הסדנה להורה וילד" href="#contact">לעדכון כשנפתחת ההרשמה</a>
-        </article>
-
-        <article class="card" id="groups">
-          <span class="badge">בהזמנה מראש</span>
-          <h3>סדנה לקבוצות</h3>
-          <ul class="lines">
-            <li>גיבוש לעובדים, חברים או משפחה מורחבת</li>
-            <li>שעתיים, 7 עד 10 משתתפים</li>
-          </ul>
-          <p class="price num">180 ₪ למשתתף <small>כולל מע"מ</small></p>
-          <p>כל אחד בונה אדנית ולוקח אותה הביתה. אפשר גם לבנות יחד סט אדניות למקום שממנו הגעתם.</p>
-          <a class="more" data-wa="היי נטע, אני רוצה לתאם סדנה לקבוצה" href="#contact">לתאם סדנה לקבוצה</a>
         </article>
       </div>
     </div>
@@ -384,9 +378,9 @@
       </div>
       <div>
         <div class="head">
-          <p class="kicker">המקום</p>
+          <p class="label">המקום</p>
           <h2>בשקט של הר כמון.</h2>
-          <p>הנגרייה נמצאת בחוות רום, על הר כמון בגליל. זו חווה שיקומית ותיירותית, עם גלמפינג, ביסטרו וחנות. אפשר לבוא לסדנה בבוקר, ולהישאר בחווה עוד קצת.</p>
+          <p>הנגרייה נמצאת בחוות רום, על הר כמון בגליל. זו חווה שיקומית ותיירותית, עם גלמפינג, ביסטרו, סדנת קרמיקה וחנות. אפשר לבוא לסדנה בבוקר, ולהישאר בחווה עוד קצת.</p>
         </div>
         <div class="place-links">
           <a class="btn btn-line" href="https://waze.com/ul?q=%D7%97%D7%95%D7%95%D7%AA%20%D7%A8%D7%95%D7%9D%20%D7%94%D7%A8%20%D7%9B%D7%9E%D7%95%D7%9F" target="_blank" rel="noopener"><svg class="i"><use href="#i-pin"/></svg>ניווט בוויז</a>
@@ -398,30 +392,20 @@
   </section>
 
   <!-- ===== Products ===== -->
-  <section id="products" class="products">
-    <div class="wrap">
-      <div class="head">
-        <p class="kicker">מוצרים מהנגרייה</p>
+  <section id="products">
+    <div class="wrap prod">
+      <div class="prod-text">
+        <p class="label">מוצרים מהנגרייה</p>
         <h2>צעצועים ועציצים שנבנו כאן.</h2>
         <p>המוצרים מיוצרים בנגרייה על ידי מתמודדי נפש, במסגרת המפעל המוגן. אפשר לקנות אותם באתר של חוות רום ובחנות בחווה.</p>
-      </div>
-      <div class="prod-grid">
-        <figure class="wide"><img src="images/toy-cars.jpg" width="1024" height="768" loading="lazy" alt="שורה של מכוניות עץ צבועות בכתום, בכחול ובאדום על שולחן בנגרייה"></figure>
-        <figure class="tall"><img src="images/block-wagon.jpg" width="768" height="1024" loading="lazy" alt="עגלת קוביות מעץ בחנות של חוות רום"></figure>
-      </div>
-      <div class="prod-body">
-        <ul class="chips" aria-label="המוצרים">
-          <li>עגלת קוביות</li>
-          <li>מכוניות</li>
-          <li>משאית מעץ</li>
-          <li>עציצים</li>
-          <li>קומפוסטרים</li>
-        </ul>
+        <p class="list">עגלת קוביות · מכוניות · משאית מעץ · עציצים · קומפוסטרים</p>
         <div class="prod-actions">
-          <a class="btn btn-main" href="https://havatrom.co.il/%D7%97%D7%A0%D7%95%D7%AA-%D7%94%D7%9E%D7%A9%D7%A7/" target="_blank" rel="noopener">לחנות של חוות רום</a>
+          <a class="btn btn-main" href="https://havatrom.co.il/product-category/%d7%9c%d7%92%d7%99%d7%a0%d7%94/" target="_blank" rel="noopener">למוצרים בחנות החווה</a>
           <a class="btn btn-line" data-wa="היי נטע, יש לי שאלה על מוצר מהנגרייה" href="#contact"><svg class="i"><use href="#i-wa"/></svg>שאלה על מוצר</a>
         </div>
       </div>
+      <figure><img src="images/tile-wagon.jpg" width="1200" height="1500" loading="lazy" alt="עגלת קוביות מעץ"></figure>
+      <figure><img src="images/tile-vase.jpg" width="1200" height="1500" loading="lazy" alt="כלי עץ קטן ובו ענף של עשב יבש"></figure>
     </div>
   </section>
 
@@ -429,7 +413,7 @@
   <section id="same-table" class="same">
     <div class="wrap same-grid">
       <div>
-        <p class="kicker">הנגרייה השיקומית</p>
+        <p class="label">הנגרייה השיקומית</p>
         <h2>באותו שולחן עבודה.</h2>
       </div>
       <div>
@@ -444,7 +428,7 @@
   <section id="faq">
     <div class="wrap">
       <div class="head">
-        <p class="kicker">שאלות</p>
+        <p class="label">שאלות</p>
         <h2>לפני שבאים.</h2>
       </div>
       <div class="faq-list">
@@ -452,6 +436,7 @@
         <details><summary>מה לוקחים הביתה?</summary><p>את מה שבניתם. בסדנה הזוגית בוחרים מראש מה לבנות, ובסדנה לקבוצות כל אחד בונה אדנית.</p></details>
         <details><summary>מאיזה גיל אפשר להגיע?</summary><p>לסדנה המשפחתית ילדים מגיל 3. הגילאים לסדנת הורה וילד ייקבעו כשההרשמה תיפתח.</p></details>
         <details><summary>אפשר להגיע כזוג אחד?</summary><p>כן. בכל סדנה זוגית יש עד שלושה זוגות, וכל זוג נרשם בנפרד.</p></details>
+        <details><summary>הקבוצה שלנו גדולה או קטנה מהרגיל. אפשר?</summary><p>הסדנה לקבוצות מתאימה ל־6 עד 16 משתתפים. אם צריך משהו אחר, דברו איתי ונתאים.</p></details>
         <details><summary>איך נרשמים?</summary><p>כותבים לי בוואטסאפ או מתקשרים. אפשר גם דרך חוות רום. לסדנה לקבוצה עדיף לדבר איתי ישירות.</p></details>
         <details><summary>איפה זה?</summary><p>בנגרייה בחוות רום, על הר כמון בגליל. קישורים לניווט יש באזור "המקום" למעלה.</p></details>
       </div>
@@ -460,20 +445,18 @@
 
   <!-- ===== Contact ===== -->
   <section id="contact" class="contact">
-    <div class="wrap">
-      <div class="contact-box">
-        <div>
-          <p class="kicker">הזמנות ושאלות</p>
-          <h2>בואו לבנות.</h2>
-          <p>הכי פשוט לכתוב לי בוואטסאפ, ואחזור אליכם עם תאריך פנוי. אפשר גם להתקשר, או לדבר עם חוות רום. לסדנה לקבוצה עדיף לדבר איתי ישירות.</p>
-        </div>
-        <div class="contact-actions">
-          <a class="btn btn-main" data-wa="היי נטע, אשמח לפרטים על הסדנאות" href="mailto:nettaamit21@gmail.com"><svg class="i"><use href="#i-wa"/></svg>כתבו לי בוואטסאפ</a>
-          <a class="btn btn-line" data-tel href="mailto:nettaamit21@gmail.com"><svg class="i"><use href="#i-phone"/></svg><span data-tel-label>טלפון</span></a>
-          <a class="btn btn-line" data-ig href="#" hidden><svg class="i"><use href="#i-ig"/></svg>אינסטגרם</a>
-          <a class="btn btn-line" href="mailto:nettaamit21@gmail.com">nettaamit21@gmail.com</a>
-          <p class="addr muted">הנגרייה בחוות רום, הר כמון</p>
-        </div>
+    <div class="wrap contact-grid">
+      <div>
+        <p class="label">הזמנות ושאלות</p>
+        <h2>בואו לבנות.</h2>
+        <p>הכי פשוט לכתוב לי בוואטסאפ, ואחזור אליכם עם תאריך פנוי. אפשר גם להתקשר, או לדבר עם חוות רום. לסדנה לקבוצה עדיף לדבר איתי ישירות.</p>
+      </div>
+      <div class="contact-actions">
+        <a class="btn btn-main" data-wa="היי נטע, אשמח לפרטים על הסדנאות" href="mailto:nettaamit21@gmail.com"><svg class="i"><use href="#i-wa"/></svg>כתבו לי בוואטסאפ</a>
+        <a class="btn btn-line" data-tel href="mailto:nettaamit21@gmail.com"><svg class="i"><use href="#i-phone"/></svg><span data-tel-label>טלפון</span></a>
+        <a class="btn btn-line" data-ig href="#" hidden><svg class="i"><use href="#i-ig"/></svg>אינסטגרם</a>
+        <a class="btn btn-line" href="mailto:nettaamit21@gmail.com">nettaamit21@gmail.com</a>
+        <p class="addr muted">הנגרייה בחוות רום, הר כמון</p>
       </div>
     </div>
   </section>
@@ -481,7 +464,7 @@
 
 <footer>
   <div class="wrap">
-    <a class="brand" href="#top"><b>הנגרייה</b></a>
+    <img src="images/wordmark.webp" width="1304" height="336" alt="הנגרייה">
     <p class="motto">כל אחד יכול לבנות משהו מדהים, כשיש לו את המקום הנכון ומישהו לצידו.</p>
     <p>© <span id="year">2026</span> נטע עמית · חוות רום, הר כמון · <a href="https://www.instagram.com/romfarm/" target="_blank" rel="noopener">@romfarm</a></p>
   </div>
@@ -494,7 +477,7 @@
 
 <script>
   (function () {
-    // המספר של נטע, למשל '050-1234567'. כל עוד הוא ריק, הכפתורים מובילים למייל.
+    // המספר של נטע. אם מוחקים אותו, הכפתורים מובילים למייל.
     var PHONE = '052-8666104';
     // שם המשתמש באינסטגרם בלי @, למשל 'netta.wood'. כל עוד הוא ריק, הכפתור מוסתר.
     var INSTAGRAM = '';
