@@ -165,12 +165,13 @@
 
   /* Place */
   .place-grid { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: clamp(1.8rem, 5vw, 4.5rem); align-items: center; }
-  .place-photo { margin: 0; }
-  .place-photo img { width: 100%; aspect-ratio: 4 / 4.6; object-fit: cover; border-radius: var(--radius); box-shadow: var(--shadow); }
+  .mosaic { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .7rem; }
+  .mosaic img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 12px; box-shadow: var(--shadow); }
+  .mosaic .m-wide { grid-column: 1 / -1; aspect-ratio: 4 / 3; border-radius: var(--radius); }
   .place .head { margin-bottom: 1.2rem; }
   .place-links { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: 1.6rem; }
   .place-links .btn { padding: .6em 1.2em; font-size: .95rem; }
-  @media (max-width: 820px) { .place-grid { grid-template-columns: 1fr; } .place-photo img { aspect-ratio: 4 / 3.2; object-position: 50% 45%; } }
+  @media (max-width: 820px) { .place-grid { grid-template-columns: 1fr; } }
 
   /* Products */
   .products { background: var(--bg-2); }
@@ -365,7 +366,7 @@
             <li>שעתיים, 7 עד 10 משתתפים</li>
           </ul>
           <p class="price num">180 ₪ למשתתף <small>כולל מע"מ</small></p>
-          <p>כל אחד בונה אדנית ולוקח אותה הביתה. לקבוצות של מבוגרים אפשר לבנות שרפרף, בשעתיים וחצי וב־230 ₪ למשתתף. אפשר גם לבנות יחד סט אדניות למקום שממנו הגעתם.</p>
+          <p>כל אחד בונה אדנית ולוקח אותה הביתה. אפשר גם לבנות יחד סט אדניות למקום שממנו הגעתם.</p>
           <a class="more" data-wa="היי נטע, אני רוצה לתאם סדנה לקבוצה" href="#contact">לתאם סדנה לקבוצה</a>
         </article>
       </div>
@@ -375,9 +376,12 @@
   <!-- ===== Place ===== -->
   <section id="place" class="place">
     <div class="wrap place-grid">
-      <figure class="place-photo">
+      <div class="mosaic">
+        <img class="m-wide" src="images/workshop.jpg" width="1024" height="768" loading="lazy" alt="הנגרייה מבפנים: שולחן עבודה עם מסורים, מקדחה עומדת ומלטשת, וקיר עץ">
+        <img src="images/bench.jpg" width="768" height="1024" loading="lazy" alt="ספסל עץ מוגמר על שולחן העבודה בנגרייה, באור של שקיעה">
+        <img src="images/vase-workshop.jpg" width="768" height="1024" loading="lazy" alt="כלי עץ קטן עם עשב יבש על שולחן העבודה בנגרייה">
         <img src="images/eucalyptus-logs.jpg" width="768" height="1024" loading="lazy" alt="ערימת בולי עץ אקליפטוס חתוכים, ומאחוריהם עצים והר">
-      </figure>
+      </div>
       <div>
         <div class="head">
           <p class="kicker">המקום</p>
@@ -402,8 +406,8 @@
         <p>המוצרים מיוצרים בנגרייה על ידי מתמודדי נפש, במסגרת המפעל המוגן. אפשר לקנות אותם באתר של חוות רום ובחנות בחווה.</p>
       </div>
       <div class="prod-grid">
-        <figure class="wide"><img src="images/toy-blocks.jpg" width="1024" height="768" loading="lazy" alt="קוביות עץ וצעצועי עץ על שולחן העבודה בנגרייה"></figure>
-        <figure class="tall"><img src="images/dried-grass-vase.jpg" width="960" height="1200" loading="lazy" alt="כלי עץ קטן ובו ענף של עשב יבש"></figure>
+        <figure class="wide"><img src="images/toy-cars.jpg" width="1024" height="768" loading="lazy" alt="שורה של מכוניות עץ צבועות בכתום, בכחול ובאדום על שולחן בנגרייה"></figure>
+        <figure class="tall"><img src="images/block-wagon.jpg" width="768" height="1024" loading="lazy" alt="עגלת קוביות מעץ בחנות של חוות רום"></figure>
       </div>
       <div class="prod-body">
         <ul class="chips" aria-label="המוצרים">
@@ -491,7 +495,7 @@
 <script>
   (function () {
     // המספר של נטע, למשל '050-1234567'. כל עוד הוא ריק, הכפתורים מובילים למייל.
-    var PHONE = '';
+    var PHONE = '052-8886104';
     // שם המשתמש באינסטגרם בלי @, למשל 'netta.wood'. כל עוד הוא ריק, הכפתור מוסתר.
     var INSTAGRAM = '';
     var EMAIL = 'nettaamit21@gmail.com';
