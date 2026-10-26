@@ -3,418 +3,392 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>הנגרייה · חוות רום</title>
-<meta name="description" content="נגרייה ומרחב שיקומי בחוות רום שבהר כמון: צעצועי עץ, חפצי אומנות ומעמדים לפרחים יבשים בעבודת יד. כל רכישה משלמת שכר לאדם שבנה את המוצר.">
+<title>סדנאות נגרות בחוות רום, הר כמון | הנגרייה של נטע עמית</title>
+<meta name="description" content="סדנה זוגית, סדנה משפחתית, הורה וילד וסדנאות לקבוצות בנגרייה בחוות רום שעל הר כמון. לא צריך ניסיון בנגרות: בונים בעצמכם מעץ וחוזרים הביתה עם מה שבניתם.">
+<meta name="theme-color" content="#FAF3E8">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="he_IL">
+<meta property="og:title" content="סדנאות נגרות בחוות רום, הר כמון">
+<meta property="og:description" content="כל אחד יכול לבנות משהו מדהים, כשיש לו את המקום הנכון ומישהו לצידו. סדנאות לזוגות, משפחות וקבוצות.">
+<meta property="og:url" content="https://nettaamit21-crypto.github.io/me/">
+<meta property="og:image" content="https://nettaamit21-crypto.github.io/me/images/sign.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Karantina:wght@400;700&family=Assistant:wght@300;400;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Suez+One&family=Assistant:wght@400;600;700&display=swap">
 <style>
-  /* Layout: a working sheet on a bench. Big condensed type, shop drawings in place of stock photos, forest-green bands for the farm and the quote. */
+  /* Layout: photo-led and warm. Hero with the workshop sign, workshops as the main event, the farm and products in between, the rehab story as one short dark band. */
   :root {
-    --stone: #F3F2EC;
-    --birch: #EADFCB;
-    --birch-2: #E1D3BA;
-    --ink: #1D241F;
-    --ink-2: #545E57;
-    --forest: #2B4533;
-    --on-forest: #EEF0E8;
-    --on-forest-2: #B9C6B6;
-    --accent: #2B4533;
-    --on-accent: #F3F2EC;
-    --graphite: #3A3F3B;
-    --chalk: #3C6CB0;
-    --gridline: rgba(58, 63, 59, .09);
-    --rule: rgba(29, 36, 31, .16);
+    --bg: #FAF3E8;
+    --bg-2: #F2E4CF;
+    --card: #FFFAF2;
+    --ink: #2E2016;
+    --ink-2: #6F5947;
+    --clay: #B4542C;
+    --clay-ink: #FFF8EF;
+    --clay-hover: #96431F;
+    --honey: #C98A3C;
+    --olive: #66713C;
+    --on-olive: #FFF8EF;
+    --walnut: #3B2A1E;
+    --on-walnut: #F8EBDB;
+    --on-walnut-2: #D9C2A6;
+    --rule: rgba(46, 32, 22, .13);
+    --shadow: 0 18px 40px -26px rgba(91, 52, 22, .55);
 
-    --display: "Karantina", "Assistant", "Arial Hebrew", Arial, sans-serif;
+    --display: "Suez One", "Assistant", "Arial Hebrew", serif;
     --body: "Assistant", "Arial Hebrew", Arial, sans-serif;
-    --max: 1200px;
-    --gutter: clamp(16px, 5vw, 56px);
+    --max: 1160px;
+    --gutter: clamp(16px, 5vw, 48px);
+    --radius: 18px;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --stone: #141A16; --birch: #1E2520; --birch-2: #252D27; --ink: #E8EBE4; --ink-2: #A9B2AA;
-      --forest: #1B2A20; --on-forest: #E8EBE4; --on-forest-2: #9FB09F;
-      --accent: #A9CBB0; --on-accent: #142017; --graphite: #C8CEC6; --chalk: #86ADE6;
-      --gridline: rgba(200, 206, 198, .07); --rule: rgba(232, 235, 228, .15);
+      --bg: #1E1611; --bg-2: #271D16; --card: #2D2219; --ink: #F4E8D8; --ink-2: #C9B39B;
+      --clay: #E0845A; --clay-ink: #241309; --clay-hover: #EB9C77; --honey: #E2AA62; --olive: #A9B47A; --on-olive: #1E1611;
+      --walnut: #140F0B; --on-walnut: #F4E8D8; --on-walnut-2: #C9B39B;
+      --rule: rgba(244, 232, 216, .14); --shadow: 0 18px 40px -26px rgba(0, 0, 0, .8);
       color-scheme: dark;
     }
   }
   :root[data-theme="dark"] {
-    --stone: #141A16; --birch: #1E2520; --birch-2: #252D27; --ink: #E8EBE4; --ink-2: #A9B2AA;
-    --forest: #1B2A20; --on-forest: #E8EBE4; --on-forest-2: #9FB09F;
-    --accent: #A9CBB0; --on-accent: #142017; --graphite: #C8CEC6; --chalk: #86ADE6;
-    --gridline: rgba(200, 206, 198, .07); --rule: rgba(232, 235, 228, .15);
+    --bg: #1E1611; --bg-2: #271D16; --card: #2D2219; --ink: #F4E8D8; --ink-2: #C9B39B;
+    --clay: #E0845A; --clay-ink: #241309; --clay-hover: #EB9C77; --honey: #E2AA62; --olive: #A9B47A; --on-olive: #1E1611;
+    --walnut: #140F0B; --on-walnut: #F4E8D8; --on-walnut-2: #C9B39B;
+    --rule: rgba(244, 232, 216, .14); --shadow: 0 18px 40px -26px rgba(0, 0, 0, .8);
     color-scheme: dark;
   }
 
   * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
+  [hidden] { display: none !important; }
+  html { scroll-behavior: smooth; scroll-padding-top: 76px; }
   body {
-    margin: 0; background: var(--stone); color: var(--ink);
-    font-family: var(--body); font-size: 18px; line-height: 1.65; font-weight: 400;
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: var(--body); font-size: 17.5px; line-height: 1.65;
     direction: rtl; text-align: right; -webkit-font-smoothing: antialiased;
   }
-  img { max-width: 100%; display: block; }
+  img { max-width: 100%; height: auto; display: block; }
   a { color: inherit; }
-  h1, h2 { font-family: var(--display); font-weight: 700; line-height: .95; margin: 0; text-wrap: balance; letter-spacing: .005em; }
-  h3 { font-family: var(--body); font-weight: 700; font-size: 1.15rem; line-height: 1.3; margin: 0; }
+  h1, h2, h3 { font-family: var(--display); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
   p { margin: 0; }
   .wrap { max-width: var(--max); margin-inline: auto; padding-inline: var(--gutter); }
-  .kicker { font-size: .92rem; font-weight: 600; color: var(--ink-2); }
+  .kicker { font-weight: 700; font-size: .92rem; color: var(--clay); letter-spacing: .01em; }
   .muted { color: var(--ink-2); }
-  :focus-visible { outline: 2px solid var(--chalk); outline-offset: 3px; }
+  .num { font-variant-numeric: tabular-nums; }
+  :focus-visible { outline: 3px solid var(--honey); outline-offset: 3px; }
+  svg.i { width: 1.15em; height: 1.15em; flex: none; }
 
-  .btn { display: inline-flex; align-items: center; gap: .5em; padding: .8em 1.5em; border-radius: 2px; font: inherit; font-size: 1rem; font-weight: 600; text-decoration: none; border: 1.5px solid var(--accent); cursor: pointer; line-height: 1.2; }
-  .btn-solid { background: var(--accent); color: var(--on-accent); }
-  .btn-solid:hover { background: transparent; color: var(--accent); }
-  .btn-line { background: transparent; color: var(--accent); }
-  .btn-line:hover { background: var(--accent); color: var(--on-accent); }
-  .textlink { font-weight: 600; text-decoration: none; border-bottom: 1.5px solid var(--accent); padding-bottom: .1em; color: var(--ink); }
-  .textlink:hover { color: var(--accent); }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: .55em; padding: .8em 1.5em; border-radius: 999px; font: inherit; font-weight: 700; font-size: 1rem; line-height: 1.2; text-decoration: none; border: 2px solid transparent; cursor: pointer; transition: background .15s, color .15s, border-color .15s; }
+  .btn-main { background: var(--clay); color: var(--clay-ink); }
+  .btn-main:hover { background: var(--clay-hover); }
+  .btn-line { border-color: currentColor; color: var(--ink); background: transparent; }
+  .btn-line:hover { color: var(--clay); }
+  .more { font-weight: 700; color: var(--clay); text-decoration: none; border-bottom: 2px solid color-mix(in srgb, var(--clay) 35%, transparent); padding-bottom: 1px; }
+  .more:hover { border-bottom-color: var(--clay); }
 
-  /* ---------- Shop drawings ---------- */
-  .dwg { display: block; width: 100%; height: auto; max-width: 100%; }
-  .dw-paper { fill: var(--birch); }
-  .dw-gridline { stroke: var(--gridline); stroke-width: 1; fill: none; }
-  .dw-frame { fill: none; stroke: var(--graphite); stroke-width: 1.2; }
-  .dw-line { fill: var(--birch); stroke: var(--graphite); stroke-width: 1.8; stroke-linejoin: round; stroke-linecap: round; }
-  .dw-open { fill: none; stroke: var(--graphite); stroke-width: 1.8; stroke-linejoin: round; stroke-linecap: round; }
-  .dw-thin { fill: none; stroke: var(--graphite); stroke-width: 1.1; stroke-linecap: round; }
-  .dw-grain { fill: none; stroke: var(--graphite); stroke-width: .7; opacity: .45; stroke-linecap: round; }
-  .dw-hidden { fill: none; stroke: var(--graphite); stroke-width: 1; stroke-dasharray: 5 4; }
-  .dw-center { fill: none; stroke: var(--chalk); stroke-width: .9; stroke-dasharray: 14 4 3 4; }
-  .dw-lead { fill: none; stroke: var(--graphite); stroke-width: .8; }
-  .dw-dot { fill: var(--graphite); }
-  .dw-fill { fill: var(--graphite); }
-  .dw-hatchline { stroke: var(--graphite); stroke-width: .8; }
-  .dw-text { fill: var(--graphite); font-family: var(--body); font-size: 13px; font-weight: 400; }
-  .dw-title { fill: var(--ink); font-family: var(--display); font-size: 22px; font-weight: 700; }
-  .dw-small { fill: var(--ink-2); font-family: var(--body); font-size: 11.5px; }
-
-  /* ---------- Nav ---------- */
-  .nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: color-mix(in srgb, var(--stone) 92%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--rule); }
-  .nav .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 66px; }
-  .brand { text-decoration: none; display: flex; align-items: baseline; gap: .6rem; }
-  .brand b { font-family: var(--display); font-weight: 700; font-size: 2rem; line-height: 1; }
-  .brand span { font-size: .82rem; color: var(--ink-2); }
-  .nav ul { display: flex; gap: 1.6rem; list-style: none; margin: 0; padding: 0; font-size: .95rem; }
-  .nav ul a { text-decoration: none; color: var(--ink-2); }
-  .nav ul a:hover { color: var(--ink); }
-  .nav .btn { padding: .55em 1.1em; font-size: .9rem; }
-  @media (max-width: 860px) { .nav ul { display: none; } }
-  @media (max-width: 420px) { .brand span { display: none; } }
+  /* ---------- Header ---------- */
+  .top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 30; background: color-mix(in srgb, var(--bg) 90%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--rule); }
+  .top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 64px; }
+  .brand { text-decoration: none; display: flex; align-items: baseline; gap: .45rem; }
+  .brand b { font-family: var(--display); font-weight: 400; font-size: 1.55rem; line-height: 1; }
+  .brand span { font-size: .9rem; color: var(--ink-2); }
+  .top nav ul { display: flex; gap: 1.5rem; list-style: none; margin: 0; padding: 0; font-weight: 600; font-size: .98rem; }
+  .top nav a { text-decoration: none; color: var(--ink-2); }
+  .top nav a:hover { color: var(--clay); }
+  .top .btn { padding: .55em 1.1em; font-size: .92rem; }
+  @media (max-width: 900px) { .top nav { display: none; } }
 
   /* ---------- Hero ---------- */
-  .hero { padding-block: clamp(2.5rem, 6vw, 5.5rem) clamp(2.5rem, 5vw, 4.5rem); }
-  .hero-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: clamp(2rem, 5vw, 5rem); align-items: center; }
-  .hero h1 { font-size: clamp(4rem, 10.5vw, 8.6rem); margin-block: 1rem 1.6rem; }
-  .hero h1 span { color: var(--accent); }
-  .hero .lede { font-size: clamp(1.08rem, 1.5vw, 1.25rem); max-width: 40ch; color: var(--ink); }
-  .hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.6rem; margin-top: 2.2rem; }
-  .sheet { margin: 0; transform: rotate(-1.4deg); box-shadow: 0 1px 0 var(--rule), 0 28px 50px -28px rgba(20, 26, 22, .45); background: var(--birch); }
-  .sheet figcaption { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
-  @media (max-width: 900px) {
+  .hero { padding-block: clamp(1.5rem, 5vw, 4.5rem) clamp(2.5rem, 5vw, 4rem); }
+  .hero-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: clamp(1.8rem, 5vw, 4.5rem); align-items: center; }
+  .season { display: inline-flex; align-items: center; gap: .5em; background: color-mix(in srgb, var(--honey) 18%, var(--card)); color: var(--ink); border: 1px solid color-mix(in srgb, var(--honey) 45%, transparent); border-radius: 999px; padding: .3em .95em; font-size: .9rem; font-weight: 600; margin-bottom: 1.1rem; }
+  .season::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--honey); flex: none; }
+  .hero h1 { font-size: clamp(2.35rem, 6.4vw, 4.4rem); margin-block: .5rem .4rem; }
+  .hero .line2 { font-family: var(--display); font-size: clamp(1.3rem, 2.8vw, 1.9rem); color: var(--clay); line-height: 1.3; }
+  .hero .intro { margin-top: 1.3rem; max-width: 42ch; font-size: clamp(1.05rem, 1.5vw, 1.18rem); }
+  .hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .9rem 1.4rem; margin-top: 1.8rem; }
+  .hero-photo { position: relative; margin: 0; }
+  .hero-photo img { width: 100%; aspect-ratio: 5 / 5.6; object-fit: cover; border-radius: var(--radius); box-shadow: var(--shadow); }
+  .sticker { position: absolute; bottom: -14px; inset-inline-start: -14px; background: var(--olive); color: var(--on-olive); font-family: var(--display); font-size: 1.05rem; line-height: 1.2; padding: .75em 1.1em; border-radius: 14px; transform: rotate(-4deg); box-shadow: var(--shadow); text-align: center; }
+  .quick { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: clamp(2.2rem, 5vw, 3.5rem); }
+  .quick a { display: inline-flex; gap: .5em; align-items: baseline; text-decoration: none; background: var(--card); border: 1px solid var(--rule); border-radius: 999px; padding: .5em 1.05em; font-weight: 700; font-size: .95rem; }
+  .quick a span { font-weight: 400; color: var(--ink-2); }
+  .quick a:hover { border-color: var(--clay); }
+  @media (max-width: 820px) {
     .hero-grid { grid-template-columns: 1fr; }
-    .sheet { transform: none; max-width: 520px; }
-  }
-
-  /* ---------- Facts ---------- */
-  .facts { border-block: 1px solid var(--rule); }
-  .facts .wrap { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  .fact { padding: 1.6rem 1.4rem 1.7rem; display: flex; flex-direction: column; gap: .35rem; }
-  .fact + .fact { border-inline-start: 1px solid var(--rule); }
-  .fact:first-child { padding-inline-start: 0; }
-  .fact b { font-family: var(--display); font-weight: 700; font-size: 2rem; line-height: 1; }
-  .fact span { font-size: .95rem; color: var(--ink-2); line-height: 1.5; }
-  @media (max-width: 900px) {
-    .facts .wrap { grid-template-columns: 1fr 1fr; }
-    .fact:nth-child(3) { border-inline-start: 0; padding-inline-start: 0; }
-    .fact:nth-child(n+3) { border-top: 1px solid var(--rule); }
-  }
-  @media (max-width: 480px) {
-    .facts .wrap { grid-template-columns: 1fr; }
-    .fact { padding-inline: 0; }
-    .fact + .fact { border-inline-start: 0; border-top: 1px solid var(--rule); }
+    .hero-photo { order: -1; }
+    .hero-photo img { aspect-ratio: 4 / 3.1; object-position: 50% 62%; }
+    .sticker { bottom: -12px; inset-inline-start: auto; inset-inline-end: 14px; font-size: .95rem; }
   }
 
   /* ---------- Sections ---------- */
-  section { padding-block: clamp(4rem, 9vw, 7.5rem); }
-  .sec-title { font-size: clamp(3rem, 6.5vw, 5.2rem); }
+  section { padding-block: clamp(3.5rem, 8vw, 6.5rem); }
+  .head { display: flex; flex-direction: column; gap: .7rem; max-width: 640px; margin-bottom: clamp(2rem, 4vw, 3rem); }
+  .head h2 { font-size: clamp(2rem, 4.6vw, 3.1rem); }
+  .head p { color: var(--ink-2); font-size: 1.08rem; }
 
-  /* Story */
-  .story-top { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: clamp(2rem, 5vw, 5rem); align-items: end; }
-  .story-top .lede { font-size: clamp(1.15rem, 1.8vw, 1.4rem); line-height: 1.55; font-weight: 300; }
-  .tracks { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 4vw, 4rem); margin-top: clamp(3rem, 6vw, 5rem); }
-  .track { border-top: 2px solid var(--ink); padding-top: 1.2rem; display: flex; flex-direction: column; gap: .7rem; }
-  .track small { font-size: .88rem; font-weight: 600; color: var(--accent); }
-  .track h3 { font-family: var(--display); font-size: 2.4rem; line-height: 1; }
-  .track p { color: var(--ink-2); max-width: 52ch; }
-  @media (max-width: 800px) { .story-top, .tracks { grid-template-columns: 1fr; } }
-
-  .band { background: var(--forest); color: var(--on-forest); }
-  .quote { padding-block: clamp(3.5rem, 8vw, 6rem); }
-  .quote blockquote { margin: 0; font-size: clamp(1.45rem, 3vw, 2.3rem); line-height: 1.35; font-weight: 300; max-width: 30ch; }
-  .quote blockquote b { font-weight: 600; }
-
-  /* Way */
-  .way-head { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: clamp(2rem, 5vw, 5rem); align-items: end; }
-  .way-head p { color: var(--ink-2); font-size: 1.1rem; max-width: 46ch; }
-  .steps { list-style: none; margin: clamp(3rem, 6vw, 4.5rem) 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; counter-reset: step; }
-  .steps li { counter-increment: step; padding: 0 1.4rem 0 1.4rem; display: flex; flex-direction: column; gap: .5rem; }
-  .steps li:first-child { padding-inline-start: 0; }
-  .steps li + li { border-inline-start: 1px solid var(--rule); }
-  .steps li::before { content: counter(step); font-family: var(--display); font-weight: 700; font-size: 4.2rem; line-height: .8; color: var(--accent); }
-  .steps h3 { font-size: 1.2rem; }
-  .steps p { color: var(--ink-2); font-size: .98rem; }
-  @media (max-width: 900px) {
-    .way-head { grid-template-columns: 1fr; }
-    .steps { grid-template-columns: 1fr 1fr; row-gap: 2.4rem; }
-    .steps li:nth-child(3) { border-inline-start: 0; padding-inline-start: 0; }
-  }
-  @media (max-width: 480px) {
-    .steps { grid-template-columns: 1fr; }
-    .steps li { padding-inline: 0; }
-    .steps li + li { border-inline-start: 0; }
+  /* Workshops */
+  .workshops { background: var(--bg-2); }
+  .feature { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); background: var(--card); border-radius: calc(var(--radius) + 6px); overflow: hidden; box-shadow: var(--shadow); }
+  .feature figure { margin: 0; position: relative; min-height: 100%; background: var(--bg-2); }
+  .feature figure img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; }
+  .feature figcaption { position: absolute; inset-inline-start: 12px; bottom: 12px; background: color-mix(in srgb, var(--card) 88%, transparent); border-radius: 10px; padding: .35em .8em; font-size: .85rem; color: var(--ink-2); max-width: calc(100% - 24px); }
+  .feature-body { padding: clamp(1.4rem, 4vw, 2.6rem); display: flex; flex-direction: column; gap: 1.1rem; }
+  .badge { align-self: flex-start; background: color-mix(in srgb, var(--clay) 14%, transparent); color: var(--clay); font-weight: 700; font-size: .85rem; border-radius: 999px; padding: .2em .85em; }
+  .badge.new { background: color-mix(in srgb, var(--olive) 18%, transparent); color: var(--olive); }
+  .feature h3 { font-size: clamp(1.9rem, 3.6vw, 2.5rem); }
+  .facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .9rem 1.4rem; margin: 0; padding: 1rem 0; border-block: 1px solid var(--rule); }
+  .facts dt { font-size: .85rem; color: var(--ink-2); font-weight: 600; }
+  .facts dd { margin: 0; font-weight: 700; line-height: 1.4; }
+  .facts dd small { display: block; font-weight: 400; color: var(--ink-2); font-size: .85rem; }
+  .choose h4 { margin: 0 0 .55rem; font-size: 1rem; }
+  .chips { display: flex; flex-wrap: wrap; gap: .45rem; list-style: none; margin: 0; padding: 0; }
+  .chips li { background: var(--bg); border: 1px solid var(--rule); border-radius: 999px; padding: .25em .85em; font-size: .93rem; }
+  .chips li.hot { border-color: var(--honey); background: color-mix(in srgb, var(--honey) 16%, var(--bg)); font-weight: 600; }
+  .note { font-size: .95rem; color: var(--ink-2); border-inline-start: 3px solid var(--honey); padding-inline-start: .8rem; }
+  @media (max-width: 820px) {
+    .feature { grid-template-columns: 1fr; }
+    .feature figure img { position: static; aspect-ratio: 4 / 3.4; height: auto; object-position: 50% 40%; }
   }
 
-  .values { margin-top: clamp(3.5rem, 7vw, 5.5rem); display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: clamp(2rem, 5vw, 5rem); }
-  .values h2 { font-size: clamp(2.4rem, 4.5vw, 3.6rem); }
-  .values dl { margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 1.8rem 2.4rem; }
-  .values dt { font-weight: 700; font-size: 1.08rem; margin-bottom: .3rem; }
-  .values dd { margin: 0; color: var(--ink-2); font-size: .98rem; }
-  @media (max-width: 800px) { .values { grid-template-columns: 1fr; } }
-  @media (max-width: 520px) { .values dl { grid-template-columns: 1fr; } }
+  .cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(1rem, 2.4vw, 1.6rem); margin-top: clamp(1rem, 2.4vw, 1.6rem); }
+  .card { background: var(--card); border-radius: var(--radius); padding: clamp(1.3rem, 3vw, 1.8rem); display: flex; flex-direction: column; gap: .8rem; border: 1px solid var(--rule); }
+  .card h3 { font-size: 1.6rem; }
+  .card ul.lines { list-style: none; margin: 0; padding: 0; display: grid; gap: .3rem; font-size: .97rem; }
+  .card ul.lines li { display: flex; gap: .6rem; align-items: baseline; }
+  .card ul.lines li::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--honey); flex: none; transform: translateY(-.15em); }
+  .card .price { font-weight: 700; font-size: 1.05rem; }
+  .card .price small { font-weight: 400; color: var(--ink-2); font-size: .85rem; }
+  .card p { color: var(--ink-2); font-size: .97rem; }
+  .card p.price { color: var(--ink); }
+  .card .more { margin-top: auto; align-self: flex-start; }
+  @media (max-width: 900px) { .cards { grid-template-columns: 1fr; } }
+
+  /* Place */
+  .place-grid { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: clamp(1.8rem, 5vw, 4.5rem); align-items: center; }
+  .place-photo { margin: 0; }
+  .place-photo img { width: 100%; aspect-ratio: 4 / 4.6; object-fit: cover; border-radius: var(--radius); box-shadow: var(--shadow); }
+  .place .head { margin-bottom: 1.2rem; }
+  .place-links { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: 1.6rem; }
+  .place-links .btn { padding: .6em 1.2em; font-size: .95rem; }
+  @media (max-width: 820px) { .place-grid { grid-template-columns: 1fr; } .place-photo img { aspect-ratio: 4 / 3.2; object-position: 50% 45%; } }
 
   /* Products */
-  .products { background: var(--birch-2); }
-  .products-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 1.5rem 3rem; }
-  .products-head p { color: var(--ink-2); max-width: 44ch; }
-  .shelf { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(1.2rem, 2.5vw, 2.2rem); margin-top: clamp(2.5rem, 5vw, 4rem); }
-  .item { display: flex; flex-direction: column; gap: .9rem; }
-  .item .dwg { box-shadow: 0 1px 0 var(--rule), 0 16px 30px -22px rgba(20, 26, 22, .5); }
-  .item h3 { font-family: var(--display); font-size: 2.2rem; line-height: 1; margin-top: .4rem; }
-  .item p { color: var(--ink-2); flex: 1; }
-  .item a { align-self: flex-start; }
-  .shelf-cta { margin-top: clamp(2.5rem, 5vw, 3.5rem); }
-  @media (max-width: 900px) { .shelf { grid-template-columns: 1fr 1fr; } }
-  @media (max-width: 580px) { .shelf { grid-template-columns: 1fr; } }
+  .products { background: var(--bg-2); }
+  .prod-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, .75fr); gap: clamp(1rem, 2.4vw, 1.6rem); }
+  .prod-grid figure { margin: 0; }
+  .prod-grid img { width: 100%; object-fit: cover; border-radius: var(--radius); box-shadow: var(--shadow); }
+  .prod-grid .wide img { aspect-ratio: 4 / 3; }
+  .prod-grid .tall { position: relative; }
+  .prod-grid .tall img { position: absolute; inset: 0; height: 100%; }
+  .prod-body { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1.2rem 2rem; align-items: end; margin-top: clamp(1.4rem, 3vw, 2rem); }
+  .prod-actions { display: flex; flex-wrap: wrap; gap: .7rem; }
+  @media (max-width: 820px) { .prod-body { grid-template-columns: 1fr; } }
+  @media (max-width: 560px) { .prod-grid { grid-template-columns: 1fr; } .prod-grid .tall img { position: static; aspect-ratio: 4 / 3.6; object-position: 50% 40%; } }
 
-  /* Farm */
-  .farm-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: clamp(2rem, 5vw, 5rem); align-items: start; }
-  .farm .kicker { color: var(--on-forest-2); }
-  .farm h2 { font-size: clamp(3rem, 6vw, 4.8rem); margin-block: .8rem 1.4rem; }
-  .farm p { color: var(--on-forest-2); max-width: 54ch; }
-  .farm p + p { margin-top: 1rem; }
-  .farm ul { list-style: none; margin: 0; padding: 0; border-top: 1px solid rgba(238, 240, 232, .22); }
-  .farm li { padding: .85rem 0; border-bottom: 1px solid rgba(238, 240, 232, .22); display: flex; justify-content: space-between; gap: 1rem; font-size: 1.05rem; }
-  .farm li em { font-style: normal; color: var(--on-forest-2); font-size: .9rem; }
-  .farm li.us { font-weight: 700; }
-  .farm .btn { margin-top: 1.8rem; border-color: var(--on-forest); color: var(--on-forest); background: transparent; }
-  .farm .btn:hover { background: var(--on-forest); color: var(--forest); }
-  @media (max-width: 800px) { .farm-grid { grid-template-columns: 1fr; } }
+  /* Same table (rehab) */
+  .same { background: var(--walnut); color: var(--on-walnut); padding-block: clamp(3rem, 7vw, 5rem); }
+  .same-grid { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: clamp(1.2rem, 5vw, 4.5rem); align-items: start; }
+  .same .kicker { color: var(--honey); }
+  .same h2 { font-size: clamp(2rem, 4.4vw, 2.9rem); margin-top: .5rem; }
+  .same p { color: var(--on-walnut-2); }
+  .same p + p { margin-top: .9rem; }
+  .same p strong { color: var(--on-walnut); font-weight: 600; }
+  .same .closing { color: var(--on-walnut); font-family: var(--display); font-size: 1.25rem; line-height: 1.4; margin-top: 1.3rem; }
+  @media (max-width: 820px) { .same-grid { grid-template-columns: 1fr; } }
+
+  /* FAQ */
+  .faq-list { display: grid; gap: .6rem; max-width: 820px; }
+  .faq-list details { background: var(--card); border: 1px solid var(--rule); border-radius: 14px; padding: 0 1.2rem; }
+  .faq-list summary { cursor: pointer; list-style: none; padding: 1rem 0; font-weight: 700; font-size: 1.05rem; display: flex; justify-content: space-between; gap: 1rem; align-items: center; }
+  .faq-list summary::-webkit-details-marker { display: none; }
+  .faq-list summary::after { content: "+"; font-family: var(--body); font-size: 1.4rem; line-height: 1; color: var(--clay); font-weight: 400; }
+  .faq-list details[open] summary::after { content: "−"; }
+  .faq-list details p { padding-bottom: 1.1rem; color: var(--ink-2); }
 
   /* Contact */
-  .contact-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(2rem, 5vw, 5rem); align-items: start; }
-  .contact h2 { margin-block: .8rem 1.2rem; }
-  .contact .lede { color: var(--ink-2); max-width: 44ch; }
-  .contact ul { list-style: none; margin: 1.8rem 0 0; padding: 0; display: grid; gap: .5rem; }
-  .contact li { display: flex; gap: .8rem; align-items: baseline; }
-  .contact li::before { content: ""; width: 14px; height: 1.5px; background: var(--accent); flex: none; transform: translateY(-.3em); }
-  .contact .shop-line { margin-top: 1.8rem; color: var(--ink-2); }
-  .form { display: grid; gap: 1.2rem; background: var(--birch); padding: clamp(1.4rem, 3vw, 2.4rem); border-radius: 2px; }
-  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
-  .field { display: grid; gap: .3rem; }
-  .field label { font-size: .88rem; font-weight: 600; color: var(--ink-2); }
-  .field input, .field textarea { width: 100%; background: transparent; border: 0; border-bottom: 1.5px solid var(--rule); color: var(--ink); font: inherit; padding: .5em 0; border-radius: 0; }
-  .field textarea { min-height: 110px; resize: vertical; }
-  .field input:focus, .field textarea:focus { outline: none; border-bottom-color: var(--accent); }
-  .form .btn { justify-self: start; }
-  .form-ok { display: none; border-inline-start: 3px solid var(--accent); padding: .6rem .9rem; font-size: .95rem; background: var(--stone); }
-  .form.sent .form-ok { display: block; }
-  .form-note { font-size: .85rem; color: var(--ink-2); }
-  @media (max-width: 800px) { .contact-grid, .form-row { grid-template-columns: 1fr; } }
+  .contact { background: var(--bg-2); }
+  .contact-box { background: var(--card); border-radius: calc(var(--radius) + 6px); padding: clamp(1.6rem, 5vw, 3.2rem); box-shadow: var(--shadow); display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: clamp(1.6rem, 4vw, 3.5rem); align-items: center; }
+  .contact h2 { font-size: clamp(2.2rem, 5vw, 3.3rem); }
+  .contact p { color: var(--ink-2); margin-top: .8rem; max-width: 46ch; }
+  .contact-actions { display: grid; gap: .7rem; }
+  .contact-actions .btn { width: 100%; }
+  .contact-actions .addr { font-size: .95rem; text-align: center; margin-top: .3rem; }
+  @media (max-width: 820px) { .contact-box { grid-template-columns: 1fr; } }
 
   /* Footer */
-  footer { background: var(--forest); color: var(--on-forest-2); padding-block: 2.4rem; font-size: .92rem; }
-  footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 1rem 2rem; }
-  footer .brand b { color: var(--on-forest); }
-  footer a { color: var(--on-forest); text-decoration: none; border-bottom: 1px solid rgba(238, 240, 232, .35); }
+  footer { background: var(--walnut); color: var(--on-walnut-2); padding-block: 2.4rem calc(2.4rem + env(safe-area-inset-bottom, 0px)); font-size: .95rem; }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 1rem 2rem; justify-content: space-between; align-items: baseline; }
+  footer .brand b { color: var(--on-walnut); }
+  footer .motto { font-family: var(--display); color: var(--on-walnut); font-size: 1.1rem; }
+  footer a { color: var(--on-walnut); }
 
-  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  /* Mobile booking dock */
+  .dock { display: none; }
+  @media (max-width: 760px) {
+    .dock { display: flex; gap: .6rem; position: fixed; inset-inline: 0; bottom: 0; z-index: 40; padding: .6rem max(16px, env(safe-area-inset-right, 0px)) calc(.6rem + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); background: color-mix(in srgb, var(--bg) 94%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-top: 1px solid var(--rule); }
+    .dock .btn-main { flex: 1; }
+    .dock .btn-line { width: 52px; padding: 0; }
+    footer { padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px)); }
+  }
+
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .btn { transition: none; } }
 </style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"LocalBusiness","name":"הנגרייה בחוות רום","description":"סדנאות נגרות לזוגות, משפחות וקבוצות, ונגרייה שיקומית","url":"https://nettaamit21-crypto.github.io/me/","email":"nettaamit21@gmail.com","image":"https://nettaamit21-crypto.github.io/me/images/sign.jpg","address":{"@type":"PostalAddress","streetAddress":"חוות רום, הר כמון","addressCountry":"IL"}}
+</script>
 </head>
 <body>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
-  <defs>
-    <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><path class="dw-gridline" d="M20 0H0V20"/></pattern>
-    <pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line class="dw-hatchline" x1="0" y1="0" x2="0" y2="6"/></pattern>
-  </defs>
+  <symbol id="i-wa" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2c0 1.3.9 2.5 1 2.7.1.2 1.8 2.8 4.4 3.9 1.6.7 2.3.8 3.1.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3z"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M5 4h3l2 5-2.5 1.5a11 11 0 0 0 6 6L15 14l5 2v3a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+  <symbol id="i-ig" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor"/></symbol>
 </svg>
 
-<header class="nav">
+<header class="top">
   <div class="wrap">
-    <a class="brand" href="#top"><b>הנגרייה</b><span>חוות רום · הר כמון</span></a>
-    <ul>
-      <li><a href="#story">הסיפור</a></li>
-      <li><a href="#way">איך עובדים</a></li>
-      <li><a href="#products">המוצרים</a></li>
-      <li><a href="#farm">חוות רום</a></li>
-      <li><a href="#contact">יצירת קשר</a></li>
-    </ul>
-    <a class="btn btn-solid" href="https://havatrom.co.il/%D7%97%D7%A0%D7%95%D7%AA-%D7%94%D7%9E%D7%A9%D7%A7/" target="_blank" rel="noopener">לחנות</a>
+    <a class="brand" href="#top"><b>הנגרייה</b><span>בחוות רום</span></a>
+    <nav aria-label="ניווט">
+      <ul>
+        <li><a href="#workshops">הסדנאות</a></li>
+        <li><a href="#place">המקום</a></li>
+        <li><a href="#products">מוצרים</a></li>
+        <li><a href="#same-table">הנגרייה השיקומית</a></li>
+        <li><a href="#faq">שאלות</a></li>
+      </ul>
+    </nav>
+    <a class="btn btn-main" data-wa="היי נטע, אשמח לפרטים על הסדנאות" href="#contact"><svg class="i"><use href="#i-wa"/></svg>וואטסאפ</a>
   </div>
 </header>
 
 <main id="top">
   <!-- ===== Hero ===== -->
   <div class="hero">
-    <div class="wrap hero-grid">
-      <div>
-        <p class="kicker">נגרייה ומרחב שיקומי בחוות רום, הר כמון</p>
-        <h1>מה שנבנה בעץ,<br><span>נבנה גם באדם.</span></h1>
-        <p class="lede">בנגרייה שלנו עובדים יחד מתמודדי נפש ומשוחררי צה״ל. אנחנו מייצרים צעצועי עץ, חפצי אומנות ומעמדים לפרחים יבשים, הכל בעבודת יד ובקצב שמאפשר לעשות את זה טוב.</p>
-        <div class="hero-actions">
-          <a class="btn btn-solid" href="https://havatrom.co.il/%D7%97%D7%A0%D7%95%D7%AA-%D7%94%D7%9E%D7%A9%D7%A7/" target="_blank" rel="noopener">לקנות בחנות החווה</a>
-          <a class="textlink" href="#story">להכיר את הנגרייה</a>
+    <div class="wrap">
+      <div class="hero-grid">
+        <div>
+          <p class="season" data-until="2026-12-04">עד חנוכה: בונים בסדנה הזוגית חנוכייה מעץ אקליפטוס</p>
+          <p class="kicker">סדנאות נגרות · חוות רום, הר כמון</p>
+          <h1>כל אחד יכול לבנות משהו מדהים</h1>
+          <p class="line2">כשיש לו את המקום הנכון ומישהו לצידו.</p>
+          <p class="intro">אני נטע עמית, נגר. בנגרייה שלי בחוות רום זוגות, משפחות וקבוצות בונים בעצמם מעץ, בשקט של ההר, וחוזרים הביתה עם משהו שעשו בידיים.</p>
+          <div class="hero-actions">
+            <a class="btn btn-main" data-wa="היי נטע, אני רוצה להזמין סדנה" href="#contact"><svg class="i"><use href="#i-wa"/></svg>להזמנת סדנה בוואטסאפ</a>
+            <a class="more" href="#workshops">לכל הסדנאות</a>
+          </div>
         </div>
+        <figure class="hero-photo">
+          <img src="images/sign.jpg" width="576" height="660" alt="השלט &quot;הנגרייה&quot; באותיות עץ על קיר הנגרייה בחוות רום, באור של שקיעה">
+          <span class="sticker">לא צריך<br>ניסיון בנגרות</span>
+        </figure>
       </div>
-
-      <figure class="sheet">
-        <svg class="dwg" viewBox="0 0 520 640" direction="ltr" role="img" aria-label="שרטוט עבודה של מעמד לפרחים יבשים, במבט חזית ובמבט על">
-          <rect class="dw-paper" width="520" height="640"/>
-          <rect fill="url(#grid)" width="520" height="640"/>
-          <rect class="dw-frame" x="14" y="14" width="492" height="612"/>
-
-          <!-- stems -->
-          <path class="dw-thin" d="M160 340C158 282 150 232 139 176"/>
-          <path class="dw-thin" d="M210 340C212 272 220 206 228 128"/>
-          <path class="dw-thin" d="M260 340C260 262 262 196 258 108"/>
-          <path class="dw-thin" d="M310 340C312 282 322 232 335 170"/>
-          <path class="dw-thin" d="M360 340C362 302 372 262 388 222"/>
-          <!-- lavender -->
-          <g class="dw-thin">
-            <ellipse cx="139" cy="174" rx="3" ry="5.5" transform="rotate(-12 139 174)"/>
-            <ellipse cx="137" cy="164" rx="3" ry="5.5" transform="rotate(-12 137 164)"/>
-            <ellipse cx="135.5" cy="154" rx="2.8" ry="5" transform="rotate(-12 135.5 154)"/>
-            <ellipse cx="134" cy="145" rx="2.5" ry="4.5" transform="rotate(-12 134 145)"/>
-            <ellipse cx="133" cy="137" rx="2.2" ry="4" transform="rotate(-12 133 137)"/>
-          </g>
-          <!-- wheat -->
-          <g class="dw-thin">
-            <path d="M226 150c-7-2-11-8-11-14 7 1 11 6 11 14z"/><path d="M227 150c6-3 10-9 10-15-7 2-10 7-10 15z"/>
-            <path d="M227 138c-7-2-11-8-11-14 7 1 11 6 11 14z"/><path d="M228 138c6-3 10-9 10-15-7 2-10 7-10 15z"/>
-            <path d="M228 126c-6-2-10-8-10-13 7 1 10 6 10 13z"/><path d="M229 126c6-3 9-8 9-14-6 2-9 7-9 14z"/>
-            <path d="M229 114c0-6 0-10 1-16"/>
-          </g>
-          <!-- craspedia -->
-          <circle class="dw-thin" cx="258" cy="98" r="11"/>
-          <g class="dw-fill"><circle cx="254" cy="94" r="1.3"/><circle cx="261" cy="93" r="1.3"/><circle cx="257" cy="101" r="1.3"/><circle cx="263" cy="100" r="1.3"/><circle cx="251" cy="101" r="1.3"/><circle cx="258" cy="88" r="1.3"/></g>
-          <!-- bunny tail -->
-          <ellipse class="dw-thin" cx="338" cy="156" rx="7" ry="15" transform="rotate(16 338 156)"/>
-          <path class="dw-grain" d="M333 150l8-4M332 157l10-4M333 164l9-4"/>
-          <!-- small flower -->
-          <circle class="dw-thin" cx="389" cy="219" r="4"/>
-          <path class="dw-thin" d="M389 213v-6M394 215l5-4M395 221l6 1M384 215l-5-4M383 221l-6 1M389 225v4"/>
-
-          <!-- block, front view -->
-          <rect class="dw-line" x="110" y="340" width="300" height="72" rx="5"/>
-          <path class="dw-grain" d="M122 358c50-8 96 8 156-2s100-6 122 2"/>
-          <path class="dw-grain" d="M120 376c60-6 104 10 170 0s88-8 110 0"/>
-          <path class="dw-grain" d="M124 394c44-4 90 8 150 0s96-6 124 2"/>
-          <g class="dw-hidden"><path d="M160 340v34M210 340v34M260 340v34M310 340v34M360 340v34"/></g>
-          <text class="dw-small" x="260" y="436" text-anchor="middle">מבט חזית</text>
-
-          <!-- block, top view -->
-          <rect class="dw-line" x="110" y="468" width="300" height="58" rx="5"/>
-          <path class="dw-center" d="M94 497h332"/>
-          <g class="dw-open"><circle cx="160" cy="497" r="6"/><circle cx="210" cy="497" r="6"/><circle cx="260" cy="497" r="6"/><circle cx="310" cy="497" r="6"/><circle cx="360" cy="497" r="6"/></g>
-          <text class="dw-small" x="260" y="548" text-anchor="middle">מבט על</text>
-
-          <!-- callouts -->
-          <circle class="dw-dot" cx="230" cy="132" r="2.2"/><path class="dw-lead" d="M230 132L176 70H34"/>
-          <text class="dw-text" x="34" y="64">פרחים יבשים, לפי העונה</text>
-          <circle class="dw-dot" cx="160" cy="366" r="2.2"/><path class="dw-lead" d="M160 366L96 300H30"/>
-          <text class="dw-text" x="30" y="294">קידוח לגבעול</text>
-          <circle class="dw-dot" cx="398" cy="402" r="2.2"/><path class="dw-lead" d="M398 402L446 300H494"/>
-          <text class="dw-text" x="494" y="294" text-anchor="end">עץ מלא</text>
-          <circle class="dw-dot" cx="408" cy="520" r="2.2"/><path class="dw-lead" d="M408 520L448 470H494"/>
-          <text class="dw-text" x="494" y="464" text-anchor="end">פינות מלוטשות</text>
-
-          <!-- title block -->
-          <path class="dw-frame" d="M14 568H506M200 568V626M352 568V626"/>
-          <text class="dw-title" x="496" y="596" text-anchor="end">מעמד לפרחים יבשים</text>
-          <text class="dw-small" x="496" y="616" text-anchor="end">הנגרייה · חוות רום</text>
-          <text class="dw-small" x="342" y="592" text-anchor="end">חומר: עץ מלא</text>
-          <text class="dw-small" x="342" y="612" text-anchor="end">עבודת יד</text>
-          <text class="dw-small" x="190" y="592" text-anchor="end">גיליון 1 מתוך 3</text>
-          <text class="dw-small" x="190" y="612" text-anchor="end">קנ״מ 1:2</text>
-        </svg>
-        <figcaption>שרטוט עבודה: מעמד לפרחים יבשים</figcaption>
-      </figure>
+      <nav class="quick" aria-label="הסדנאות בקצרה">
+        <a href="#couples">סדנה זוגית <span>3 שעות</span></a>
+        <a href="#family">סדנה משפחתית <span>ילדים מגיל 3</span></a>
+        <a href="#parent-child">הורה וילד <span>בקרוב</span></a>
+        <a href="#groups">קבוצות <span class="num">7 עד 10</span></a>
+      </nav>
     </div>
   </div>
 
-  <div class="facts">
+  <!-- ===== Workshops ===== -->
+  <section id="workshops" class="workshops">
     <div class="wrap">
-      <div class="fact"><b>סל שיקום</b><span>תעסוקה בשכר למתמודדי נפש, במסגרת משרד הבריאות</span></div>
-      <div class="fact"><b>סדנאות תהליכיות</b><span>כחצי שנה של עבודה משותפת, במסגרת משרד הביטחון</span></div>
-      <div class="fact"><b>עץ מלא</b><span>כל פריט נחתך, מלוטש ומורכב ביד</span></div>
-      <div class="fact"><b>רכישה שהיא שכר</b><span>כל מוצר שנמכר משלם לאדם שבנה אותו</span></div>
-    </div>
-  </div>
-
-  <!-- ===== Story ===== -->
-  <section id="story">
-    <div class="wrap">
-      <div class="story-top">
-        <h2 class="sec-title">נגרייה אחת,<br>שני משרדים,<br>מודל פשוט.</h2>
-        <p class="lede">מבחוץ זו נגרייה כמו כל נגרייה: ריח של נסורת, מכונות עובדות, קרשים שמחכים לתורם. מבפנים זה מקום שבו אנשים בדרך חזרה לשגרה מוצאים עבודה, שייכות ומשמעות. נגרייה עובדת, והאנשים בה הם הלב שלה.</p>
+      <div class="head">
+        <p class="kicker">הסדנאות</p>
+        <h2>בונים בעצמכם, ואני לצידכם.</h2>
+        <p>צלילה ליצירה ועשייה בשקט של הר כמון. אני מנחה כל סדנה בעצמי, ובסופה לוקחים הביתה את מה שבניתם.</p>
       </div>
-      <div class="tracks">
-        <article class="track">
-          <small>משרד הבריאות</small>
-          <h3>סל שיקום</h3>
-          <p>יחד עם מתמודדי נפש הזכאים לסל שיקום אנחנו מייצרים צעצועים, חפצי אומנות ומעמדים לפרחים יבשים. המוצרים נמכרים בשוק החופשי והרווחים חוזרים למשתתפים. העבודה עצמה מחזקת, והשכר עליה הוא הכרה בערך שלה.</p>
+
+      <article class="feature" id="couples">
+        <figure>
+          <img src="images/wine-rack.jpg" width="662" height="1400" loading="lazy" alt="מתלה עץ לבקבוק יין ולכוסות תלוי על קיר, עם בקבוקים וכוסות">
+          <figcaption>מתלה ליין ולכוסות, אחת האפשרויות</figcaption>
+        </figure>
+        <div class="feature-body">
+          <span class="badge" data-until="2027-01-15">מחיר השקה</span>
+          <h3>סדנה זוגית</h3>
+          <dl class="facts">
+            <div><dt>כמה זמן</dt><dd>3 שעות</dd></div>
+            <div><dt>כמה זוגות</dt><dd>עד 3 זוגות בסדנה</dd></div>
+            <div><dt>מתי</dt><dd class="num">שישי 08:30–11:30<br>שבת 10:00–13:00</dd></div>
+            <div><dt>מחיר</dt><dd class="num" data-price data-regular="1,000 ₪ לזוג" data-until="2027-01-15">850 ₪ לזוג<small>מחיר השקה עד 15.1.2027, אחר כך 1,000 ₪</small></dd></div>
+          </dl>
+          <p>את החיתוכים במסור אני מכין מראש. אתם משייפים, קודחים, מרכיבים וצובעים. לא צריך ניסיון בנגרות, לומדים הכול במקום.</p>
+          <div class="choose">
+            <h4>בוחרים מה לבנות</h4>
+            <ul class="chips">
+              <li class="hot" data-until="2026-12-04">חנוכייה מעץ אקליפטוס (עד חנוכה)</li>
+              <li>מדף תבלינים</li>
+              <li>מתלה לבקבוק יין ולכוסות</li>
+              <li>זוג מכוניות עץ לילדים</li>
+              <li>אדנית או מעמד לעציצים</li>
+            </ul>
+          </div>
+          <p class="note">מתארחים בצימר או בגלמפינג באזור? זו חוויה זוגית בצפון שמסתיימת במתנה לילדים או במשהו לבית, שבניתם בעצמכם.</p>
+          <div><a class="btn btn-main" data-wa="היי נטע, אני רוצה לשריין סדנה זוגית" href="#contact"><svg class="i"><use href="#i-wa"/></svg>לשריין סדנה זוגית</a></div>
+        </div>
+      </article>
+
+      <div class="cards">
+        <article class="card" id="family">
+          <span class="badge">מחיר השקה</span>
+          <h3>סדנה משפחתית</h3>
+          <ul class="lines">
+            <li>שעה וחצי עד שעתיים</li>
+            <li>4 עד 10 משתתפים, ילדים מגיל 3</li>
+            <li class="num">ראשון ושלישי 16:30–18:30</li>
+          </ul>
+          <p class="price num">250 ₪ למשתתף <small>מחיר השקה, אחר כך 280 ₪</small></p>
+          <p>פעילות לילדים בגליל שכל המשפחה עושה יחד. הורים וילדים בונים פרויקט משותף, למשל אדנית לבית.</p>
+          <a class="more" data-wa="היי נטע, אני רוצה לשריין סדנה משפחתית" href="#contact">לשריין סדנה משפחתית</a>
         </article>
-        <article class="track">
-          <small>משרד הביטחון</small>
-          <h3>סדנאות תהליכיות</h3>
-          <p>אנחנו מלווים קבוצות בסדנאות של כחצי שנה. בונים יחד פרויקטים שמשמשים את החווה, ולצידם כל משתתף מתכנן ובונה פרויקט אישי שהוא לוקח הביתה בסוף הדרך.</p>
+
+        <article class="card" id="parent-child">
+          <span class="badge new">חדש · נפתח בקרוב</span>
+          <h3>הורה וילד</h3>
+          <ul class="lines">
+            <li>4 מפגשים, בכל מפגש מוצר אחר</li>
+            <li>מכונית, בית לציפורים, ארגז כלים</li>
+            <li>ובסוף שרפרף עם השם של הילד</li>
+          </ul>
+          <p>הימים, השעות, הגילאים והמחיר ייקבעו בקרוב. כתבו לי, ואעדכן אתכם ראשונים.</p>
+          <a class="more" data-wa="היי נטע, אשמח לעדכון כשנפתחת הסדנה להורה וילד" href="#contact">לעדכון כשנפתחת ההרשמה</a>
+        </article>
+
+        <article class="card" id="groups">
+          <span class="badge">בהזמנה מראש</span>
+          <h3>סדנה לקבוצות</h3>
+          <ul class="lines">
+            <li>גיבוש לעובדים, חברים או משפחה מורחבת</li>
+            <li>שעתיים, 7 עד 10 משתתפים</li>
+          </ul>
+          <p class="price num">180 ₪ למשתתף <small>כולל מע"מ</small></p>
+          <p>כל אחד בונה אדנית ולוקח אותה הביתה. לקבוצות של מבוגרים אפשר לבנות שרפרף, בשעתיים וחצי וב־230 ₪ למשתתף. אפשר גם לבנות יחד סט אדניות למקום שממנו הגעתם.</p>
+          <a class="more" data-wa="היי נטע, אני רוצה לתאם סדנה לקבוצה" href="#contact">לתאם סדנה לקבוצה</a>
         </article>
       </div>
     </div>
   </section>
 
-  <div class="band quote">
-    <div class="wrap">
-      <blockquote>מעמד לפרחים או צעצוע שקונים כאן הוא קודם כל מוצר טוב בעבודת יד. <b>הכסף עליו משלם שכר לאדם שבנה אותו, ומאפשר לו להגיע לעבודה גם מחר.</b></blockquote>
-    </div>
-  </div>
-
-  <!-- ===== Way ===== -->
-  <section id="way">
-    <div class="wrap">
-      <div class="way-head">
-        <h2 class="sec-title">העץ הוא החומר.<br>האדם הוא הפרויקט.</h2>
-        <p>חוויית מסוגלות לא נולדת מדיבורים. היא נולדת מעבודה סבלנית, מהתמודדות עם קושי, ומתהליך שמסתיים בחפץ שאפשר להחזיק ביד.</p>
-      </div>
-      <ol class="steps">
-        <li><h3>חיתוך</h3><p>לחתוך ישר. מודדים פעמיים, נושמים, ורק אז חותכים.</p></li>
-        <li><h3>ליטוש</h3><p>ללטש עד שחלק. סבלנות שרואים בעין ומרגישים ביד.</p></li>
-        <li><h3>הרכבה</h3><p>להרכיב עד שיציב. כל אחד אחראי לחלק שלו, וביחד זה עומד.</p></li>
-        <li><h3>גימור</h3><p>החפץ מוכן ויוצא לעולם. מה שנשאר אצל מי שבנה אותו זו הידיעה שהוא מסוגל.</p></li>
-      </ol>
-
-      <div class="values">
-        <h2>מה מחזיק<br>את המקום.</h2>
-        <dl>
-          <div><dt>מרחב בטוח ויציב</dt><dd>מסגרת ברורה עם כללים, לצד אמפתיה והקשבה. כאן אפשר לטעות, לתקן ולהמשיך.</dd></div>
-          <div><dt>מלאכה שמרגיעה</dt><dd>הידיים עסוקות, הראש שקט, והקשב חוזר להווה.</dd></div>
-          <div><dt>בגובה העיניים</dt><dd>כל אדם בקצב שלו. אין כאן מטופלים, יש צוות שעובד יחד.</dd></div>
-          <div><dt>מכאן והלאה</dt><dd>ערך עצמי, התמדה ושייכות לקהילה, שממשיכים הרבה אחרי שיוצאים משער הנגרייה.</dd></div>
-        </dl>
+  <!-- ===== Place ===== -->
+  <section id="place" class="place">
+    <div class="wrap place-grid">
+      <figure class="place-photo">
+        <img src="images/eucalyptus-logs.jpg" width="768" height="1024" loading="lazy" alt="ערימת בולי עץ אקליפטוס חתוכים, ומאחוריהם עצים והר">
+      </figure>
+      <div>
+        <div class="head">
+          <p class="kicker">המקום</p>
+          <h2>בשקט של הר כמון.</h2>
+          <p>הנגרייה נמצאת בחוות רום, על הר כמון בגליל. זו חווה שיקומית ותיירותית, עם גלמפינג, ביסטרו וחנות. אפשר לבוא לסדנה בבוקר, ולהישאר בחווה עוד קצת.</p>
+        </div>
+        <div class="place-links">
+          <a class="btn btn-line" href="https://waze.com/ul?q=%D7%97%D7%95%D7%95%D7%AA%20%D7%A8%D7%95%D7%9D%20%D7%94%D7%A8%20%D7%9B%D7%9E%D7%95%D7%9F" target="_blank" rel="noopener"><svg class="i"><use href="#i-pin"/></svg>ניווט בוויז</a>
+          <a class="btn btn-line" href="https://www.google.com/maps/search/?api=1&amp;query=%D7%97%D7%95%D7%95%D7%AA%20%D7%A8%D7%95%D7%9D%20%D7%94%D7%A8%20%D7%9B%D7%9E%D7%95%D7%9F" target="_blank" rel="noopener">גוגל מפות</a>
+          <a class="btn btn-line" href="https://havatrom.co.il/" target="_blank" rel="noopener">האתר של חוות רום</a>
+        </div>
       </div>
     </div>
   </section>
@@ -422,143 +396,81 @@
   <!-- ===== Products ===== -->
   <section id="products" class="products">
     <div class="wrap">
-      <div class="products-head">
-        <h2 class="sec-title">עץ מלא,<br>עבודת יד.</h2>
-        <p>כל מוצר עובר חיתוך, ליטוש, הרכבה וגימור בידיים סבלניות, עם גימורים בטוחים לילדים. המוצרים נמכרים בחנות המשק של חוות רום, לצד הגבינות, הירקות והשתילים.</p>
+      <div class="head">
+        <p class="kicker">מוצרים מהנגרייה</p>
+        <h2>צעצועים ועציצים שנבנו כאן.</h2>
+        <p>המוצרים מיוצרים בנגרייה על ידי מתמודדי נפש, במסגרת המפעל המוגן. אפשר לקנות אותם באתר של חוות רום ובחנות בחווה.</p>
       </div>
-
-      <div class="shelf">
-        <article class="item">
-          <svg class="dwg" viewBox="0 0 400 300" direction="ltr" role="img" aria-label="שרטוט של מכונית צעצוע מעץ במבט צד">
-            <rect class="dw-paper" width="400" height="300"/>
-            <rect fill="url(#grid)" width="400" height="300"/>
-            <rect class="dw-frame" x="10" y="10" width="380" height="280"/>
-            <path class="dw-line" d="M138 132L160 86q6-10 18-10h58q12 0 18 10l24 46z"/>
-            <path class="dw-open" d="M166 128l14-34q3-6 10-6h16v40zM214 88h16q7 0 10 6l14 34h-40z"/>
-            <rect class="dw-line" x="60" y="128" width="280" height="74" rx="22"/>
-            <path class="dw-grain" d="M80 150c60-6 120 8 180 0s60-4 64 0M78 170c70-6 110 6 170-2s70-2 80 2"/>
-            <circle class="dw-line" cx="118" cy="204" r="32"/><circle class="dw-hidden" cx="118" cy="204" r="20"/><circle class="dw-open" cx="118" cy="204" r="7"/>
-            <circle class="dw-line" cx="282" cy="204" r="32"/><circle class="dw-hidden" cx="282" cy="204" r="20"/><circle class="dw-open" cx="282" cy="204" r="7"/>
-            <path class="dw-center" d="M76 204h84M118 162v84M240 204h84M282 162v84"/>
-            <path class="dw-thin" d="M30 236h340"/>
-            <path class="dw-grain" d="M40 236l-6 8M56 236l-6 8M72 236l-6 8M88 236l-6 8M104 236l-6 8M120 236l-6 8M136 236l-6 8M152 236l-6 8M168 236l-6 8M184 236l-6 8M200 236l-6 8M216 236l-6 8M232 236l-6 8M248 236l-6 8M264 236l-6 8M280 236l-6 8M296 236l-6 8M312 236l-6 8M328 236l-6 8M344 236l-6 8M360 236l-6 8"/>
-            <circle class="dw-dot" cx="332" cy="140" r="2.2"/><path class="dw-lead" d="M332 140L352 62H378"/>
-            <text class="dw-text" x="378" y="56" text-anchor="end">פינות מעוגלות ליד קטנה</text>
-            <circle class="dw-dot" cx="96" cy="182" r="2.2"/><path class="dw-lead" d="M96 182L52 92H24"/>
-            <text class="dw-text" x="24" y="86">גלגלים שמסתובבים</text>
-            <text class="dw-small" x="378" y="276" text-anchor="end">צעצוע · מבט צד</text>
-          </svg>
-          <h3>צעצועי עץ לילדים</h3>
-          <p>משחקים פשוטים: חלקים, נעימים ליד, ובנויים להחזיק יותר מדור אחד.</p>
-          <a class="textlink" href="https://havatrom.co.il/%D7%97%D7%A0%D7%95%D7%AA-%D7%94%D7%9E%D7%A9%D7%A7/" target="_blank" rel="noopener">לחנות החווה</a>
-        </article>
-
-        <article class="item">
-          <svg class="dwg" viewBox="0 0 400 300" direction="ltr" role="img" aria-label="שרטוט של קערת עץ בחצי חתך">
-            <rect class="dw-paper" width="400" height="300"/>
-            <rect fill="url(#grid)" width="400" height="300"/>
-            <rect class="dw-frame" x="10" y="10" width="380" height="280"/>
-            <path fill="url(#hatch)" d="M80 112C88 192 148 224 200 226V212C152 210 100 182 92 112Z"/>
-            <rect fill="url(#hatch)" x="168" y="226" width="32" height="10"/>
-            <path class="dw-open" d="M80 112C88 192 148 224 200 226C252 224 312 192 320 112"/>
-            <path class="dw-open" d="M92 112C100 182 152 210 200 212"/>
-            <path class="dw-hidden" d="M200 212C248 210 300 182 308 112"/>
-            <path class="dw-open" d="M80 112H320"/>
-            <path class="dw-open" d="M168 224v12h64v-12"/>
-            <path class="dw-center" d="M200 92V256"/>
-            <path class="dw-thin" d="M110 236h180"/>
-            <circle class="dw-dot" cx="128" cy="176" r="2.2"/><path class="dw-lead" d="M128 176L70 66H24"/>
-            <text class="dw-text" x="24" y="60">חתך</text>
-            <circle class="dw-dot" cx="300" cy="166" r="2.2"/><path class="dw-lead" d="M300 166L346 66H378"/>
-            <text class="dw-text" x="378" y="60" text-anchor="end">כל פריט שונה מעט מהאחר</text>
-            <text class="dw-small" x="378" y="276" text-anchor="end">קערה · חצי חתך</text>
-          </svg>
-          <h3>חפצי אומנות לבית</h3>
-          <p>פריטים בעבודת יד. כל אחד שונה מעט מהאחר, כמו האנשים שבנו אותם.</p>
-          <a class="textlink" href="https://havatrom.co.il/%D7%97%D7%A0%D7%95%D7%AA-%D7%94%D7%9E%D7%A9%D7%A7/" target="_blank" rel="noopener">לחנות החווה</a>
-        </article>
-
-        <article class="item">
-          <svg class="dwg" viewBox="0 0 400 300" direction="ltr" role="img" aria-label="שרטוט של מעמד לפרחים יבשים במבט חזית ובמבט על">
-            <rect class="dw-paper" width="400" height="300"/>
-            <rect fill="url(#grid)" width="400" height="300"/>
-            <rect class="dw-frame" x="10" y="10" width="380" height="280"/>
-            <path class="dw-thin" d="M150 152C148 120 142 96 134 66M200 152C201 112 204 82 202 52M250 152C252 122 260 100 272 78"/>
-            <g class="dw-thin">
-              <ellipse cx="134" cy="66" rx="2.6" ry="5" transform="rotate(-14 134 66)"/><ellipse cx="132" cy="57" rx="2.4" ry="4.6" transform="rotate(-14 132 57)"/><ellipse cx="130.5" cy="49" rx="2.2" ry="4.2" transform="rotate(-14 130.5 49)"/>
-            </g>
-            <circle class="dw-thin" cx="202" cy="44" r="9"/>
-            <g class="dw-fill"><circle cx="199" cy="41" r="1.2"/><circle cx="205" cy="40" r="1.2"/><circle cx="202" cy="47" r="1.2"/><circle cx="197" cy="47" r="1.2"/></g>
-            <ellipse class="dw-thin" cx="275" cy="68" rx="6" ry="13" transform="rotate(20 275 68)"/>
-            <rect class="dw-line" x="90" y="152" width="220" height="50" rx="4"/>
-            <path class="dw-grain" d="M100 166c40-6 80 6 130-2s60-2 72 2M98 182c50-5 90 6 140-1s56-4 66 0"/>
-            <path class="dw-hidden" d="M150 152v24M200 152v24M250 152v24"/>
-            <rect class="dw-line" x="90" y="222" width="220" height="38" rx="4"/>
-            <path class="dw-center" d="M76 241h248"/>
-            <g class="dw-open"><circle cx="150" cy="241" r="5"/><circle cx="200" cy="241" r="5"/><circle cx="250" cy="241" r="5"/></g>
-            <circle class="dw-dot" cx="300" cy="190" r="2.2"/><path class="dw-lead" d="M300 190L340 120H378"/>
-            <text class="dw-text" x="378" y="114" text-anchor="end">עץ מלא</text>
-            <text class="dw-small" x="378" y="282" text-anchor="end">מעמד · חזית ועל</text>
-          </svg>
-          <h3>מעמדים לפרחים יבשים</h3>
-          <p>מעמדים נקיים שנותנים במה לפרחים יבשים ומכניסים קצת מהטבע של הגליל הביתה.</p>
-          <a class="textlink" href="https://havatrom.co.il/%D7%97%D7%A0%D7%95%D7%AA-%D7%94%D7%9E%D7%A9%D7%A7/" target="_blank" rel="noopener">לחנות החווה</a>
-        </article>
+      <div class="prod-grid">
+        <figure class="wide"><img src="images/toy-blocks.jpg" width="1024" height="768" loading="lazy" alt="קוביות עץ וצעצועי עץ על שולחן העבודה בנגרייה"></figure>
+        <figure class="tall"><img src="images/dried-grass-vase.jpg" width="960" height="1200" loading="lazy" alt="כלי עץ קטן ובו ענף של עשב יבש"></figure>
       </div>
-
-      <div class="shelf-cta">
-        <a class="btn btn-solid" href="https://havatrom.co.il/%D7%97%D7%A0%D7%95%D7%AA-%D7%94%D7%9E%D7%A9%D7%A7/" target="_blank" rel="noopener">לכל המוצרים בחנות חוות רום</a>
+      <div class="prod-body">
+        <ul class="chips" aria-label="המוצרים">
+          <li>עגלת קוביות</li>
+          <li>מכוניות</li>
+          <li>משאית מעץ</li>
+          <li>עציצים</li>
+          <li>קומפוסטרים</li>
+        </ul>
+        <div class="prod-actions">
+          <a class="btn btn-main" href="https://havatrom.co.il/%D7%97%D7%A0%D7%95%D7%AA-%D7%94%D7%9E%D7%A9%D7%A7/" target="_blank" rel="noopener">לחנות של חוות רום</a>
+          <a class="btn btn-line" data-wa="היי נטע, יש לי שאלה על מוצר מהנגרייה" href="#contact"><svg class="i"><use href="#i-wa"/></svg>שאלה על מוצר</a>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- ===== Farm ===== -->
-  <section id="farm" class="band farm">
-    <div class="wrap farm-grid">
+  <!-- ===== Same table (rehab) ===== -->
+  <section id="same-table" class="same">
+    <div class="wrap same-grid">
       <div>
-        <p class="kicker">הבית שלנו</p>
-        <h2>חוות רום,<br>על פסגת הר כמון.</h2>
-        <p>הנגרייה פועלת בתוך חוות רום, חווה חקלאית ושיקומית בגליל. כבר יותר מעשרים שנה החווה היא בית לפרויקט תעסוקתי למתמודדי נפש ולנפגעי טראומה, בפיקוח משרד הבריאות ומשרד הביטחון.</p>
-        <p>בכל אחד מהעסקים בחווה עובדים משתקמים לצד אנשי מקצוע. הפרויקטים שנבנים בסדנאות שלנו משמשים את החווה עצמה.</p>
-        <a class="btn" href="https://havatrom.co.il/" target="_blank" rel="noopener">לאתר חוות רום</a>
+        <p class="kicker">הנגרייה השיקומית</p>
+        <h2>באותו שולחן עבודה.</h2>
       </div>
-      <ul aria-label="מה יש בחווה">
-        <li>מחלבת עזים</li>
-        <li>משתלה וגן ירק</li>
-        <li>מסעדה מהמשק לצלחת</li>
-        <li>אירוח וספא</li>
-        <li>מרכז שיקום ותיק</li>
-        <li class="us">נגרייה <em>זה אנחנו</em></li>
-      </ul>
+      <div>
+        <p>הנגרייה שלי היא גם נגרייה שיקומית. <strong>יומיים בשבוע היא פועלת כמפעל מוגן של משרד הבריאות</strong>, ומכאן יוצאים המוצרים שבחנות. אני מעביר בה גם <strong>סדנאות למרכז חוסן של משרד הביטחון</strong>, לאנשים שמתמודדים עם פוסט טראומה מהשירות הצבאי. לפני שהגעתי לחוות רום ניהלתי שנתיים נגרייה שיקומית בירושלים.</p>
+        <p>לאותו שולחן עבודה מגיעים גם זוגות, משפחות וקבוצות. כולם בונים באותה דרך: בסבלנות, בידיים, ועם מישהו לצידם.</p>
+        <p class="closing">כשאתם באים לסדנה או קונים מוצר מהנגרייה, אתם חלק מהמקום הזה.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FAQ ===== -->
+  <section id="faq">
+    <div class="wrap">
+      <div class="head">
+        <p class="kicker">שאלות</p>
+        <h2>לפני שבאים.</h2>
+      </div>
+      <div class="faq-list">
+        <details><summary>צריך ניסיון בנגרות?</summary><p>לא. לומדים הכול במקום, וכל אחד יכול. את החיתוכים במסור אני מכין מראש, ואני לידכם לאורך כל הסדנה.</p></details>
+        <details><summary>מה לוקחים הביתה?</summary><p>את מה שבניתם. בסדנה הזוגית בוחרים מראש מה לבנות, ובסדנה לקבוצות כל אחד בונה אדנית.</p></details>
+        <details><summary>מאיזה גיל אפשר להגיע?</summary><p>לסדנה המשפחתית ילדים מגיל 3. הגילאים לסדנת הורה וילד ייקבעו כשההרשמה תיפתח.</p></details>
+        <details><summary>אפשר להגיע כזוג אחד?</summary><p>כן. בכל סדנה זוגית יש עד שלושה זוגות, וכל זוג נרשם בנפרד.</p></details>
+        <details><summary>איך נרשמים?</summary><p>כותבים לי בוואטסאפ או מתקשרים. אפשר גם דרך חוות רום. לסדנה לקבוצה עדיף לדבר איתי ישירות.</p></details>
+        <details><summary>איפה זה?</summary><p>בנגרייה בחוות רום, על הר כמון בגליל. קישורים לניווט יש באזור "המקום" למעלה.</p></details>
+      </div>
     </div>
   </section>
 
   <!-- ===== Contact ===== -->
   <section id="contact" class="contact">
-    <div class="wrap contact-grid">
-      <div>
-        <p class="kicker">יצירת קשר</p>
-        <h2 class="sec-title">היו חלק<br>מהעשייה.</h2>
-        <p class="lede">הזמנה פרטית, מתנה לעובדים או לאירוע, שיתוף פעולה, או ביקור בנגרייה ובחווה. כתבו לנו ונחזור אליכם.</p>
-        <ul>
-          <li>הזמנות פרטיות ומתנות</li>
-          <li>מתנות לעובדים, לאירועים ולארגונים</li>
-          <li>שיתופי פעולה עם עסקים וקהילות</li>
-          <li>ביקור בנגרייה ובחווה</li>
-        </ul>
-        <p class="shop-line">רוצים פשוט לקנות? <a class="textlink" href="https://havatrom.co.il/%D7%97%D7%A0%D7%95%D7%AA-%D7%94%D7%9E%D7%A9%D7%A7/" target="_blank" rel="noopener">המוצרים בחנות חוות רום</a></p>
-      </div>
-      <form class="form" id="contact-form" novalidate>
-        <div class="form-row">
-          <div class="field"><label for="f-name">שם מלא</label><input id="f-name" name="name" type="text" autocomplete="name" required></div>
-          <div class="field"><label for="f-phone">טלפון</label><input id="f-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel"></div>
+    <div class="wrap">
+      <div class="contact-box">
+        <div>
+          <p class="kicker">הזמנות ושאלות</p>
+          <h2>בואו לבנות.</h2>
+          <p>הכי פשוט לכתוב לי בוואטסאפ, ואחזור אליכם עם תאריך פנוי. אפשר גם להתקשר, או לדבר עם חוות רום. לסדנה לקבוצה עדיף לדבר איתי ישירות.</p>
         </div>
-        <div class="field"><label for="f-email">אימייל</label><input id="f-email" name="email" type="email" autocomplete="email" inputmode="email"></div>
-        <div class="field"><label for="f-msg">איך נוכל לעזור?</label><textarea id="f-msg" name="message" rows="4"></textarea></div>
-        <button class="btn btn-solid" type="submit" id="f-submit">שליחה</button>
-        <p class="form-ok" id="form-ok" role="status">ההודעה נפתחה בתוכנת המייל שלכם. אם לא נפתח כלום, כתבו לנו ישירות ל־nettaamit21@gmail.com</p>
-        <p class="form-note">אנחנו עונים לכל פנייה, בדרך כלל תוך יום עסקים.</p>
-      </form>
+        <div class="contact-actions">
+          <a class="btn btn-main" data-wa="היי נטע, אשמח לפרטים על הסדנאות" href="mailto:nettaamit21@gmail.com"><svg class="i"><use href="#i-wa"/></svg>כתבו לי בוואטסאפ</a>
+          <a class="btn btn-line" data-tel href="mailto:nettaamit21@gmail.com"><svg class="i"><use href="#i-phone"/></svg><span data-tel-label>טלפון</span></a>
+          <a class="btn btn-line" data-ig href="#" hidden><svg class="i"><use href="#i-ig"/></svg>אינסטגרם</a>
+          <a class="btn btn-line" href="mailto:nettaamit21@gmail.com">nettaamit21@gmail.com</a>
+          <p class="addr muted">הנגרייה בחוות רום, הר כמון</p>
+        </div>
+      </div>
     </div>
   </section>
 </main>
@@ -566,28 +478,62 @@
 <footer>
   <div class="wrap">
     <a class="brand" href="#top"><b>הנגרייה</b></a>
-    <p>נבנה בעץ, בסבלנות, ובאמונה באנשים.</p>
-    <p>© <span id="year">2026</span> · חוות רום, הר כמון · <a href="mailto:nettaamit21@gmail.com">nettaamit21@gmail.com</a></p>
+    <p class="motto">כל אחד יכול לבנות משהו מדהים, כשיש לו את המקום הנכון ומישהו לצידו.</p>
+    <p>© <span id="year">2026</span> נטע עמית · חוות רום, הר כמון · <a href="https://www.instagram.com/romfarm/" target="_blank" rel="noopener">@romfarm</a></p>
   </div>
 </footer>
 
+<div class="dock">
+  <a class="btn btn-main" data-wa="היי נטע, אני רוצה להזמין סדנה" href="#contact"><svg class="i"><use href="#i-wa"/></svg>להזמנת סדנה</a>
+  <a class="btn btn-line" data-tel href="#contact" aria-label="חיוג לנטע"><svg class="i"><use href="#i-phone"/></svg></a>
+</div>
+
 <script>
   (function () {
-    var CONTACT_EMAIL = 'nettaamit21@gmail.com';
-    var form = document.getElementById('contact-form');
-    var yearEl = document.getElementById('year');
-    if (yearEl) yearEl.textContent = String(new Date().getFullYear());
-    if (!form) return;
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-      var v = function (id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; };
-      var name = v('f-name'), phone = v('f-phone'), email = v('f-email'), msg = v('f-msg');
-      if (!name) { document.getElementById('f-name').focus(); return; }
-      var subject = 'פנייה מדף הנחיתה – ' + name;
-      var body = 'שם: ' + name + '\nטלפון: ' + phone + '\nאימייל: ' + email + '\n\n' + msg;
-      window.location.href = 'mailto:' + CONTACT_EMAIL + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
-      form.classList.add('sent');
+    // המספר של נטע, למשל '050-1234567'. כל עוד הוא ריק, הכפתורים מובילים למייל.
+    var PHONE = '';
+    // שם המשתמש באינסטגרם בלי @, למשל 'netta.wood'. כל עוד הוא ריק, הכפתור מוסתר.
+    var INSTAGRAM = '';
+    var EMAIL = 'nettaamit21@gmail.com';
+
+    var digits = PHONE.replace(/\D/g, '');
+    var intl = digits.charAt(0) === '0' ? '972' + digits.slice(1) : digits;
+
+    document.querySelectorAll('[data-wa]').forEach(function (a) {
+      var text = a.getAttribute('data-wa');
+      if (intl) {
+        a.href = 'https://wa.me/' + intl + '?text=' + encodeURIComponent(text);
+        a.target = '_blank';
+        a.rel = 'noopener';
+      } else {
+        a.href = 'mailto:' + EMAIL + '?subject=' + encodeURIComponent(text);
+      }
     });
+    document.querySelectorAll('[data-tel]').forEach(function (a) {
+      a.href = intl ? 'tel:+' + intl : 'mailto:' + EMAIL;
+    });
+    document.querySelectorAll('[data-tel-label]').forEach(function (s) {
+      if (PHONE) s.textContent = PHONE;
+    });
+    document.querySelectorAll('[data-ig]').forEach(function (a) {
+      if (!INSTAGRAM) return;
+      a.href = 'https://www.instagram.com/' + INSTAGRAM.replace(/^@/, '') + '/';
+      a.target = '_blank';
+      a.rel = 'noopener';
+      a.hidden = false;
+    });
+
+    // מה שמסומן data-until נעלם אחרי התאריך. מחיר עם data-price עובר למחיר הרגיל.
+    var d = new Date();
+    var today = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    document.querySelectorAll('[data-until]').forEach(function (el) {
+      if (today <= el.getAttribute('data-until')) return;
+      if (el.hasAttribute('data-price')) el.textContent = el.getAttribute('data-regular');
+      else el.hidden = true;
+    });
+
+    var yearEl = document.getElementById('year');
+    if (yearEl) yearEl.textContent = String(d.getFullYear());
   })();
 </script>
 </body>
