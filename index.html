@@ -93,7 +93,7 @@
   /* ---------- Hero ---------- */
   .hero { background: var(--teal); color: var(--on-teal); padding-block: clamp(3rem, 8vw, 6rem) clamp(3rem, 7vw, 5rem); text-align: center; }
   .hero .label { color: var(--on-teal-2); }
-  .wordmark { width: min(560px, 88%); margin: 1.4rem auto 2rem; filter: drop-shadow(-3px 8px 10px rgba(0, 0, 0, .35)); }
+  .wordmark { width: min(560px, 88%); margin: 1.4rem auto 2rem; filter: drop-shadow(0 6px 8px rgba(0, 0, 0, .3)); }
   .hero h1 { font-size: clamp(1.9rem, 4.6vw, 3rem); }
   .hero .intro { max-width: 46ch; margin: 1.1rem auto 0; color: var(--on-teal-2); font-size: clamp(1.02rem, 1.5vw, 1.15rem); }
   .hero .rehab-note { margin-top: .9rem; font-size: .95rem; color: var(--on-teal-2); }
@@ -126,7 +126,10 @@
   /* Workshops */
   .feature { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; overflow: hidden; }
   .feature figure { margin: 0; background: #E7EFEC; position: relative; min-height: 100%; }
-  .feature figure img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: 50% 55%; }
+  .feature .shots { position: absolute; inset: 0; display: flex; flex-direction: column; gap: 3px; }
+  .feature .shots img { flex: 2 1 0; min-height: 0; width: 100%; height: 100%; object-fit: cover; object-position: 62% 50%; }
+  .feature .shots .couple { flex-grow: 3; object-position: 50% 32%; }
+  .feature .shots img:only-child { object-position: 78% 50%; }
   .feature-body { padding: clamp(1.4rem, 4vw, 2.6rem); display: flex; flex-direction: column; gap: 1.1rem; }
   .feature h3 { font-size: clamp(1.7rem, 3.2vw, 2.2rem); }
   .facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .9rem 1.4rem; margin: 0; padding: 1rem 0; border-block: 1px solid var(--rule); }
@@ -141,7 +144,9 @@
   .note { color: var(--ink-2); font-size: .96rem; }
   @media (max-width: 820px) {
     .feature { grid-template-columns: 1fr; }
-    .feature figure img { position: static; aspect-ratio: 4 / 3; height: auto; }
+    .feature .shots { position: static; }
+    .feature .shots img { flex: none; height: auto; aspect-ratio: 16 / 10; }
+    .feature .shots .couple { aspect-ratio: 1 / 1; }
   }
 
   .special { margin-top: clamp(1rem, 2.4vw, 1.4rem); background: var(--mist); border-radius: 10px; padding: clamp(1.3rem, 3.5vw, 2rem) clamp(1.3rem, 4vw, 2.6rem); display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1rem 2rem; align-items: center; }
@@ -250,7 +255,7 @@
 
 <header class="top">
   <div class="wrap">
-    <a class="brand" href="#top"><img src="images/wordmark.webp" width="1304" height="336" alt="הנגרייה"><span>בחוות רום</span></a>
+    <a class="brand" href="#top"><img src="images/wordmark.webp" width="1490" height="390" alt="הנגרייה"><span>בחוות רום</span></a>
     <nav aria-label="ניווט">
       <ul>
         <li><a href="#workshops">הסדנאות</a></li>
@@ -269,7 +274,7 @@
   <div class="hero">
     <div class="wrap">
       <p class="label">סדנאות נגרות · חוות רום, הר כמון</p>
-      <img class="wordmark" src="images/wordmark.webp" width="1304" height="336" alt="הנגרייה">
+      <img class="wordmark" src="images/wordmark.webp" width="1490" height="390" alt="הנגרייה">
       <h1>כל אחד יכול לבנות משהו מדהים,<br>כשיש לו את המקום הנכון ומישהו לצידו.</h1>
       <p class="intro">אני נטע עמית, נגר. בנגרייה שלי בחוות רום זוגות, משפחות וקבוצות בונים בעצמם מעץ, בשקט של ההר, וחוזרים הביתה עם משהו שעשו בידיים. לא צריך ניסיון בנגרות.</p>
       <p class="rehab-note">הנגרייה היא גם נגרייה שיקומית. <a href="#same-table">על זה בהמשך</a></p>
@@ -300,7 +305,9 @@
 
       <article class="feature" id="couples">
         <figure>
-          <img src="images/tile-cars.jpg" width="1400" height="1100" alt="מכוניות עץ צבועות בכתום ובכחול, אחד הדברים שזוגות בונים בסדנה">
+          <div class="shots">
+            <img src="images/toy-cars.jpg" width="1024" height="768" alt="מכוניות עץ צבועות בכתום ובכחול, אחד הדברים שזוגות בונים בסדנה">
+          </div>
         </figure>
         <div class="feature-body">
           <h3>סדנה זוגית</h3>
@@ -337,6 +344,7 @@
             <li>שעה וחצי עד שעתיים</li>
             <li>4 עד 10 משתתפים, ילדים מגיל 3</li>
             <li class="num">ראשון ושלישי 16:30 עד 18:30</li>
+            <li class="num" data-until="2026-12-12">בחופשת חנוכה גם בבוקר: שבת 5.12, רביעי 9.12 ושבת 12.12 בשעה 10:00, שישי 11.12 בשעה 8:30</li>
           </ul>
           <p class="price num">250 ₪ למשתתף <small>מחיר השקה, אחר כך 280 ₪</small></p>
           <p>פעילות לילדים בגליל שכל המשפחה עושה יחד. הורים וילדים בונים פרויקט משותף, למשל אדנית לבית.</p>
@@ -468,7 +476,7 @@
 
 <footer>
   <div class="wrap">
-    <img src="images/wordmark.webp" width="1304" height="336" alt="הנגרייה">
+    <img src="images/wordmark.webp" width="1490" height="390" alt="הנגרייה">
     <p class="motto">כל אחד יכול לבנות משהו מדהים, כשיש לו את המקום הנכון ומישהו לצידו.</p>
     <p>© <span id="year">2026</span> נטע עמית · חוות רום, הר כמון · <a href="https://www.instagram.com/romfarm/" target="_blank" rel="noopener">@romfarm</a></p>
   </div>
