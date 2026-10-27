@@ -439,6 +439,7 @@
   .m-dayhead span{ font-size:0.76rem; color:var(--muted); }
   .m-ev{ display:flex; flex-wrap:wrap; gap:2px 8px; align-items:baseline; text-align:right; width:100%; background:var(--walnut); color:var(--paper); border:0; border-radius:9px; padding:6px 9px; font-family:inherit; cursor:pointer; }
   .m-ev .mono{ font-size:0.76rem; color:var(--brass); }
+  .m-ev .mono, .m-itext .mono, .m-fxrow .mono{ direction:ltr; unicode-bidi:isolate; display:inline-block; }
   .m-ev b{ font-size:0.86rem; }
   .m-ev .small{ color:rgba(242,236,221,.7); }
   .m-ev.soft{ background:transparent; color:var(--walnut); border:1px dashed var(--brass); }
@@ -538,6 +539,13 @@
   .m-calcbar b{ font-family:Georgia,serif; }
   .m-calcbar .small{ flex:1; color:rgba(242,236,221,.7); }
   .m-calcframe{ flex:1; width:100%; border:0; background:#fff; }
+
+  .m-blk{ display:flex; justify-content:space-between; align-items:baseline; gap:8px; margin:10px 0 2px; padding-top:6px; border-top:1px dashed var(--border); font-size:0.76rem; font-weight:700; color:var(--brass-dark); }
+  .m-blk span{ font-weight:400; color:var(--muted); font-family:"Courier New",Consolas,monospace; direction:ltr; }
+  .m-blk.lunch{ color:var(--muted); font-weight:600; }
+  .m-lunch{ height:0; border-top:1px dashed var(--brass); margin:6px 0; opacity:.7; }
+  .m-tomorrow{ display:block; width:100%; text-align:right; margin-top:6px; padding:8px 10px; border:1px dashed var(--brass); border-radius:10px; background:rgba(176,141,87,.08); font-family:inherit; font-size:0.86rem; color:var(--walnut); cursor:pointer; }
+  .m-rhythm .row-input[type="time"]{ width:96px; }
 
   /* ---------- the phone ---------- */
   .m-bottom{ display:none; }
@@ -6887,6 +6895,7 @@
         gcal: { cal:"", calName:"", tasks:true, untimed:true, steps:true, ws:true, meets:true, admin:true, fixed:false, auto:false },
         week: defaultWeek(),
         denis: { from:"08:00", to:"12:00" },
+        rhythm: { start:"07:30", amEnd:"13:00", pmStart:"14:00", end:"17:00" },
         dealSeq: 1001,
         hours: { 0:["08:00","18:00"], 1:["08:00","18:00"], 2:["08:00","18:00"], 3:["08:00","18:00"], 4:["08:00","18:00"], 5:["08:00","13:00"], 6:null },
         fixed: []
@@ -8236,46 +8245,57 @@
     function isPhone(){ return !!(window.matchMedia && window.matchMedia("(max-width: 760px)").matches); }
     function whoTag(w){ return w && w !== "me" ? '<span class="m-who-tag">' + esc(w === "denis" ? "דניס" : w === "shikum" ? "שיקום" : "מי שפנוי") + "</span>" : ""; }
     function dayCount(d){ return fixedOn(d).length + meetingsOn(d).length + wsOn(d).length + prepOn(d).length + stepsOn(d).length + docsOn(d).length + monthEndOn(d).length + tasksOn(d).length; }
-    function dayItems(d){
-      var t = today(), h = "", contact = S.settings.client.contact || "המנהלת";
+    /* A day's items, in the order of the day: shop work before lunch, organising and people after it. */
+    function dayItems(d, heads){
+      var t = today(), contact = S.settings.client.contact || "המנהלת", R = rhythm(), pmFrom = toMin(R.amEnd), top = [], am = [], pm = [];
+      function put(min, blk, html){ (min == null ? (blk === "pm" ? pm : am) : (min < pmFrom ? am : pm)).push({ m:min, h:html }); }
       fixedOn(d).forEach(function(f){
         var when = f.allDay || f.off ? "" : (f.start || "") + (f.end ? "–" + f.end : "");
-        h += '<button type="button" class="m-ev' + (f.soft ? " soft" : "") + (f.off ? " offev" : "") + '" data-k="ev-' + esc(f.id) + '" data-mact="openEvent" data-id="' + esc(f.id) + '">' + (when ? '<span class="mono">' + esc(when) + "</span>" : "") + "<b>" + esc(f.title || "אירוע") + "</b>" + ((f.prep || []).length ? '<span class="small muted">' + (f.prep || []).length + " הכנות</span>" : "") + "</button>";
+        var h = '<button type="button" class="m-ev' + (f.soft ? " soft" : "") + (f.off ? " offev" : "") + '" data-k="ev-' + esc(f.id) + '" data-mact="openEvent" data-id="' + esc(f.id) + '">' + (when ? '<span class="mono">' + esc(when) + "</span>" : "") + "<b>" + esc(f.title || "אירוע") + "</b>" + ((f.prep || []).length ? '<span class="small muted">' + (f.prep || []).length + " הכנות</span>" : "") + "</button>";
+        if (f.allDay || f.off || toMin(f.start) == null) top.push({ m:null, h:h }); else put(toMin(f.start), null, h);
       });
       meetingsOn(d).forEach(function(x){
         var st = x.rec && x.rec.start, when = st ? st + "–" + endOf(st, x.r.hours * 60) : "";
-        h += '<button type="button" class="m-ev meet" data-k="mt-' + esc(x.p.id + x.r.key) + '" data-mact="goProg" data-id="' + esc(x.p.id) + '" data-arg="' + mk(d) + '">' + (when ? '<span class="mono">' + esc(when) + "</span>" : "") + "<b>" + esc(x.r.name) + '</b><span class="small">' + esc(progShort(x.p)) + "</span></button>";
+        put(toMin(st), "pm", '<button type="button" class="m-ev meet" data-k="mt-' + esc(x.p.id + x.r.key) + '" data-mact="goProg" data-id="' + esc(x.p.id) + '" data-arg="' + mk(d) + '">' + (when ? '<span class="mono">' + esc(when) + "</span>" : "") + "<b>" + esc(x.r.name) + '</b><span class="small">' + esc(progShort(x.p)) + "</span></button>");
       });
       wsOn(d).forEach(function(w){
         var when = w.start ? w.start + (n(w.hours) ? "–" + endOf(w.start, n(w.hours) * 60) : "") : "";
-        h += '<button type="button" class="m-ev ws" data-k="ws-' + esc(w.id) + '" data-mact="goWs" data-id="' + esc(w.id) + '">' + (when ? '<span class="mono">' + esc(when) + "</span>" : "") + "<b>🪚 " + esc(wsName(w)) + "</b>" + (w.client ? '<span class="small">' + esc(w.client) + (n(w.people) ? " · " + esc(w.people) + " משתתפים" : "") + "</span>" : "") + "</button>";
+        put(toMin(w.start), "pm", '<button type="button" class="m-ev ws" data-k="ws-' + esc(w.id) + '" data-mact="goWs" data-id="' + esc(w.id) + '">' + (when ? '<span class="mono">' + esc(when) + "</span>" : "") + "<b>🪚 " + esc(wsName(w)) + "</b>" + (w.client ? '<span class="small">' + esc(w.client) + (n(w.people) ? " · " + esc(w.people) + " משתתפים" : "") + "</span>" : "") + "</button>");
       });
       monthEndOn(d).forEach(function(x){
-        h += '<div class="m-item m-admin" data-k="me-' + x.k + '">' + check("monthEndDone", x.k, null, false, "סוף חודש") +
+        put(null, "pm", '<div class="m-item m-admin" data-k="me-' + x.k + '">' + check("monthEndDone", x.k, null, false, "סוף חודש") +
           '<button type="button" class="m-itext m-open" data-mact="goFarmMonth" data-arg="' + x.k + '">סוף ' + esc(monthName(x.k)) + ": חשבונות עסקה והתחשבנות ל" + esc(contact) +
-          (x.late ? '<span class="m-tag late">באיחור</span>' : "") + '<span class="m-tag">🧾 הנהלת חשבונות</span></button></div>';
+          (x.late ? '<span class="m-tag late">באיחור</span>' : "") + '<span class="m-tag">🧾 הנהלת חשבונות</span></button></div>');
       });
       docsOn(d).forEach(function(x){
-        h += '<div class="m-item m-admin" data-k="dc-' + esc(x.id) + '">' + check("docIssued", x.id, null, false, "הוצא") +
+        put(null, "pm", '<div class="m-item m-admin" data-k="dc-' + esc(x.id) + '">' + check("docIssued", x.id, null, false, "הוצא") +
           '<button type="button" class="m-itext m-open" data-mact="openDoc" data-id="' + esc(x.id) + '">להוציא ' + esc(DOC_KINDS[x.kind]) + (x.party ? " · " + esc(x.party) : "") + (n(x.amount) ? ' <span class="mono">' + esc(ils(x.amount)) + "</span>" : "") +
-          (x.by && x.by < t ? '<span class="m-tag late">מחכה מ־' + esc(dm(x.by)) + "</span>" : "") + '<span class="m-tag">🧾 מורנינג</span></button></div>';
+          (x.by && x.by < t ? '<span class="m-tag late">מחכה מ־' + esc(dm(x.by)) + "</span>" : "") + '<span class="m-tag">🧾 מורנינג</span></button></div>');
       });
       prepOn(d).forEach(function(x){
         var on = prepDone(x.ev, x.f, x.p);
-        h += '<div class="m-item' + (on ? " done" : "") + '" data-k="pp-' + esc(x.ev + x.f.id + x.p.id) + '">' + check("prepToggle", x.f.id + ":" + x.p.id, x.ev, on, x.p.text) +
-          '<button type="button" class="m-itext m-open" data-mact="openPrep" data-id="' + esc(x.f.id + ":" + x.p.id) + '" data-arg="' + x.ev + '" title="להזיז ליום אחר">' + esc(x.p.text) + '<span class="m-tag">' + (x.moved ? "הוזז · " : "") + (x.before ? "הכנה ל" + esc(x.f.title) + " (" + DAYS[wd(x.ev)] + ")" : esc(x.f.title)) + "</span></button></div>";
+        put(null, blockOf(x.p.kind || guessKind(x.p.text)), '<div class="m-item' + (on ? " done" : "") + '" data-k="pp-' + esc(x.ev + x.f.id + x.p.id) + '">' + check("prepToggle", x.f.id + ":" + x.p.id, x.ev, on, x.p.text) +
+          '<button type="button" class="m-itext m-open" data-mact="openPrep" data-id="' + esc(x.f.id + ":" + x.p.id) + '" data-arg="' + x.ev + '" title="להזיז ליום אחר">' + esc(x.p.text) + '<span class="m-tag">' + (x.moved ? "הוזז · " : "") + (x.before ? "הכנה ל" + esc(x.f.title) + " (" + DAYS[wd(x.ev)] + ")" : esc(x.f.title)) + "</span></button></div>");
       });
       stepsOn(d).forEach(function(x){
-        h += '<div class="m-item' + (x.s.done ? " done" : "") + '" data-k="sp-' + esc(x.s.id) + '">' + check("stepToggle", x.s.id, x.o.id, x.s.done, x.s.text) +
-          '<button type="button" class="m-itext m-open" data-mact="goOrder" data-id="' + esc(x.o.id) + '">' + esc(x.s.text) + whoTag(x.s.who) + '<span class="m-tag">📦 ' + esc(x.o.title || "הזמנה") + "</span></button></div>";
+        put(null, blockOf(stepKind(x.s)), '<div class="m-item' + (x.s.done ? " done" : "") + '" data-k="sp-' + esc(x.s.id) + '">' + check("stepToggle", x.s.id, x.o.id, x.s.done, x.s.text) +
+          '<button type="button" class="m-itext m-open" data-mact="goOrder" data-id="' + esc(x.o.id) + '">' + esc(x.s.text) + whoTag(x.s.who) + '<span class="m-tag">📦 ' + esc(x.o.title || "הזמנה") + "</span></button></div>");
       });
       tasksOn(d).forEach(function(x){
         var subs = x.subtasks || [], sd = subs.filter(function(s){ return s.done; }).length;
-        h += '<div class="m-item' + (x.done ? " done" : "") + '" data-k="t-' + esc(x.id) + '">' + check("taskToggle", x.id, null, x.done, x.title) +
+        put(toMin(x.start), x.who === "denis" ? "am" : blockOf(taskKind(x)), '<div class="m-item' + (x.done ? " done" : "") + '" data-k="t-' + esc(x.id) + '">' + check("taskToggle", x.id, null, x.done, x.title) +
           '<button type="button" class="m-itext m-open" data-mact="openTask" data-id="' + esc(x.id) + '">' + (x.start ? '<span class="mono">' + esc(x.start + (x.mins ? "–" + endOf(x.start, x.mins) : "")) + "</span> " : "") + esc(x.title || "(בלי שם)") + whoTag(x.who) +
-          (subs.length ? '<span class="m-tag">' + sd + "/" + subs.length + " תתי־משימות</span>" : "") + (x.rolledFrom && !x.done ? '<span class="m-tag">הועבר מ־' + esc(dm(x.rolledFrom)) + "</span>" : "") + "</button></div>";
+          (subs.length ? '<span class="m-tag">' + sd + "/" + subs.length + " תתי־משימות</span>" : "") + (x.rolledFrom && !x.done ? '<span class="m-tag">הועבר מ־' + esc(dm(x.rolledFrom)) + "</span>" : "") + "</button></div>");
       });
-      return h;
+      function sorted(list){ return list.filter(function(x){ return x.m != null; }).sort(function(a, b){ return a.m - b.m; }).concat(list.filter(function(x){ return x.m == null; })).map(function(x){ return x.h; }).join(""); }
+      var p = dayProfile(wd(d)), work = p.me !== "away" && !fixedOn(d).some(function(f){ return f.off; });
+      if (heads && work && d >= t && isWorkday(addD(d, 1))) pm.push({ m:null, h:'<button type="button" class="m-tomorrow" data-k="tm-' + d + '" data-mact="prepTomorrow" data-arg="' + addD(d, 1) + '">📝 להכין את המשימות של ' + esc(DAYS[wd(addD(d, 1))]) + "</button>" });
+      if (!am.length && !pm.length) return sorted(top);
+      if (!heads) return sorted(top) + sorted(am) + (am.length && pm.length ? '<div class="m-lunch" aria-hidden="true"></div>' : "") + sorted(pm);
+      return sorted(top) +
+        (am.length ? '<div class="m-blk">בוקר · עבודה בנגרייה <span>' + esc(R.start + "–" + R.amEnd) + "</span></div>" + sorted(am) : "") +
+        (work ? '<div class="m-blk lunch">🍽 צהריים <span>' + esc(R.amEnd + "–" + R.pmStart) + "</span></div>" : "") +
+        (pm.length ? '<div class="m-blk">אחר הצהריים · התארגנות ואנשים <span>' + esc(R.pmStart + "–" + R.end) + "</span></div>" + sorted(pm) : "");
     }
     function calTools(){
       var gs = S.gsync;
@@ -8334,7 +8354,7 @@
       }
       h += "</div>";
       h += '<div class="panel m-dayp" data-k="pday-' + d + '"><div class="m-dayptitle"><div><b>' + DAYS[wd(d)] + " " + dm(d) + (d === t ? " · היום" : "") + "</b>" + (p.label ? '<span class="small muted">' + esc(p.label) + (p.denis ? " · " + denisLabel() : "") + "</span>" : "") + "</div></div>" +
-        (dayItems(d) || '<p class="empty-note">אין כלום ביום הזה.</p>') +
+        (dayItems(d, true) || '<p class="empty-note">אין כלום ביום הזה.</p>') +
         (d >= t ? '<button type="button" class="btn-add" data-mact="newTask" data-arg="' + d + '">+ משימה ל' + esc(DAYS[wd(d)]) + "</button>" : "") + "</div>";
       h += calTools();
       h += '<details class="m-fold" data-k="cal-more"><summary>הלו״ז הקבוע ומשימות בלי יום</summary>' + calExtras() + "</details>";
@@ -8371,7 +8391,7 @@
         '<button type="button" data-mact="nav" data-arg="capture"><span>₪</span>הוצאה או מכירה</button></div>';
       var att = attention();
       if (att.length) h += '<div class="panel m-attp" data-k="att"><div class="panel-head"><h4>מחכה לך</h4></div><div class="m-atts">' + att.join("") + "</div></div>";
-      h += '<div class="panel m-dayp" data-k="today"><div class="panel-head"><h4>היום</h4><button type="button" class="link-btn" data-mact="nav" data-arg="calendar">לכל השבוע</button></div>' + (dayItems(t) || '<p class="empty-note">אין כלום היום.</p>') + "</div>";
+      h += '<div class="panel m-dayp" data-k="today"><div class="panel-head"><h4>היום</h4><button type="button" class="link-btn" data-mact="nav" data-arg="calendar">לכל השבוע</button></div>' + (dayItems(t, true) || '<p class="empty-note">אין כלום היום.</p>') + "</div>";
       h += '<div class="panel m-dayp" data-k="tomorrow"><div class="panel-head"><h4>מחר · ' + esc(DAYS[wd(tm)]) + '</h4><span class="small muted">' + esc(dayProfile(wd(tm)).label || "") + "</span></div>" + (dayItems(tm) || '<p class="empty-note">אין כלום מחר.</p>') + "</div>";
       var k = mk(t), pr = profitOf(k), f = farmCalc(monthOf(k));
       h += '<div class="m-money" data-k="money"><button type="button" data-mact="nav" data-arg="ledger"><span>רווח העסק ב' + esc(monthName(k)) + '</span><b class="mono">' + esc(ils(pr.net)) + "</b></button>" +
@@ -8391,7 +8411,7 @@
         var i = o.list.indexOf(x), it = x.it;
         return '<div class="m-pitem' + (x.on ? "" : " off") + '" data-k="op-' + i + '">' + check("optToggle", String(i), null, x.on, it.title) +
           '<div class="m-pbody"><b>' + esc(it.title) + '</b><div class="m-pmeta"><span class="m-kind">' + esc(KIND_SHORT[it.kind] || "") + "</span>" +
-          '<span class="small">' + (it.cur ? esc(DAYS_SHORT[wd(it.cur)] + " " + dm(it.cur)) + " ← " : "בלי יום ← ") + "<b>" + esc(DAYS[wd(x.day)] + " " + dm(x.day)) + "</b>" + (x.ex !== "me" ? " · " + esc(exName[x.ex]) : "") + "</span></div>" +
+          '<span class="small">' + (it.cur ? esc(DAYS_SHORT[wd(it.cur)] + " " + dm(it.cur)) + (it.curStart ? " " + esc(it.curStart) : "") + " ← " : "בלי יום ← ") + "<b>" + esc(DAYS[wd(x.day)] + " " + dm(x.day) + (x.start ? " · " + x.start : "")) + "</b>" + (x.ex !== "me" ? " · " + esc(exName[x.ex]) : "") + "</span></div>" +
           (x.why ? '<div class="small muted">' + esc(x.why) + "</div>" : "") + "</div></div>";
       }).join("") + "</div>";
       var on = changes.filter(function(x){ return x.on; }).length;
@@ -8588,6 +8608,10 @@
         sf("אחוז מפרויקטים לחווה", "farm.rates.farmwork", { im:"decimal", num:true }) + sf("אחוז ממכירות בחנות", "farm.rates.shop", { im:"decimal", num:true }) + sf("הערה מההסכם", "farm.note") + "</div>" +
         '<div class="small muted" style="margin-top:6px;">התמחור של חוסן, שיקום ושאר התוכניות (כולל האחוז לחווה מכל תוכנית) נמצא בלשונית חוות רום, ליד כל תוכנית.</div>';
       h += '<div class="calc-section" id="m-weekset">השבוע שלי</div><p class="small muted" style="margin:0 0 8px;">מה מתאים לכל יום, אם אני בנגרייה ומתי דניס עובד. ״סידור חכם״ בלוח השנה מסדר לפי זה, וחשבוניות נכנסות ליום של הנהלת החשבונות. ימי השיקום נלקחים מהתוכניות.</p>' +
+        '<div class="m-actions m-rhythm" style="margin:0 0 8px;"><b>מהלך היום</b>' +
+        [["start", "מגיע"], ["amEnd", "עבודה בנגרייה עד"], ["pmStart", "צהריים עד"], ["end", "התארגנות ואנשים עד"]].map(function(x){
+          return '<span class="inline-group"><span class="cap muted">' + x[1] + "</span>" + inp("s:rhythm." + x[0], rhythm()[x[0]], { type:"time", cls:"row-input", label:x[1] }) + "</span>";
+        }).join("") + '<span class="small muted">לפני הצהריים ״סידור חכם״ שם ייצור, חיתוך ושיפוץ. אחרי הצהריים: הודעות, הנהלת חשבונות, נסיעות והכנת המשימות למחר.</span></div>' +
         '<div class="m-actions" style="margin:0 0 8px;"><b>דניס עובד</b><span class="inline-group"><span class="cap muted">משעה</span>' + inp("s:denis.from", denisHours()[0], { type:"time", cls:"row-input", label:"דניס משעה" }) + "</span>" +
         '<span class="inline-group"><span class="cap muted">עד</span>' + inp("s:denis.to", denisHours()[1], { type:"time", cls:"row-input", label:"דניס עד שעה" }) + '</span><span class="small muted">בימים שמסומן בהם ״דניס״. זה הזמן להכנת חומר וחיתוכים.</span></div>' +
         '<div class="m-weekrows">' + DAYS.map(function(dn, i){
@@ -9337,23 +9361,54 @@
         L.push("- " + DAYS[i] + ": " + (p.label || "") + " · " + (ME_LEVELS.filter(function(x){ return x[0] === p.me; })[0] || ["", ""])[1] +
           (p.focus && p.focus.length ? " · מתאים ל: " + p.focus.map(function(k){ return KIND_SHORT[k]; }).join(", ") : "") + (who.length ? " · " + who.join(", ") : ""));
       }
+      var r = rhythm();
+      L.push("- מהלך יום רגיל: מגיע ב־" + r.start + ", עבודה בנגרייה (ייצור, חיתוך, שיפוץ) עד " + r.amEnd + ", צהריים, ומ־" + r.pmStart + " רגוע בחווה: ארגונים, דיבור עם אנשים והכנת המשימות למחר, עד " + r.end + ".");
       return L.join("\n");
     }
 
+    /* The shape of a workday: hands-on work from arrival until lunch; after lunch the farm is quiet,
+       the time for organising, talking with people and getting tomorrow ready. */
+    function rhythm(){
+      var r = S.settings.rhythm || {};
+      return { start:r.start || "07:30", amEnd:r.amEnd || "13:00", pmStart:r.pmStart || "14:00", end:r.end || "17:00" };
+    }
+    function blockOf(kind){ return SHOP_KINDS.indexOf(kind) >= 0 ? "am" : "pm"; }
+    function minsOf(t){ return toMin(t) == null ? null : toMin(t); }
+    function cutGaps(gaps, a, b){
+      var out = [];
+      gaps.forEach(function(g){
+        if (b <= g[0] || a >= g[1]){ out.push(g); return; }
+        if (a > g[0]) out.push([g[0], a]);
+        if (b < g[1]) out.push([b, g[1]]);
+      });
+      return out;
+    }
+    function busyOf(d){
+      var out = [];
+      fixedOn(d).forEach(function(f){ if (f.soft || f.off || f.allDay) return; var a = minsOf(f.start), b = minsOf(f.end); if (a != null) out.push([a, b != null && b > a ? b : a + 60]); });
+      meetingsOn(d).forEach(function(x){ var a = minsOf(x.rec && x.rec.start); if (a != null) out.push([a, a + x.r.hours * 60]); });
+      wsOn(d).forEach(function(w){ var a = minsOf(w.start); if (a != null) out.push([a, a + (n(w.hours) || 2) * 60]); });
+      tasksOn(d).forEach(function(x){ if (x.done || !x.start || x.autoTime || (x.who && x.who !== "me")) return; var a = minsOf(x.start); if (a != null) out.push([a, a + (n(x.mins) || 60)]); });
+      return out;
+    }
+    function gapSum(g){ return g.reduce(function(a, x){ return a + x[1] - x[0]; }, 0); }
+
     /* The smart arrangement. Every loose item gets the day (and, for shop work, the person) that suits it best:
-       the day's purpose first, then how full the day already is, then the deadline. Nothing changes until approved. */
+       the day's purpose first, then how full the day already is, then the deadline. My own tasks also get an hour:
+       shop work before lunch, organising after it. Nothing changes until approved. */
     function optimizeWeek(ws){
-      var t = today(), we = addD(ws, 6), from = ws < t ? t : ws, days = [];
+      var t = today(), we = addD(ws, 6), from = ws < t ? t : ws, days = [], R = rhythm();
       for (var d = from; d <= we; d = addD(d, 1)) days.push(d);
-      var load = {}, cap = {};
+      var st = {};
       days.forEach(function(d){
-        var p = dayProfile(wd(d)), off = fixedOn(d).some(function(f){ return f.off; });
-        var me = off ? 0 : ME_CAP[p.me] || 0;
-        wsOn(d).forEach(function(w){ me -= (n(w.hours) || 2) * 60; });
-        meetingsOn(d).forEach(function(x){ me -= x.r.hours * 60; });
-        cap[d] = { me:Math.max(0, me), denis: p.denis && !off ? denisMins() : 0, shikum: shikumDay(d) ? shikumMins(d) : 0 };
-        load[d] = { me:0, denis:0, shikum:0 };
-        tasksOn(d).forEach(function(x){ if (!x.done && x.start) load[d].me += n(x.mins) || 60; });
+        var p = dayProfile(wd(d)), off = fixedOn(d).some(function(f){ return f.off; }), busy = busyOf(d);
+        var am = [[minsOf(R.start), minsOf(R.amEnd)]], pm = p.me === "full" ? [[minsOf(R.pmStart), minsOf(R.end)]] : [];
+        if (d === t){ var nowM = new Date().getHours() * 60 + new Date().getMinutes(); am = cutGaps(am, 0, nowM); pm = cutGaps(pm, 0, nowM); }
+        busy.forEach(function(x){ am = cutGaps(am, x[0], x[1]); pm = cutGaps(pm, x[0], x[1]); });
+        if (off || p.me === "away"){ am = []; pm = []; }
+        st[d] = { p:p, am:am, pm:pm, capAm:gapSum(am), capPm:gapSum(pm), usedAm:0, usedPm:0,
+          away: !off && p.me === "away" ? 90 : 0, usedAway:0,
+          denis: p.denis && !off ? denisMins() : 0, usedDenis:0, shikum: shikumDay(d) ? shikumMins(d) : 0, usedShikum:0 };
       });
       var items = [];
       function add(o){ o.mins = n(o.mins) || KIND_MINS[o.kind] || 60; items.push(o); }
@@ -9362,7 +9417,7 @@
         var inWeek = x.day && x.day >= from && x.day <= we;
         if (!inWeek && x.day) return;
         var tk = taskKind(x);
-        add({ type:"task", id:x.id, title:x.title, kind:tk, who:x.who || (tk === "cutting" ? "any" : "me"), cur:x.day || null, due:x.due || null, mins:x.mins, on: inWeek || (x.due && x.due <= we) });
+        add({ type:"task", id:x.id, title:x.title, kind:tk, who:x.who || (tk === "cutting" ? "any" : "me"), cur:x.day || null, curStart:x.autoTime ? x.start : null, due:x.due || null, mins:x.mins, on: inWeek || (x.due && x.due <= we) });
       });
       allOrders().forEach(function(o){
         if (o.closed) return;
@@ -9381,24 +9436,39 @@
         docsOn(d).forEach(function(x){ add({ type:"doc", id:x.id, title:"להוציא " + DOC_KINDS[x.kind] + (x.party ? " · " + x.party : ""), kind:"admin", who:"me", cur:d, due:null, mins:20, on:true }); });
       });
       items.sort(function(a, b){ return String(a.due || "9999").localeCompare(String(b.due || "9999")) || b.mins - a.mins; });
+      /* Where in a day an item of mine would go: its own half of the day, else the other half. */
+      function meSlot(s, it){
+        if (s.p.me === "away") return s.away ? { block:"away", cap:s.away, used:s.usedAway, pen:0 } : null;
+        var pref = blockOf(it.kind), other = pref === "am" ? "pm" : "am";
+        var capP = pref === "am" ? s.capAm : s.capPm, usedP = pref === "am" ? s.usedAm : s.usedPm;
+        var capO = other === "am" ? s.capAm : s.capPm, usedO = other === "am" ? s.usedAm : s.usedPm;
+        if (capP - usedP >= it.mins || capO - usedO < it.mins) return capP ? { block:pref, cap:capP, used:usedP, pen:0 } : capO ? { block:other, cap:capO, used:usedO, pen:0.6 } : null;
+        return { block:other, cap:capO, used:usedO, pen:0.6 };
+      }
       var out = [];
       items.forEach(function(it){
         var best = null;
         days.forEach(function(d, idx){
           if (it.due && d > it.due) return;
-          if (it.type === "prep" && d === it.due && it.kind === "errand"){ /* still fine: the same morning, before the event */ }
-          var p = dayProfile(wd(d)), fi = (p.focus || []).indexOf(it.kind);
+          var s = st[d], p = s.p, fi = (p.focus || []).indexOf(it.kind);
           if (fi < 0 && it.kind === "cutting") fi = (p.focus || []).indexOf("production");
           var execs = it.who === "any" ? ["denis", "shikum", "me"] : [it.who];
           execs.forEach(function(ex){
-            if (!cap[d][ex]) return;
-            if (ex === "me" && it.kind !== "message"){
-              if (p.me === "away" && fi < 0) return;
-              if ((it.kind === "production" || it.kind === "cutting") && fi < 0) return;
+            var cap, used, block = null, pen = 0;
+            if (ex === "me"){
+              if (it.kind !== "message"){
+                if (p.me === "away" && fi < 0) return;
+                if ((it.kind === "production" || it.kind === "cutting") && fi < 0) return;
+              }
+              var sl = meSlot(s, it); if (!sl) return;
+              cap = sl.cap; used = sl.used; block = sl.block; pen = sl.pen;
+            } else {
+              if (SHOP_KINDS.indexOf(it.kind) < 0) return;
+              cap = ex === "denis" ? s.denis : s.shikum; used = ex === "denis" ? s.usedDenis : s.usedShikum;
+              if (!cap) return;
             }
-            if ((ex === "denis" || ex === "shikum") && SHOP_KINDS.indexOf(it.kind) < 0) return;
-            var after = load[d][ex] + it.mins, ratio = after / cap[d][ex];
-            var sc = (fi === 0 ? 3 : fi > 0 ? 2.5 - fi * 0.3 : 0.6);
+            var ratio = (used + it.mins) / cap;
+            var sc = (fi === 0 ? 3 : fi > 0 ? 2.5 - fi * 0.3 : 0.6) - pen;
             if (ex !== "me") sc += 1;
             if (ex === "denis" && it.kind === "cutting") sc += 1.5;
             if (it.cur === d) sc += 0.5;
@@ -9406,21 +9476,39 @@
             sc -= ratio * 2.5;
             if (ratio > 1) sc -= 4;
             sc -= idx * (it.due ? 0.25 : 0.1);
-            if (!best || sc > best.sc) best = { d:d, ex:ex, sc:sc, fi:fi, ratio:ratio };
+            if (!best || sc > best.sc) best = { d:d, ex:ex, sc:sc, fi:fi, block:block };
           });
         });
         if (!best) return;
-        var start = best.ex === "denis" && it.type === "task" ? hm(toMin(denisHours()[0]) + load[best.d].denis) : null;
-        load[best.d][best.ex] += it.mins;
-        var p = dayProfile(wd(best.d)), why = [];
+        var s = st[best.d], start = null;
+        if (best.ex === "denis"){
+          if (it.type === "task") start = hm(minsOf(denisHours()[0]) + s.usedDenis);
+          s.usedDenis += it.mins;
+        } else if (best.ex === "shikum") s.usedShikum += it.mins;
+        else if (best.block === "away") s.usedAway += it.mins;
+        else {
+          var gaps = best.block === "am" ? s.am : s.pm, g = null;
+          for (var i = 0; i < gaps.length; i++){ if (gaps[i][1] - gaps[i][0] >= it.mins){ g = gaps[i]; break; } }
+          if (!g && gaps.length) g = gaps.slice().sort(function(x, y){ return (y[1] - y[0]) - (x[1] - x[0]); })[0];
+          if (g){
+            if (it.type === "task") start = hm(g[0]);
+            var cut = cutGaps(gaps, g[0], g[0] + it.mins);
+            if (best.block === "am") s.am = cut; else s.pm = cut;
+          }
+          if (best.block === "am") s.usedAm += it.mins; else s.usedPm += it.mins;
+        }
+        var p = s.p, why = [];
         if (best.ex === "denis") why.push(denisLabel() + (it.kind === "cutting" ? ", הכנת חומר וחיתוכים" : ", יכול לבד"));
         else if (best.ex === "shikum") why.push("יום שיקום, מייצרים איתם");
+        else if (best.block === "am") why.push(blockOf(it.kind) === "am" ? "לפני הצהריים, עבודה בנגרייה" : s.p.me === "part" ? "בבוקר" : "בבוקר, כי אחרי הצהריים כבר מלא");
+        else if (best.block === "pm") why.push(blockOf(it.kind) === "pm" ? "אחרי הצהריים, זמן להתארגנות ואנשים" : "אחרי הצהריים, כי הבוקר כבר מלא");
         if (best.fi >= 0 && p.label) why.push(p.label);
-        if (it.cur && it.cur !== best.d && cap[it.cur] && load[it.cur].me > cap[it.cur].me) why.push(DAYS[wd(it.cur)] + " כבר מלא");
+        if (it.cur && it.cur !== best.d && st[it.cur] && st[it.cur].capAm + st[it.cur].capPm > 0 && st[it.cur].usedAm + st[it.cur].usedPm > st[it.cur].capAm + st[it.cur].capPm) why.push(DAYS[wd(it.cur)] + " כבר מלא");
         if (it.due) why.push("עד " + dm(it.due));
-        out.push({ it:it, day:best.d, ex:best.ex, start:start, why:why.join(" · "), on: it.on && (it.cur !== best.d || (it.who === "any" && best.ex !== "me")), same: it.cur === best.d });
+        var same = it.cur === best.d && (it.type !== "task" || (it.curStart || null) === start || !it.curStart && !start);
+        out.push({ it:it, day:best.d, ex:best.ex, start:start, why:why.join(" · "), on: it.on && (!same || (it.who === "any" && best.ex !== "me") || (it.type === "task" && start && it.curStart !== start)), same: same && !(it.type === "task" && start && it.curStart !== start) });
       });
-      return out.sort(function(a, b){ return a.day.localeCompare(b.day); });
+      return out.sort(function(a, b){ return a.day.localeCompare(b.day) || String(a.start || "99").localeCompare(String(b.start || "99")); });
     }
     function applyOptimize(list){
       var n0 = 0;
@@ -9648,6 +9736,7 @@
       month: function(i, a){ goToMonth(a === "0" ? todayMonthKey() : shiftMonth(currentMonthKey, +a)); render(); },
       week: function(i, a){ S.week = a === "0" ? weekStartOf(today()) : addD(S.week, 7 * +a); S.day = null; render(); },
       pickDay: function(i, d){ S.day = d; render(); },
+      prepTomorrow: function(i, d){ S.sheet = null; S.week = weekStartOf(d); S.day = d; switchView("calendar"); render(); },
 
       /* Phone navigation */
       nav: function(i, v){
