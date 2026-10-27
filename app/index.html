@@ -157,9 +157,6 @@
   .seg button { border: 0; background: none; padding: 6px 11px; color: var(--ink2); font-size: .86rem; min-height: 34px; }
   .seg button + button { border-inline-start: 1px solid var(--line); }
   .seg button[aria-pressed="true"] { background: var(--ink); color: var(--on-ink); }
-  .seg.state button[aria-pressed="true"][data-v="done"] { background: var(--pine); color: #fff; }
-  .seg.state button[aria-pressed="true"][data-v="partial"] { background: var(--amber); color: #fff; }
-  .seg.state button[aria-pressed="true"][data-v="not"] { background: var(--rust); color: #fff; }
 
   .chip { display: inline-flex; align-items: center; gap: 4px; border: 1px solid var(--line); border-radius: 999px; padding: 0 8px; font-size: .76rem; line-height: 1.7; white-space: nowrap; color: var(--ink2); }
   .chip.oak { border-color: var(--oak); color: var(--oak); }
@@ -207,6 +204,7 @@
   .fixedrow.soft { background: transparent; border: 1px dashed var(--line); color: var(--ink2); }
   .fixedrow.off { background: var(--amber-soft); color: var(--amber); }
   .timeline { display: flex; flex-direction: column; gap: 6px; }
+  .listnote { font-size: .8rem; color: var(--ink2); }
   .empty { border: 1px dashed var(--line); border-radius: 8px; padding: 14px; color: var(--ink2); font-size: .9rem; }
 
   /* ---------- the ruler (a day's capacity) ---------- */
@@ -342,11 +340,6 @@
   .sheet details { border: 1px solid var(--line); border-radius: 8px; background: var(--bg); }
   .sheet details > summary { cursor: pointer; padding: 10px 12px; font-weight: 600; }
   .sheet details > .inner { padding: 4px 12px 14px; display: flex; flex-direction: column; gap: 10px; }
-  .ci-item { display: flex; flex-direction: column; gap: 6px; padding: 10px 0; border-bottom: 1px solid var(--line); }
-  .ci-item:last-child { border-bottom: 0; }
-  .energy { display: flex; gap: 6px; }
-  .energy button { width: 40px; height: 40px; border-radius: 50%; border: 1.5px solid var(--line); background: var(--bg); font-weight: 600; }
-  .energy button[aria-pressed="true"] { background: var(--oak); border-color: var(--oak); color: #fff; }
 
   .toast { position: fixed; z-index: 50; left: 50%; transform: translateX(-50%); bottom: calc(84px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--on-ink); padding: 10px 16px; border-radius: 8px; font-size: .9rem; max-width: calc(100% - 32px); box-shadow: 0 6px 20px rgb(0 0 0 / .18); }
   @media (min-width: 760px) { .toast { bottom: 24px; } }
@@ -510,7 +503,6 @@
       vat: 18,
       hourly: 90,
       hours: { 0: ['08:00', '17:00'], 1: ['08:00', '17:00'], 2: ['08:00', '17:00'], 3: ['08:00', '17:00'], 4: ['08:00', '17:00'], 5: ['08:00', '13:00'], 6: null },
-      checkinHour: 18,
       fixed: [],
       deadlines: [],
       tags: ['כללי'],
@@ -566,14 +558,13 @@
     ai: null, dl: null,
     settings: defaultSettings(), settingsSeen: false,
     notes: { items: [] },
-    tasks: {}, checkins: {}, docs: {}, months: {}, monthSeen: {},
+    tasks: {}, docs: {}, months: {}, monthSeen: {},
     view: 'today',
     week: weekStartOf(today()),
     money: monthKey(today()),
     close: defaultCloseMonth(),
     sheet: null,
     draft: { capture: '', plan: '', planBacklog: true },
-    ci: null,                 // check-in draft
     busy: {}, ctl: {},
     prop: { capture: null, plan: null },
     armed: null,
@@ -699,7 +690,6 @@
     if (c === 'app' && id === 'settings') return S.settings;
     if (c === 'app' && id === 'notes') return S.notes;
     if (c === 'tasks') return S.tasks[id] || null;
-    if (c === 'checkins') return S.checkins[id] || null;
     if (c === 'docs') return S.docs[id] || null;
     if (c === 'months') return S.months[id] || null;
     return null;
@@ -750,14 +740,15 @@
     Store.watchDoc('app/settings', function (d) {
       S.settings = fillDefaults(d || {}, defaultSettings());
       S.settingsSeen = true;
+      S.settingsLoaded = true;
+      autoRoll();
       render();
     });
     Store.watchDoc('app/notes', function (d) {
       S.notes = d && Array.isArray(d.items) ? d : { items: [] };
       render();
     });
-    Store.watchColl('tasks', function (all) { mergeColl('tasks', S.tasks, all, fixTask); render(); });
-    Store.watchColl('checkins', function (all) { mergeColl('checkins', S.checkins, all); render(); });
+    Store.watchColl('tasks', function (all) { mergeColl('tasks', S.tasks, all, fixTask); S.tasksSeen = true; autoRoll(); render(); });
     Store.watchColl('docs', function (all) { mergeColl('docs', S.docs, all); render(); });
     var cur = monthKey(today());
     watchMonth(cur); watchMonth(shiftMonth(cur, -1));
@@ -936,7 +927,6 @@
   }
   function tasksOn(date) { return allTasks().filter(function (t) { return t.day === date; }).sort(byStart); }
   function openTasks() { return allTasks().filter(function (t) { return !t.done; }); }
-  function rolledTasks() { var t = today(); return openTasks().filter(function (x) { return x.day && x.day < t && !x.waiting; }).sort(function (a, b) { return a.day < b.day ? -1 : 1; }); }
   function backlogTasks() { return openTasks().filter(function (x) { return !x.day && !x.waiting; }).sort(function (a, b) { return (a.prio || 2) - (b.prio || 2) || String(a.due || '9').localeCompare(String(b.due || '9')); }); }
   function waitingTasks() { return openTasks().filter(function (x) { return !!x.waiting; }); }
   /* A task whose start time falls inside a fixed block (work done during the sheltered workshop, say) does not take extra time. */
@@ -1089,23 +1079,15 @@
   /* =========================================================
      What needs attention today
      ========================================================= */
-  function prevDayWithTasks(t) {
-    for (var i = 1; i <= 6; i++) {
-      var d = addDays(t, -i);
-      if (tasksOn(d).length) return d;
-    }
-    return null;
-  }
   function buildAlerts() {
     var t = today(), out = [];
-    var hour = new Date().getHours();
-    if (!S.checkins[t] && hour >= num(S.settings.checkinHour || 18)) {
-      var n = tasksOn(t).length;
-      out.push({ k: 'ci', go: true, title: 'שאלון סוף היום', sub: n ? 'שתי דקות על ' + plural(n, 'המשימה של היום', 'המשימות של היום') + ', והלו״ז של מחר מתעדכן.' : 'מה עשית היום ומה עובר למחר.', act: 'openCheckin', arg: t });
+    if (S.rolled && S.rolled.on === t && S.rolled.to !== t) {
+      out.push({ k: 'rolled', title: plural(S.rolled.n, 'משימה אחת שלא סומנה', 'משימות שלא סומנו') + ' כבוצעו עברו ל' + dayLabel(S.rolled.to), sub: 'היום אין זמן פנוי, אז הן מחכות ביום העבודה הבא.', act: 'go', arg: 'week' });
     }
-    var y = prevDayWithTasks(t);
-    if (y && !S.checkins[y] && tasksOn(y).some(function (x) { return !x.done; })) {
-      out.push({ k: 'ciy', title: 'השאלון של ' + dayLabel(y) + ' לא מולא', sub: 'למלא עכשיו, ומה שלא הספקת יעבור קדימה.', act: 'openCheckin', arg: y });
+    var tgt = rollTarget(), tinfo = dayInfo(tgt), tpl = planned(tgt);
+    if (tinfo.avail && tpl > tinfo.avail * 1.1) {
+      out.push({ k: 'over', hot: tpl > tinfo.avail * 1.5, title: (tgt === t ? 'היום' : dayLabel(tgt)) + ' עמוס: ' + hm(tpl) + ' של משימות על ' + hm(tinfo.avail) + ' פנויות',
+        sub: S.ai ? 'Claude יכול להשאיר רק את הדחוף ולפזר את השאר על המשך השבוע.' : 'כדאי להעביר חלק מהמשימות ליום אחר.', act: S.ai ? 'spreadAI' : 'go', arg: 'week' });
     }
     allDocs().forEach(function (d) {
       var st = docState(d);
@@ -1174,7 +1156,7 @@
     if (t.moved) o.timesPostponed = t.moved;
     return JSON.stringify(o);
   }
-  function planPrompt(from, to, dump, ciNotes, withBacklog) {
+  function planPrompt(from, to, dump, goal, withBacklog) {
     var st = S.settings, L = [];
     L.push('You plan the week for a one-person carpentry workshop business in Israel: a rehabilitative woodshop on a farm (Hosen program workshops for the Ministry of Defense, a sheltered workshop for the Ministry of Health, couple and family workshops, products sold in the farm shop, Instagram). The owner writes Hebrew. Write every title, note and summary in short, natural Hebrew.');
     L.push('Today is ' + today() + ' (' + DAYS[wd(today())] + '). Plan the days from ' + from + ' to ' + to + '.');
@@ -1213,7 +1195,7 @@
       L.push('\nALREADY DONE (do not plan again): ' + doneIn.slice(0, 40).map(function (t) { return t.title; }).join(' | '));
     }
     if (dump) L.push('\nNEW ITEMS from the owner (free text, maybe dictated; split it into separate concrete tasks):\n"""\n' + dump.slice(0, 6000) + '\n"""');
-    if (ciNotes) L.push('\nEND-OF-DAY CHECK-IN NOTES (things already done must not be planned again; blockers should shape the plan):\n"""\n' + ciNotes.slice(0, 3000) + '\n"""');
+    if (goal) L.push('\nGOAL FOR THIS RUN: ' + goal);
     L.push('\nTAGS (use one per task): ' + (st.tags || []).join(', '));
     L.push([
       '\nRULES:',
@@ -1256,8 +1238,8 @@
     }).filter(Boolean);
     return { summary: String(r.summary || '').slice(0, 800), items: items, from: from, to: to };
   }
-  function runPlan(from, to, dump, ciNotes, withBacklog) {
-    var prompt = planPrompt(from, to, dump, ciNotes, withBacklog);
+  function runPlan(from, to, dump, goal, withBacklog) {
+    var prompt = planPrompt(from, to, dump, goal, withBacklog);
     return askJSON('plan', prompt, 'default').then(function (r) {
       var p = cleanPlan(r, from, to);
       if (r && !p) toast('Claude החזיר תכנית ריקה. לנסות שוב.');
@@ -1280,6 +1262,7 @@
         if (it.due) t.due = it.due;
         if (it.waiting) t.waiting = it.waiting;
         if (it.note && !t.notes) t.notes = it.note;
+        t.rolledFrom = null;
         saveTask(t, 0);
       } else {
         var nt = newTask({ title: it.title, day: it.day, start: it.start, minutes: it.minutes, tag: it.tag, prio: it.prio, due: it.due, waiting: it.waiting, notes: it.note, src: 'plan' });
@@ -1359,49 +1342,25 @@
     render();
   }
 
-  /* ---------- end-of-day check-in ---------- */
-  function openCheckin(date) {
-    var saved = S.checkins[date];
-    var items = {};
-    tasksOn(date).forEach(function (t) { items[t.id] = saved && saved.results && saved.results[t.id] ? saved.results[t.id] : (t.done ? 'done' : ''); });
-    S.ci = { date: date, results: items, extra: saved ? saved.extra || '' : '', stuck: saved ? saved.stuck || '' : '', energy: saved ? saved.energy || 0 : 0, tomorrow: saved ? saved.tomorrow || '' : '', saved: false };
-    S.sheet = { type: 'checkin' };
-    render();
+  /* ---------- the task list is the record: whatever was not ticked moves on by itself ---------- */
+  function rollTarget() {
+    var t = today(), info = dayInfo(t);
+    return !info.off && info.avail >= 30 ? t : nextWorkday(t);
   }
-  function submitCheckin() {
-    var ci = S.ci;
-    if (!ci) return;
-    var date = ci.date, next = nextWorkday(date < today() ? addDays(today(), -1) : date);
-    var moved = 0, done = 0, back = 0;
-    Object.keys(ci.results).forEach(function (id) {
-      var t = S.tasks[id], r = ci.results[id];
-      if (!t || !r) return;
-      if (r === 'done') { if (!t.done) { t.done = true; t.doneAt = date; } done++; }
-      else if (r === 'partial') { t.done = false; t.partial = true; t.day = next; t.start = null; t.moved = (t.moved || 0) + 1; moved++; }
-      else if (r === 'not') { t.done = false; t.day = next; t.start = null; t.moved = (t.moved || 0) + 1; moved++; }
-      else if (r === 'drop') { t.done = false; t.day = null; t.start = null; back++; }
-      saveTask(t, 0);
+  function autoRoll() {
+    if (!S.tasksSeen || !S.settingsLoaded) return;
+    var t = today();
+    var list = openTasks().filter(function (x) { return x.day && x.day < t && !x.waiting; });
+    if (!list.length) return;
+    var to = rollTarget();
+    list.forEach(function (x) {
+      x.rolledFrom = x.day;
+      x.day = to;
+      x.start = null;
+      x.moved = (x.moved || 0) + 1;
+      saveTask(x, 0);
     });
-    if (ci.tomorrow && ci.tomorrow.trim()) {
-      ci.tomorrow.split(/\n+/).map(function (s) { return s.trim(); }).filter(Boolean).forEach(function (line) {
-        saveTask(newTask({ title: line.slice(0, 200), day: next, src: 'checkin' }), 0);
-      });
-    }
-    S.checkins[date] = { date: date, results: ci.results, extra: ci.extra, stuck: ci.stuck, energy: ci.energy, tomorrow: ci.tomorrow, at: new Date().toISOString() };
-    persist('checkins/' + date, 0);
-    ci.saved = { done: done, moved: moved, back: back, next: next };
-    render();
-  }
-  function replanAfterCheckin() {
-    var ci = S.ci;
-    if (!ci) return;
-    var from = ci.saved && ci.saved.next ? ci.saved.next : addDays(today(), 1);
-    var to = addDays(weekStartOf(from), 6);
-    if (daysBetween(from, to) < 2) to = addDays(to, 7);
-    var notes = [ci.extra ? 'מה עוד נעשה: ' + ci.extra : '', ci.stuck ? 'מה תקוע: ' + ci.stuck : '', ci.energy ? 'אנרגיה (1-5): ' + ci.energy : ''].filter(Boolean).join('\n');
-    S.sheet = null;
-    S.week = weekStartOf(from);
-    runPlan(from, to, '', notes || 'אין הערות.', false);
+    S.rolled = { n: list.length + (S.rolled && S.rolled.on === t ? S.rolled.n : 0), to: to, on: t };
   }
 
   /* =========================================================
@@ -1424,6 +1383,7 @@
     if (t.waiting) meta.push('<span class="chip amber">ממתין ' + esc(pfx('ל', t.waiting)) + '</span>');
     if (t.partial && !t.done) meta.push('<span class="chip amber">בוצע חלקית</span>');
     if (t.moved >= 2 && !t.done) meta.push('<span class="chip rust">נדחה ' + t.moved + ' פעמים</span>');
+    else if (t.rolledFrom && !t.done) meta.push('<span class="chip amber num">הועבר מ־' + esc(dm(t.rolledFrom)) + '</span>');
     var quick = '';
     if (o.quick && !t.done) {
       var tm = today(), nx = nextWorkday(tm);
@@ -1465,7 +1425,7 @@
      Today
      ========================================================= */
   function vToday() {
-    var t = today(), info = dayInfo(t), list = tasksOn(t), al = buildAlerts(), rolled = rolledTasks();
+    var t = today(), info = dayInfo(t), list = tasksOn(t), al = buildAlerts();
     var pl = planned(t), open = list.filter(function (x) { return !x.done; }).length;
     var h = '';
     h += '<div class="pagehead"><div><h1>' + esc(hebDate(t)) + '</h1><p>' +
@@ -1490,22 +1450,9 @@
         return e.f ? '<li class="task" data-k="fx-' + esc(e.f.id) + '" style="border-bottom:1px solid var(--line)"><div style="flex:1">' + fixedRow(e.f) + '</div></li>' : taskRow(e.t);
       }).join('') + untimed.map(function (x) { return taskRow(x); }).join('') + '</ul></div>';
     }
-    h += '</section>';
-
-    if (rolled.length) {
-      var all = S.showAllRolled || rolled.length <= 4;
-      h += '<section class="sec" aria-labelledby="h-rolled"><div class="sechead"><h2 id="h-rolled">נשארו מימים קודמים <span class="c num">' + rolled.length + '</span></h2><div class="row">' +
-        (S.ai ? btn('לשבץ מחדש עם Claude', 'rolledAI', { cls: 'small', icon: 'spark' }) : '') + btn('הכל להיום', 'rollAll', { cls: 'small' }) + '</div></div>' +
-        '<div class="card tight"><ul class="tasks">' + (all ? rolled : rolled.slice(0, 3)).map(function (x) { return taskRow(x, { quick: true, showDay: true }); }).join('') + '</ul>' +
-        (rolled.length > 4 ? '<button type="button" class="add" style="margin:4px 0 8px" data-act="toggleRolled">' + (all ? 'להציג פחות' : 'להציג את כל ה־' + rolled.length) + '</button>' : '') + '</div></section>';
-    }
+    h += '<p class="listnote">מסמנים מה בוצע. מה שלא מסומן עובר לבד ליום העבודה הבא.</p></section>';
 
     h += captureCard();
-
-    var ci = S.checkins[t];
-    h += '<section class="card" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap"><div style="flex:1;min-width:200px"><h2 style="font-size:1.02rem;font-weight:600">שאלון סוף היום</h2><p class="small muted">' +
-      (ci ? 'מולא היום. אפשר לעדכן אם משהו השתנה.' : 'בסוף היום: מה בוצע, מה חלקית ומה לא. מה שלא הספקת עובר אוטומטית ליום העבודה הבא.') + '</p></div>' +
-      btn(ci ? 'לעדכן את השאלון' : 'למלא עכשיו', 'openCheckin', { cls: ci ? '' : 'primary', arg: t }) + '</section>';
 
     if (S.notes.items.length) {
       h += '<details class="card" id="notes-box" data-k="notes-box"><summary style="cursor:pointer;font-weight:600">פתקים ורעיונות <span class="muted num">(' + S.notes.items.length + ')</span></summary><ul class="tasks" style="margin-top:8px">' +
@@ -1576,17 +1523,11 @@
       if (info.fixed.length) h += '<div class="timeline">' + info.fixed.map(fixedRow).join('') + '</div>';
       if (list.length) h += '<ul class="tasks">' + list.map(function (x) { return taskRow(x); }).join('') + '</ul>';
       if (!past || d === t) h += '<button type="button" class="add" data-act="newTask" data-arg="' + d + '">+ משימה ל' + DAYS[wd(d)] + '</button>';
-      var ci = S.checkins[d];
-      if (ci) h += '<div class="small muted">שאלון מולא' + (ci.energy ? ' · אנרגיה ' + ci.energy + '/5' : '') + '</div>';
-      else if (past && list.length) h += '<button type="button" class="add" data-act="openCheckin" data-arg="' + d + '">למלא את השאלון של היום הזה</button>';
       h += '</section>';
     }
     h += '</div>';
 
-    var bl = backlogTasks(), wt = waitingTasks(), rl = rolledTasks();
-    if (rl.length && ws <= t) {
-      h += '<section class="sec"><div class="sechead"><h2>נשארו מימים קודמים <span class="c num">' + rl.length + '</span></h2>' + btn('הכל להיום', 'rollAll', { cls: 'small' }) + '</div><div class="card tight"><ul class="tasks">' + rl.map(function (x) { return taskRow(x, { quick: true, showDay: true }); }).join('') + '</ul></div></section>';
-    }
+    var bl = backlogTasks(), wt = waitingTasks();
     h += '<div class="grid2">';
     h += '<section class="sec"><div class="sechead"><h2>מאגר: בלי יום <span class="c num">' + bl.length + '</span></h2>' + btn('משימה', 'newTask', { cls: 'small', arg: '', icon: 'plus' }) + '</div>' +
       (bl.length ? '<div class="card tight"><ul class="tasks">' + bl.map(function (x) { return taskRow(x, { quick: true }); }).join('') + '</ul></div>' : '<div class="empty">המאגר ריק. כל המשימות משובצות.</div>') + '</section>';
@@ -1862,37 +1803,6 @@
     return sheetWrap(t.title ? 'משימה' : 'משימה חדשה', t.created ? 'נוצרה ' + dayLabel(t.created.slice(0, 10)) : '', body, 'sh-task');
   }
 
-  function sheetCheckin() {
-    var ci = S.ci;
-    if (!ci) return '';
-    var list = tasksOn(ci.date);
-    var body = '';
-    if (ci.saved) {
-      var sv = ci.saved;
-      body += '<div class="ai-note">נשמר. ' + [sv.done ? plural(sv.done, 'משימה אחת בוצעה', 'משימות בוצעו') : '', sv.moved ? plural(sv.moved, 'משימה אחת עברה', 'משימות עברו') + ' ל' + dayLabel(sv.next) : '', sv.back ? plural(sv.back, 'משימה אחת חזרה', 'משימות חזרו') + ' למאגר' : ''].filter(Boolean).join(', ') + '.</div>';
-      if (S.ai) body += '<p class="small muted">רוצה ש־Claude יסדר מחדש את המשך השבוע לפי מה שקרה היום? רואים הצעה לפני שמשהו משתנה.</p><div class="row">' + btn('לסדר מחדש עם Claude', 'ciReplan', { cls: 'primary', icon: 'spark' }) + btn('לא צריך', 'closeSheet') + '</div>';
-      else body += '<div class="row end">' + btn('סגירה', 'closeSheet', { cls: 'primary' }) + '</div>';
-      return sheetWrap('איך היה היום?', dayLabel(ci.date), body, 'sh-ci');
-    }
-    if (list.length) {
-      body += '<div><p class="small muted">מה שלא מסומן נחשב "לא הספקתי" ועובר ליום העבודה הבא.</p>' + list.map(function (t) {
-        var r = ci.results[t.id] || '';
-        return '<div class="ci-item" data-k="ci-' + esc(t.id) + '"><b style="font-weight:500">' + esc(t.title) + '</b><div class="seg state" role="group" aria-label="' + esc(t.title) + '">' +
-          [['done', 'בוצע'], ['partial', 'חלקית'], ['not', 'לא הספקתי'], ['drop', 'להוריד למאגר']].map(function (o) {
-            return '<button type="button" data-act="ciSet" data-id="' + esc(t.id) + '" data-arg="' + o[0] + '" data-v="' + o[0] + '" aria-pressed="' + (r === o[0]) + '">' + o[1] + '</button>';
-          }).join('') + '</div></div>';
-      }).join('') + '</div>';
-    } else body += '<div class="empty">לא היו משימות מתוכננות ליום הזה.</div>';
-    body += field('מה עוד עשית שלא היה בתכנון?', area('ci:extra', ci.extra, { id: 'ci-extra', rows: 2 }), null, 'ci-extra') +
-      field('משהו תקוע או מחכה למישהו?', area('ci:stuck', ci.stuck, { id: 'ci-stuck', rows: 2 }), null, 'ci-stuck') +
-      field('משימות חדשות ליום הבא, שורה לכל משימה', area('ci:tomorrow', ci.tomorrow, { id: 'ci-tomorrow', rows: 2 }), null, 'ci-tomorrow') +
-      '<div class="field"><span class="lbl">כמה אנרגיה הייתה היום?</span><div class="energy" role="group" aria-label="אנרגיה מ־1 עד 5">' + [1, 2, 3, 4, 5].map(function (n) {
-        return '<button type="button" data-act="ciEnergy" data-arg="' + n + '" aria-pressed="' + (ci.energy === n) + '">' + n + '</button>';
-      }).join('') + '</div></div>' + micHint() +
-      '<div class="row end">' + btn('סגירה', 'closeSheet', { cls: 'ghost' }) + btn('לשמור ולעדכן את הלו״ז', 'ciSubmit', { cls: 'primary' }) + '</div>';
-    return sheetWrap('איך היה היום?', dayLabel(ci.date), body, 'sh-ci');
-  }
-
   function sheetDoc() {
     var d = S.docs[S.sheet.id];
     if (!d) return '';
@@ -1938,11 +1848,11 @@
       '<div class="fields">' + sf('שכירות חודשית (₪, לפני מע״מ)', 'farm.rent', { im: 'decimal', num: true }) + sf('אחוז לחווה מחוסן', 'farm.rates.hosen', { im: 'decimal', num: true }) + sf('אחוז מפרויקטים לחווה', 'farm.rates.farmwork', { im: 'decimal', num: true }) +
       sf('אחוז ממכירות בחנות', 'farm.rates.shop', { im: 'decimal', num: true }) + sf('אחוז מהכנסה אחרת', 'farm.rates.other', { im: 'decimal', num: true }) + sf('מע״מ (%)', 'vat', { im: 'decimal', num: true }) + '</div>' +
       sf('הערה מההסכם', 'farm.note') + sf('תעריף שעה למחשבון (₪)', 'hourly', { im: 'decimal', num: true }));
-    body += sec('hours', 'שעות עבודה ושאלון', DAYS.map(function (d, i) {
+    body += sec('hours', 'שעות עבודה', DAYS.map(function (d, i) {
       var hh = st.hours[i];
       return '<div class="row" data-k="hr-' + i + '"><span style="width:52px">' + d + '</span><label class="check small"><input type="checkbox" data-act="hoursOff" data-arg="' + i + '" id="hr-off-' + i + '"' + (hh ? '' : ' checked') + '> לא עובד</label>' +
         (hh ? inp('hours:' + i + ':0', hh[0], { type: 'time', cls: 'ctl', id: 'hr-a-' + i, label: d + ' מ', extra: { style: 'width:120px' } }) + '<span>עד</span>' + inp('hours:' + i + ':1', hh[1], { type: 'time', cls: 'ctl', id: 'hr-b-' + i, label: d + ' עד', extra: { style: 'width:120px' } }) : '') + '</div>';
-    }).join('') + sf('השאלון מופיע מהשעה', 'checkinHour', { im: 'numeric', num: true, help: 'למשל 18 = משש בערב' }));
+    }).join(''));
     body += sec('fixed', 'קבועים בשבוע', '<p class="small muted">מה שתפוס כל שבוע. "רק אם יש הרשמה" לא נספר כזמן תפוס. "יום חופש" מבטל את היום כולו.</p>' + (st.fixed || []).map(function (f) {
       var b = 'sl:fixed:' + f.id + ':';
       var when = f.date ? 'date' : String(f.weekday);
@@ -1974,7 +1884,6 @@
   function sheetHTML() {
     if (!S.sheet) return '';
     if (S.sheet.type === 'task') return sheetTask();
-    if (S.sheet.type === 'checkin') return sheetCheckin();
     if (S.sheet.type === 'doc') return sheetDoc();
     if (S.sheet.type === 'settings') return sheetSettings();
     return '';
@@ -2251,7 +2160,6 @@
     var k, m, item;
     switch (p[0]) {
       case 'd': return { obj: S.draft, key: p[1] };
-      case 'ci': return { obj: S.ci, key: p[1] };
       case 'calc': return { obj: S.calc, key: p[1], after: function () { try { localStorage.setItem('lnag:ui:calc', JSON.stringify(S.calc)); } catch (e) { /* storage blocked */ } } };
       case 's': {
         var path = p[1].split('.'), o = S.settings;
@@ -2276,6 +2184,7 @@
         if (!t) return null;
         return { obj: t, key: p[2], after: function () {
           if (p[2] === 'day' || p[2] === 'start' || p[2] === 'due') t[p[2]] = t[p[2]] || null;
+          if (p[2] === 'day') t.rolledFrom = null;
           if (t.title.trim()) saveTask(t, 600);
         } };
       }
@@ -2311,7 +2220,6 @@
       if (t && !t.title.trim()) { delete S.tasks[t.id]; Store.remove('tasks/' + t.id); }
       else if (t) Store.flush('tasks/' + t.id);
     }
-    if (S.sheet && S.sheet.type === 'checkin') S.ci = null;
     S.sheet = null; S.armed = null; S.pendingImport = null;
     render();
   }
@@ -2350,17 +2258,13 @@
       if (!t) return;
       if (t.day && arg && arg > t.day && !t.done) t.moved = (t.moved || 0) + 1;
       t.day = arg || null;
+      t.rolledFrom = null;
       if (!arg) t.start = null;
       saveTask(t, 0);
       toast(arg ? 'הועבר ל' + dayLabel(arg) + '.' : 'הועבר למאגר.');
     },
     taskPrio: function (id, arg) { var t = S.tasks[id]; if (!t) return; t.prio = +arg; if (t.title.trim()) saveTask(t, 0); else render(); },
     taskDelete: function (id) { if (!arm('taskDelete|' + id)) return; S.sheet = null; deleteTask(id); toast('המשימה נמחקה.'); },
-    rollAll: function () {
-      var t = today(), list = rolledTasks();
-      list.forEach(function (x) { x.day = t; x.start = null; x.moved = (x.moved || 0) + 1; saveTask(x, 0); });
-      toast(plural(list.length, 'משימה אחת הועברה', 'משימות הועברו') + ' להיום.');
-    },
 
     /* capture */
     captureTask: function () {
@@ -2403,17 +2307,6 @@
       toast(plural(lines.length, 'משימה אחת נוספה', 'משימות נוספו') + ' למאגר. משבצים מהמאגר לימים.');
       render();
     },
-
-    /* check-in */
-    openCheckin: function (id, arg) { openCheckin(arg || today()); },
-    ciSet: function (id, arg) { if (!S.ci) return; S.ci.results[id] = S.ci.results[id] === arg ? '' : arg; render(); },
-    ciEnergy: function (id, arg) { if (!S.ci) return; S.ci.energy = +arg; render(); },
-    ciSubmit: function () {
-      if (!S.ci) return;
-      Object.keys(S.ci.results).forEach(function (tid) { if (!S.ci.results[tid]) S.ci.results[tid] = S.tasks[tid] && S.tasks[tid].done ? 'done' : 'not'; });
-      submitCheckin();
-    },
-    ciReplan: function () { replanAfterCheckin(); },
 
     /* notes */
     noteDel: function (id) { S.notes.items = S.notes.items.filter(function (n) { return n.id !== id; }); persist('app/notes'); },
@@ -2551,7 +2444,7 @@
         : Promise.resolve(LS.coll('months'));
       getMonths.then(function (months) {
         Object.keys(S.months).forEach(function (k) { months[k] = clone(S.months[k]); });
-        var data = { app: 'lnag', v: 1, at: new Date().toISOString(), settings: S.settings, notes: S.notes, tasks: S.tasks, checkins: S.checkins, docs: S.docs, months: months };
+        var data = { app: 'lnag', v: 1, at: new Date().toISOString(), settings: S.settings, notes: S.notes, tasks: S.tasks, docs: S.docs, months: months };
         saveFile('גיבוי לוח הנגרייה ' + today() + '.json', new Blob([JSON.stringify(data, null, 1)], { type: 'application/json' }));
       });
     },
@@ -2561,7 +2454,7 @@
       if (!d) return;
       if (d.settings) { S.settings = fillDefaults(d.settings, defaultSettings()); persist('app/settings', 0); }
       if (d.notes && Array.isArray(d.notes.items)) { S.notes = d.notes; persist('app/notes', 0); }
-      ['tasks', 'checkins', 'docs', 'months'].forEach(function (c) {
+      ['tasks', 'docs', 'months'].forEach(function (c) {
         Object.keys(d[c] || {}).forEach(function (id) {
           if (!/^[A-Za-z0-9_\-.~:@+]{1,200}$/.test(id)) return;
           var v = d[c][id];
@@ -2675,12 +2568,11 @@
     }
   }
   ACT.hideLocal = function () { S.localNoted = true; render(); };
-  ACT.toggleRolled = function () { S.showAllRolled = !S.showAllRolled; render(); };
-  ACT.rolledAI = function () {
-    var t = today(), to = addDays(weekStartOf(t), 6);
-    if (daysBetween(t, to) < 2) to = addDays(to, 7);
-    S.week = weekStartOf(t);
-    runPlan(t, to, '', '', false);
+  ACT.spreadAI = function () {
+    var from = rollTarget(), to = addDays(weekStartOf(from), 6);
+    if (daysBetween(from, to) < 2) to = addDays(to, 7);
+    S.week = weekStartOf(from);
+    runPlan(from, to, '', 'The nearest workday (' + from + ') is overloaded, mostly with tasks carried over from earlier days. Keep there only what is urgent or has a deadline, and spread the rest over the following days.', false);
   };
 
   function boot() {
@@ -2704,6 +2596,7 @@
         if (S.money === monthKey(lastDay)) S.money = monthKey(t);
         lastDay = t;
         watchMonth(monthKey(t));
+        autoRoll();
       }
       if (!S.sheet) render();
     }, 60000);
