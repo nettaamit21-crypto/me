@@ -457,6 +457,27 @@
   .m-flag{ display:inline-flex; gap:6px; align-items:center; font-size:0.84rem; }
   .m-flag input{ width:16px; height:16px; accent-color:var(--pine); }
   .modal-body .subrow select{ max-width:130px; }
+  .m-stepper{ display:inline-flex; align-items:stretch; border:1px solid var(--border); border-radius:9px; overflow:hidden; background:#fff; }
+  .m-stepper button{ border:0; background:none; width:28px; font-family:inherit; font-size:1rem; font-weight:700; color:var(--walnut); cursor:pointer; padding:0; }
+  .m-stepper button:hover{ background:var(--pine-light); }
+  .m-stepper input.m-stepin{ width:38px; border:0; border-inline:1px solid var(--border); border-radius:0; text-align:center; padding:5px 2px; font-weight:700; background:transparent; color:var(--walnut); }
+  .m-rateline{ display:flex; flex-wrap:wrap; gap:8px 16px; align-items:center; margin-top:12px; padding:10px 12px; border:1px solid var(--border); border-radius:12px; background:rgba(255,255,255,.45); }
+  input.m-field{ width:70px; border:1px solid var(--border); border-radius:8px; padding:6px 8px; font-weight:700; text-align:center; background:#fff; color:var(--walnut); }
+  .m-date-chip .m-chipbtn{ display:flex; flex-direction:column; align-items:center; gap:1px; background:none; border:0; padding:0; font-family:inherit; color:inherit; cursor:pointer; }
+  .m-chiphours{ display:inline-flex; align-items:center; gap:2px; font-size:0.68rem; color:var(--muted); margin-top:3px; }
+  .m-chiphours input{ width:40px; border:1px solid var(--border); border-radius:6px; padding:2px 4px; text-align:center; font-size:0.74rem; background:#fff; color:var(--walnut); }
+  .m-progset{ margin:12px 0 4px; padding:12px; border:1px dashed var(--brass); border-radius:12px; background:rgba(176,141,87,.07); }
+  .m-progset textarea{ width:100%; border:1px solid var(--border); border-radius:9px; padding:7px 9px; font-family:inherit; font-size:0.84rem; background:#fff; color:var(--walnut); resize:vertical; }
+  .m-order.m-folded{ padding-top:12px; padding-bottom:12px; }
+  .m-ohead{ display:flex; align-items:center; gap:10px; width:100%; background:none; border:0; padding:0; font-family:inherit; color:var(--walnut); text-align:right; cursor:pointer; }
+  .m-otext{ flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; }
+  .m-otext b{ font-size:0.98rem; overflow-wrap:anywhere; }
+  .m-otext .small{ overflow-wrap:anywhere; }
+  .m-folded .bar{ margin-top:10px; }
+  .m-chev{ display:inline-grid; place-items:center; width:20px; height:20px; flex:none; color:var(--muted); transition:transform .15s; }
+  .m-chev.open{ transform:rotate(-90deg); }
+  .m-chevbtn{ flex:none; width:30px; height:30px; display:grid; place-items:center; background:none; border:0; border-radius:8px; padding:0; cursor:pointer; }
+  .m-chevbtn:hover, .m-ohead:hover .m-chev{ color:var(--walnut); background:rgba(176,141,87,.12); border-radius:8px; }
   @media (max-width:620px){
     .m-seg button{ padding:6px 7px; font-size:0.74rem; }
     .m-ses-total{ margin-inline-start:0; }
@@ -6679,18 +6700,18 @@
       seen: {},
       week: weekStartOf(today()),
       sheet: null, armed: null, focus: null,
-      showClosedDocs: false, showDoneOrders: false
+      showClosedDocs: false, showDoneOrders: false,
+      openProg: {}, openOrders: LSX0("ui:openOrders") || {}
     };
+    function LSX0(p){ try{ var v = localStorage.getItem("pnk:" + p); return v ? JSON.parse(v) : null; }catch(e){ return null; } }
 
     function defaultSettings(){
       return {
-        v: 2,
+        v: 3,
         biz: { owner:"", short:"" },
         client: { name:"חוות רום", address:"", contact:"", contactEmail:"" },
-        hosen: { program:"תכנית חוסן", group:"", weekday:2, hours:6, hoursDetail:"", labor:0, upkeep:0, wear:0,
-                 woodPerPerson:0, agreed:6, maxBill:7, lateRate:1, notes:[], terms:[], viaFarm:true },
-        shikum: { name:"שיקום · מפעל מוגן", weekdays:[0,4], price:"", viaFarm:true },
-        farm: { rent:0, rates:{ hosen:0, shikum:0, farmwork:0, shop:0, other:0 }, note:"" },
+        programs: programsFrom({}, {}, {}),
+        farm: { rent:0, rates:{ farmwork:0, shop:0, other:0 }, note:"" },
         dealSeq: 1001,
         hours: { 0:["08:00","18:00"], 1:["08:00","18:00"], 2:["08:00","18:00"], 3:["08:00","18:00"], 4:["08:00","18:00"], 5:["08:00","13:00"], 6:null },
         fixed: []
@@ -6714,12 +6735,20 @@
 
     function fixMonth(m, k){
       m.key = m.key || k;
-      m.hosen = m.hosen || {};
-      m.hosen.sessions = Array.isArray(m.hosen.sessions) ? m.hosen.sessions : [];
-      m.hosen.specials = Array.isArray(m.hosen.specials) ? m.hosen.specials : [];
-      m.shikum = m.shikum || {};
-      if (!m.shikum.marks || typeof m.shikum.marks !== "object") m.shikum.marks = {};
-      m.shikum.extra = Array.isArray(m.shikum.extra) ? m.shikum.extra : [];
+      if (!m.progs || typeof m.progs !== "object" || Array.isArray(m.progs)) m.progs = {};
+      if (m.hosen){
+        var ph = m.progs.hosen || (m.progs.hosen = {});
+        if (!ph.sessions) ph.sessions = m.hosen.sessions || [];
+        if (!ph.specials) ph.specials = m.hosen.specials || [];
+        delete m.hosen;
+      }
+      if (m.shikum){
+        var ps = m.progs.shikum || (m.progs.shikum = {});
+        if (!ps.marks) ps.marks = m.shikum.marks || {};
+        if (!ps.extra) ps.extra = m.shikum.extra || [];
+        delete m.shikum;
+      }
+      Object.keys(m.progs).forEach(function(pid){ pdata(m, pid); });
       m.farm = m.farm || {};
       m.farm.toMe = Array.isArray(m.farm.toMe) ? m.farm.toMe : [];
       m.farm.toFarm = Array.isArray(m.farm.toFarm) ? m.farm.toFarm : [];
@@ -7006,14 +7035,18 @@
     }
     function startData(){
       Store.watchDoc("app/settings", function(d){
+        var old = d && n(d.v) < 3;
         S.settings = fillDefaults(d || {}, defaultSettings());
+        if (old && ensurePrograms(S.settings)) Store.save("app/settings", 0);
         S.settingsLoaded = true;
         autoRoll();
         syncAllLedgerAuto();
         render();
       });
       Store.watchColl("months", function(all){
+        var old = Object.keys(all).filter(function(k){ return all[k] && (all[k].hosen || all[k].shikum); });
         mergeColl("months", S.months, all, fixMonth);
+        old.forEach(function(k){ if (S.months[k] && !Store.busy("months/" + k)) Store.save("months/" + k, 0); });
         S.seen.months = true;
         syncAllLedgerAuto();
         render();
@@ -7109,62 +7142,118 @@
     }
 
     /* =========================================================
-       Money from the farm: Hosen, Shikum, sales, the reconciliation
+       Money from the farm: programs (Hosen, Shikum, new ones),
+       sales, and the reconciliation
        ========================================================= */
     var SESSION_STATUS = [["held","התקיים"],["notice","בוטל בהתראה"],["late","בוטל ללא התראה"],["pending","לעדכן"]];
     var FARM_KINDS = [["farmwork","פרויקט לחווה"],["shop","מכירה בחנות"],["other","אחר"]];
+    var PROG_TYPES = { group:"קבוצה עם משתתפים", hourly:"מפגשים לפי שעות" };
 
-    function hosenCalc(m){
-      var h = S.settings.hosen;
-      var base = n(h.labor) + n(h.upkeep) + n(h.wear);
-      var rows = m.hosen.sessions.slice().sort(function(a, b){ return String(a.date).localeCompare(String(b.date)); }).map(function(s){
-        var factor = s.status === "held" ? 1 : s.status === "late" ? n(h.lateRate) : 0;
-        var agreed = s.agreed === "" || s.agreed == null ? n(h.agreed) : n(s.agreed);
+    /* Older settings kept Hosen and Shikum as two fixed blocks; now every program is one entry in a list. */
+    function programsFrom(h, sh, rates){
+      return [
+        { id:"hosen", type:"group", name: h.program || "תכנית חוסן", group: h.group || "", active:true, from:"",
+          weekday: h.weekday == null ? 2 : h.weekday, hours: h.hours == null ? 6 : h.hours, hoursDetail: h.hoursDetail || "",
+          labor: n(h.labor), upkeep: n(h.upkeep), wear: n(h.wear), woodPerPerson: n(h.woodPerPerson),
+          agreed: h.agreed == null ? 6 : h.agreed, maxBill: h.maxBill == null ? 7 : h.maxBill, lateRate: h.lateRate == null ? 1 : h.lateRate,
+          notes: h.notes || [], terms: h.terms || [], viaFarm: h.viaFarm !== false, farmRate: n(rates.hosen) },
+        { id:"shikum", type:"hourly", name: sh.name || "שיקום · מפעל מוגן", active:true, from:"",
+          weekdays: sh.weekdays || [0, 4], rate: 50, hoursPer: 3.5, viaFarm: sh.viaFarm !== false, farmRate: n(rates.shikum) }
+      ];
+    }
+    function ensurePrograms(st){
+      if (n(st.v) >= 3 && Array.isArray(st.programs)) return false;
+      st.programs = programsFrom(st.hosen || {}, st.shikum || {}, (st.farm || {}).rates || {});
+      delete st.hosen; delete st.shikum;
+      st.v = 3;
+      return true;
+    }
+    function programs(){ return S.settings.programs || []; }
+    function progById(pid){ return programs().filter(function(p){ return p.id === pid; })[0] || null; }
+    function progShort(p){ return String(p.name || "תוכנית").split("·")[0].replace(/^תכנית\s+/, "").trim(); }
+    function progInMonth(p, k){
+      if (p.active === false && !p.until) return false;
+      return !(p.from && p.from > lastDay(k)) && !(p.until && p.until < k + "-01");
+    }
+    function pdata(m, pid){
+      m.progs = m.progs || {};
+      var d = m.progs[pid] || (m.progs[pid] = {});
+      d.sessions = Array.isArray(d.sessions) ? d.sessions : [];
+      d.specials = Array.isArray(d.specials) ? d.specials : [];
+      if (!d.marks || typeof d.marks !== "object") d.marks = {};
+      d.extra = Array.isArray(d.extra) ? d.extra : [];
+      if (!d.hours || typeof d.hours !== "object") d.hours = {};
+      return d;
+    }
+    function hasData(m, pid){
+      var d = m.progs && m.progs[pid];
+      return !!(d && ((d.sessions || []).length || (d.specials || []).length || Object.keys(d.marks || {}).length || (d.extra || []).length));
+    }
+    function progsFor(m, k){ return programs().filter(function(p){ return progInMonth(p, k) || hasData(m, p.id); }); }
+
+    function groupCalc(p, d){
+      var base = n(p.labor) + n(p.upkeep) + n(p.wear);
+      var rows = d.sessions.slice().sort(function(a, b){ return String(a.date).localeCompare(String(b.date)); }).map(function(s){
+        var factor = s.status === "held" ? 1 : s.status === "late" ? n(p.lateRate) : 0;
+        var agreed = s.agreed === "" || s.agreed == null ? n(p.agreed) : n(s.agreed);
         var arrived = s.arrived === "" || s.arrived == null ? null : n(s.arrived);
-        var billed = factor ? Math.min(n(h.maxBill) || 99, Math.max(agreed, arrived || 0)) : 0;
+        var billed = factor ? Math.min(n(p.maxBill) || 99, Math.max(agreed, arrived || 0)) : 0;
         var fixedPrice = s.price !== "" && s.price != null;
         var baseAmt = fixedPrice ? 0 : factor * base;
-        var wood = fixedPrice ? 0 : factor * billed * n(h.woodPerPerson);
+        var wood = fixedPrice ? 0 : factor * billed * n(p.woodPerPerson);
         var total = fixedPrice ? factor * n(s.price) : baseAmt + wood;
         return { s:s, agreed:agreed, arrived:arrived, billed:billed, baseAmt:baseAmt, wood:wood, total:r2(total), factor:factor, fixedPrice:fixedPrice };
       });
-      var specials = m.hosen.specials.reduce(function(a, x){ return a + n(x.amount); }, 0);
+      var specials = d.specials.reduce(function(a, x){ return a + n(x.amount); }, 0);
       var sessions = rows.reduce(function(a, r){ return a + r.total; }, 0);
-      var pre = r2(sessions + specials), vat = r2(pre * vatPct() / 100);
-      return { base:base, rows:rows, specials:r2(specials), sessions:r2(sessions), pre:pre, vat:vat, total:r2(pre + vat),
+      var pre = r2(sessions + specials);
+      return { type:"group", base:base, rows:rows, specials:r2(specials), sessions:r2(sessions), pre:pre, vat:r2(pre * vatPct() / 100), total:r2(pre * (1 + vatPct() / 100)),
         baseSum: r2(rows.reduce(function(a, r){ return a + r.baseAmt; }, 0)),
         woodSum: r2(rows.reduce(function(a, r){ return a + r.wood; }, 0)),
         fixedSum: r2(rows.reduce(function(a, r){ return a + (r.fixedPrice ? r.total : 0); }, 0)),
         billedSum: rows.reduce(function(a, r){ return a + (r.fixedPrice ? 0 : r.billed); }, 0),
-        charged: rows.filter(function(r){ return r.factor > 0; }).length,
+        count: rows.filter(function(r){ return r.factor > 0; }).length,
         pending: rows.filter(function(r){ return r.s.status === "pending"; }).length };
     }
-    function shikumDates(k){
-      var days = (S.settings.shikum.weekdays || []).map(Number), out = [];
-      for (var d = k + "-01"; mk(d) === k; d = addD(d, 1)) if (days.indexOf(wd(d)) >= 0) out.push(d);
+    function hourlyDates(p, k){
+      var days = (p.weekdays || []).map(Number), out = [];
+      for (var d = k + "-01"; mk(d) === k; d = addD(d, 1)){
+        if (days.indexOf(wd(d)) < 0) continue;
+        if (p.from && d < p.from) continue;
+        if (p.until && d > p.until) continue;
+        out.push(d);
+      }
       return out;
     }
-    function shikumCalc(m, k){
-      var sh = S.settings.shikum, price = n(sh.price), t = today();
-      var dates = shikumDates(k);
-      m.shikum.extra.forEach(function(d){ if (dates.indexOf(d) < 0 && mk(d) === k) dates.push(d); });
+    function hourlyCalc(p, d, k){
+      var t = today(), rate = n(p.rate), dates = hourlyDates(p, k);
+      d.extra.forEach(function(x){ if (dates.indexOf(x) < 0 && mk(x) === k) dates.push(x); });
       dates.sort();
-      var rows = dates.map(function(d){
-        var mark = m.shikum.marks[d];
-        var off = fixedOn(d).some(function(f){ return f.off; });
-        var status = mark || (off ? "cancel" : "held");
-        return { date:d, status:status, future: d > t, extra: m.shikum.extra.indexOf(d) >= 0 };
+      var rows = dates.map(function(date){
+        var off = fixedOn(date).some(function(f){ return f.off; });
+        var status = d.marks[date] || (off ? "cancel" : "held");
+        var hours = d.hours[date] === "" || d.hours[date] == null ? n(p.hoursPer) : n(d.hours[date]);
+        return { date:date, status:status, hours:hours, own: d.hours[date] !== "" && d.hours[date] != null, amount: status === "held" ? r2(hours * rate) : 0, future: date > t, extra: d.extra.indexOf(date) >= 0 };
       });
-      var count = rows.filter(function(r){ return r.status === "held"; }).length;
-      var pre = r2(count * price), vat = r2(pre * vatPct() / 100);
-      return { rows:rows, count:count, price:price, pre:pre, vat:vat, total:r2(pre + vat), future: rows.filter(function(r){ return r.future && r.status === "held"; }).length };
+      var held = rows.filter(function(r){ return r.status === "held"; });
+      var pre = r2(held.reduce(function(a, r){ return a + r.amount; }, 0));
+      return { type:"hourly", rows:rows, count:held.length, hoursSum: held.reduce(function(a, r){ return a + r.hours; }, 0), rate:rate, pre:pre,
+        vat:r2(pre * vatPct() / 100), total:r2(pre * (1 + vatPct() / 100)), future: held.filter(function(r){ return r.future; }).length, pending:0 };
+    }
+    function progCalc(p, m, k){
+      var d = pdata(m, p.id);
+      var c = p.type === "hourly" ? hourlyCalc(p, d, k) : groupCalc(p, d);
+      c.p = p; c.d = d;
+      return c;
     }
     function farmCalc(m){
-      var st = S.settings, rates = st.farm.rates || {};
-      var hc = hosenCalc(m), sc = shikumCalc(m, m.key);
+      var st = S.settings, rates = st.farm.rates || {}, k = m.key;
+      var calcs = progsFor(m, k).map(function(p){ return progCalc(p, m, k); });
       var toMe = [];
-      if (st.hosen.viaFarm && (hc.pre > 0 || m.hosen.sessions.length)) toMe.push({ id:"hosen", name:"פעילות " + (st.hosen.program || "חוסן").replace(/^תכנית\s+/, ""), amount:hc.pre, rate:n(rates.hosen), auto:true });
-      if (st.shikum.viaFarm && sc.pre > 0) toMe.push({ id:"shikum", name:(st.shikum.name || "שיקום").split("·")[0].trim(), amount:sc.pre, rate:n(rates.shikum), auto:true });
+      calcs.forEach(function(c){
+        if (c.p.viaFarm === false || !(c.pre > 0 || c.rows.length)) return;
+        toMe.push({ id:"p-" + c.p.id, name:(c.p.type === "group" ? "פעילות " : "") + progShort(c.p), amount:c.pre, rate:n(c.p.farmRate), auto:true });
+      });
       m.farm.toMe.forEach(function(l){
         var rate = l.rate === "" || l.rate == null ? n(rates[l.kind || "other"]) : n(l.rate);
         toMe.push({ id:l.id, name:l.name || "שורה", amount:n(l.amount), rate:rate, kind:l.kind || "other", line:l });
@@ -7176,7 +7265,7 @@
       var purchases = m.farm.toFarm.map(function(l){ return { id:l.id, name:l.name || "רכישה", amount:n(l.amount), line:l }; });
       var purchTotal = r2(purchases.reduce(function(a, x){ return a + x.amount; }, 0));
       var toFarmTotal = r2(rent + pctTotal + purchTotal), net = r2(toMeTotal - toFarmTotal), v = vatPct();
-      return { hc:hc, sc:sc, toMe:toMe, toMeTotal:toMeTotal, rent:rent, pct:pct, pctTotal:pctTotal, purchases:purchases, purchTotal:purchTotal,
+      return { calcs:calcs, toMe:toMe, toMeTotal:toMeTotal, rent:rent, pct:pct, pctTotal:pctTotal, purchases:purchases, purchTotal:purchTotal,
         toFarmTotal:toFarmTotal, net:net, netVat:r2(net * (1 + v/100)) };
     }
     function salesLines(m){ return m.farm.toMe.filter(function(l){ return n(l.amount); }); }
@@ -7190,8 +7279,7 @@
         var q = qty || 1;
         return { id:"auto-" + idv, name:name, qty:q, unit:"unit", unitPrice: q ? r2(amount / q) : amount, amount:r2(amount), auto:true, locked:false, vatInc:false };
       }
-      if (f.hc.pre) out.recurringIncome.push(line("hosen", (st.hosen.program || "חוסן").replace(/^תכנית\s+/, "") + " · " + plural(f.hc.charged, "מפגש אחד", "מפגשים"), f.hc.pre, f.hc.charged || 1));
-      if (f.sc.pre) out.recurringIncome.push(line("shikum", (st.shikum.name || "שיקום").split("·")[0].trim() + " · " + plural(f.sc.count, "מפגש אחד", "מפגשים"), f.sc.pre, f.sc.count || 1));
+      f.calcs.forEach(function(c){ if (c.pre) out.recurringIncome.push(line("p-" + c.p.id, progShort(c.p) + " · " + plural(c.count, "מפגש אחד", "מפגשים"), c.pre, c.count || 1)); });
       salesLines(m).forEach(function(l){ out.oneTimeIncome.push(line("tm-" + l.id, l.name || "מכירה לחווה", n(l.amount), 1)); });
       if (f.rent) out.recurringExpenses.push(line("rent", "שכירות · " + (st.client.name || "החווה"), f.rent));
       if (f.pctTotal) out.recurringExpenses.push(line("pct", "עמלות ל" + (st.client.name || "חווה"), f.pctTotal));
@@ -7249,24 +7337,29 @@
     function dealFor(k, src){ return allDocs().filter(function(d){ return d.kind === "deal" && d.month === k && d.src === src; })[0] || null; }
 
     function dealSpec(k, src){
-      var st = S.settings, m = monthOf(k), lines = [], title = "";
-      if (src === "hosen"){
-        var hc = hosenCalc(m);
-        title = (st.hosen.program || "חוסן") + (st.hosen.group ? " (" + st.hosen.group + ")" : "") + " · " + monthLabel(k);
-        hc.rows.forEach(function(r){
-          if (!r.factor) return;
-          var desc = "מפגש " + dmy(r.s.date) + (r.fixedPrice ? "" : " · " + r.billed + " משתתפים") + (r.s.status === "late" ? " · בוטל ללא התראה" : "");
-          lines.push({ desc:desc, qty:1, price:r.total, total:r.total });
-        });
-        m.hosen.specials.forEach(function(x){ if (n(x.amount)) lines.push({ desc:"פרויקט מיוחד: " + (x.desc || ""), qty:1, price:n(x.amount), total:n(x.amount) }); });
-      } else if (src === "shikum"){
-        var sc = shikumCalc(m, k);
-        title = (st.shikum.name || "שיקום") + " · " + monthLabel(k);
-        var held = sc.rows.filter(function(r){ return r.status === "held"; });
-        if (held.length) lines.push({ desc:"מפגשים: " + held.map(function(r){ return dm(r.date); }).join(", "), qty:held.length, price:sc.price, total:sc.pre });
-      } else {
+      var m = monthOf(k), lines = [], title = "";
+      if (src === "sales"){
         title = "מכירות ופרויקטים · " + monthLabel(k);
         salesLines(m).forEach(function(l){ lines.push({ desc:l.name || "פריט", qty:1, price:n(l.amount), total:n(l.amount) }); });
+      } else {
+        var p = progById(src);
+        if (p){
+          var c = progCalc(p, m, k);
+          title = p.name + (p.group ? " (" + p.group + ")" : "") + " · " + monthLabel(k);
+          if (c.type === "group"){
+            c.rows.forEach(function(r){
+              if (!r.factor) return;
+              var desc = "מפגש " + dmy(r.s.date) + (r.fixedPrice ? "" : " · " + r.billed + " משתתפים") + (r.s.status === "late" ? " · בוטל ללא התראה" : "");
+              lines.push({ desc:desc, qty:1, price:r.total, total:r.total });
+            });
+            c.d.specials.forEach(function(x){ if (n(x.amount)) lines.push({ desc:"פרויקט מיוחד: " + (x.desc || ""), qty:1, price:n(x.amount), total:n(x.amount) }); });
+          } else {
+            c.rows.forEach(function(r){
+              if (r.status !== "held") return;
+              lines.push({ desc:"מפגש " + dmy(r.date) + " · " + r.hours + " שעות", qty:r.hours, price:c.rate, total:r.amount });
+            });
+          }
+        }
       }
       var net = r2(lines.reduce(function(a, l){ return a + n(l.total); }, 0)), vat = r2(net * vatPct() / 100);
       return { title:title, lines:lines, net:net, vat:vat, total:r2(net + vat) };
@@ -7377,7 +7470,6 @@
       return t;
     }
     function saveTask(t, delay){ t.updated = new Date().toISOString(); persist("tasks/" + t.id, delay == null ? 500 : delay); }
-
     /* =========================================================
        🌿 חוות רום
        ========================================================= */
@@ -7388,60 +7480,106 @@
         (k !== todayMonthKey() ? '<button type="button" class="btn btn-sm" data-mact="month" data-arg="0">לחודש הנוכחי</button>' : "") + "</div>" +
         '<button type="button" class="btn" data-mact="month" data-arg="1">החודש הבא ›</button></div>';
     }
-    function sessionRow(k, r, i){
-      var s = r.s, b = "hs:" + k + ":" + s.id + ":", t = today();
+    function stepper(bind, val, ph, label, act, sid, arg){
+      return '<span class="m-stepper"><button type="button" data-mact="' + act + '" data-id="' + esc(sid) + '" data-arg="' + esc(arg + "|-1") + '" aria-label="' + esc(label) + ' פחות">−</button>' +
+        inp(bind, val, { cls:"m-stepin mono", ph:ph, im:"numeric", num:true, label:label, dir:"ltr" }) +
+        '<button type="button" data-mact="' + act + '" data-id="' + esc(sid) + '" data-arg="' + esc(arg + "|1") + '" aria-label="' + esc(label) + ' יותר">+</button></span>';
+    }
+    function sessionRow(k, p, r, i){
+      var s = r.s, b = "hs:" + k + ":" + p.id + ":" + s.id + ":", t = today();
       var late = s.status === "pending" && s.date && s.date <= t;
       return '<div class="row m-ses' + (s.status === "notice" ? " m-cancel" : "") + (late ? " m-late" : "") + '" data-k="s-' + esc(s.id) + '">' +
         '<span class="m-num">' + (i + 1) + "</span>" +
         inp(b + "date", s.date, { type:"date", cls:"row-input m-date", label:"תאריך" }) +
         '<div class="m-seg" role="group" aria-label="מה קרה במפגש">' + SESSION_STATUS.map(function(o){
-          return '<button type="button" data-mact="sesStatus" data-id="' + esc(s.id) + '" data-arg="' + o[0] + '" data-v="' + o[0] + '" aria-pressed="' + (s.status === o[0]) + '">' + o[1] + "</button>";
+          return '<button type="button" data-mact="sesStatus" data-id="' + esc(s.id) + '" data-arg="' + esc(p.id + "|" + o[0]) + '" data-v="' + o[0] + '" aria-pressed="' + (s.status === o[0]) + '">' + o[1] + "</button>";
         }).join("") + "</div>" +
-        '<span class="inline-group"><span class="cap muted">הגיעו</span>' + inp(b + "arrived", s.arrived, { cls:"row-input row-qty mono", ph:"–", im:"numeric", num:true, label:"כמה הגיעו", dir:"ltr" }) + "</span>" +
-        '<span class="inline-group"><span class="cap muted">סוכמו</span>' + inp(b + "agreed", s.agreed, { cls:"row-input row-qty mono", ph:String(S.settings.hosen.agreed), im:"numeric", num:true, label:"כמה סוכמו", dir:"ltr" }) + "</span>" +
+        '<span class="inline-group"><span class="cap muted">סוכמו</span>' + stepper(b + "agreed", s.agreed === "" || s.agreed == null ? r.agreed : s.agreed, "", "משתתפים שסוכמו", "sesStep", s.id, p.id + "|agreed") + "</span>" +
+        '<span class="inline-group"><span class="cap muted">הגיעו</span>' + stepper(b + "arrived", s.arrived, "–", "משתתפים שהגיעו", "sesStep", s.id, p.id + "|arrived") + "</span>" +
         '<span class="m-ses-total">' + (s.status === "pending" ? '<span class="badge">לעדכן</span>' : (r.fixedPrice ? "" : '<span class="small muted">' + r.billed + " לחיוב · </span>") + money(r.total)) + "</span>" +
         (s.price !== "" && s.price != null ? '<span class="inline-group"><span class="cap muted">מחיר מיוחד</span>' + inp(b + "price", s.price, { cls:"row-input row-amount mono", im:"decimal", num:true, label:"מחיר מיוחד", dir:"ltr" }) + "</span>" : "") +
-        del("sesDel", s.id, k, "מחיקת המפגש") + "</div>";
+        del("sesDel", s.id, k + "|" + p.id, "מחיקת המפגש") + "</div>";
+    }
+    function progSettings(p){
+      var b = "pr:" + p.id + ":";
+      function f(label, key, o){ o = o || {}; return fld(label, inp(b + key, p[key], Object.assign({ id:fid(b + key) }, o)), o.hint, fid(b + key)); }
+      var h = '<div class="m-progset" data-k="ps-' + esc(p.id) + '"><div class="calc-grid">' + f("שם התוכנית", "name");
+      if (p.type === "group"){
+        h += f("שם הקבוצה", "group") +
+          fld("יום המפגש", sel(b + "weekday", p.weekday, DAYS.map(function(d, i){ return [i, d]; }), { id:fid(b + "weekday"), num:true }), null, fid(b + "weekday")) +
+          f("מתחילה מתאריך", "from", { type:"date", hint:"ריק = כבר פעילה" }) +
+          f("שכר עבודה למפגש (₪)", "labor", { im:"decimal", num:true }) + f("אחזקה למפגש (₪)", "upkeep", { im:"decimal", num:true }) +
+          f("בלאי ציוד למפגש (₪)", "wear", { im:"decimal", num:true }) + f("תקציב עץ למשתתף (₪)", "woodPerPerson", { im:"decimal", num:true }) +
+          f("משתתפים שסוכמו (ברירת מחדל)", "agreed", { im:"numeric", num:true }) + f("מקסימום משתתפים לחיוב", "maxBill", { im:"numeric", num:true }) +
+          f("ביטול ללא התראה: חלק מהמחיר", "lateRate", { im:"decimal", num:true, hint:"1 = חיוב מלא" }) + f("שעות עבודה למפגש", "hours", { im:"decimal", num:true }) +
+          f("פירוט שעות העבודה", "hoursDetail") + f("אחוז לחווה", "farmRate", { im:"decimal", num:true }) + "</div>" +
+          fld("הערות להצעה, שורה לכל הערה", '<textarea id="' + fid(b + "notes") + '" data-bind="' + b + 'notes" data-type="lines" rows="2">' + esc((p.notes || []).join("\n")) + "</textarea>", null, fid(b + "notes"), true) +
+          fld("תנאי ביטול ותנאים כלליים, שורה לכל תנאי", '<textarea id="' + fid(b + "terms") + '" data-bind="' + b + 'terms" data-type="lines" rows="3">' + esc((p.terms || []).join("\n")) + "</textarea>", null, fid(b + "terms"), true);
+      } else {
+        h += f("תעריף לשעה (₪, לפני מע״מ)", "rate", { im:"decimal", num:true }) + f("שעות למפגש", "hoursPer", { im:"decimal", num:true }) +
+          f("מתחילה מתאריך", "from", { type:"date", hint:"ריק = כבר פעילה" }) + f("אחוז לחווה", "farmRate", { im:"decimal", num:true }) + "</div>" +
+          '<div class="m-flags"><span class="small muted">ימי המפגש:</span>' + DAYS.map(function(d, i){ return '<label class="m-flag"><input type="checkbox" id="' + fid("prw:" + p.id + ":" + i) + '" data-bind="prw:' + p.id + ":" + i + '"' + ((p.weekdays || []).indexOf(i) >= 0 ? " checked" : "") + "> " + d + "</label>"; }).join("") + "</div>";
+      }
+      h += '<div class="m-flags"><label class="m-flag"><input type="checkbox" id="' + fid(b + "viaFarm") + '" data-bind="' + b + 'viaFarm"' + (p.viaFarm !== false ? " checked" : "") + "> נכללת בהתחשבנות עם החווה</label></div>" +
+        '<div class="m-actions">' + bt(p.active === false ? "להחזיר לתוכניות הפעילות" : "התוכנית הסתיימה", "progEnd", { cls:"btn-sm", id:p.id }) +
+        bt(S.armed === "progDel|" + p.id ? "לחיצה נוספת מוחקת" : "מחיקת התוכנית", "progDel", { cls:"btn-sm btn-danger", id:p.id }) + bt("סגירת ההגדרות", "progSet", { cls:"btn-sm", id:p.id }) + "</div></div>";
+      return h;
+    }
+    function progPanel(k, c){
+      var p = c.p, open = !!S.openProg[p.id], h = "";
+      var sub = "", shortName = progShort(p);
+      if (c.type === "group") sub = esc(ils(c.base)) + " למפגש + " + esc(ils(p.woodPerPerson)) + " למשתתף · ימי " + esc(DAYS[n(p.weekday)] || "") + (p.from && p.from > k + "-01" ? " · מתחילה ב־" + esc(dmy(p.from)) : "") + " · אחרי כל מפגש מסמנים מה קרה וכמה הגיעו";
+      else sub = esc(ils(p.rate, true)) + " לשעה × " + esc(n(p.hoursPer)) + " שעות = " + esc(ils(n(p.rate) * n(p.hoursPer), true)) + " למפגש · ימי " + (p.weekdays || []).map(function(x){ return DAYS[x]; }).join(" ו") + " · כל מפגש נספר, מסמנים רק ביטול";
+      h += '<div class="panel" data-k="p-' + esc(p.id) + '"><div class="panel-head"><div><h4>' + esc(p.name || "תוכנית חדשה") + (p.group ? " · " + esc(p.group) : "") + (p.active === false ? ' <span class="badge badge-soft">הסתיימה</span>' : "") + '</h4><div class="panel-sub">' + sub + "</div></div>" +
+        '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;"><div class="panel-total mono" style="color:var(--pine);">' + esc(ils(c.pre)) + "</div>" +
+        '<button type="button" class="link-btn" data-mact="progSet" data-id="' + esc(p.id) + '">' + (open ? "סגירת התמחור" : "⚙ תמחור והגדרות") + "</button></div></div>";
+      if (open) h += progSettings(p);
+      if (c.type === "group"){
+        h += '<div class="panel-rows">' + (c.rows.length ? c.rows.map(function(r, i){ return sessionRow(k, p, r, i); }).join("") : '<p class="empty-note">אין מפגשים בחודש הזה עדיין.</p>') + "</div>";
+        if (c.d.specials.length) h += '<div class="calc-section">פרויקטים מיוחדים, באישור החווה</div>' + c.d.specials.map(function(x){
+          var bb = "hx:" + k + ":" + p.id + ":" + x.id + ":";
+          return '<div class="row" data-k="x-' + esc(x.id) + '">' + inp(bb + "desc", x.desc, { cls:"row-input row-name", ph:"תיאור הפרויקט", label:"תיאור" }) +
+            '<span class="inline-group" dir="ltr"><span class="muted mono">₪</span>' + inp(bb + "amount", x.amount, { cls:"row-input row-amount mono", ph:"0", im:"decimal", num:true, label:"סכום לפני מע״מ", dir:"ltr" }) + "</span>" + del("spDel", x.id, k + "|" + p.id) + "</div>";
+        }).join("");
+        h += '<div class="m-actions"><button type="button" class="btn-add" data-mact="addSession" data-arg="' + k + "|" + p.id + '">+ מפגש</button>' +
+          '<button type="button" class="link-btn" data-mact="fillSessions" data-arg="' + k + "|" + p.id + '">להוסיף את כל ימי ' + esc(DAYS[n(p.weekday)] || "") + " בחודש</button>" +
+          '<button type="button" class="link-btn" data-mact="addSpecial" data-arg="' + k + "|" + p.id + '">+ פרויקט מיוחד</button></div>';
+      } else {
+        var b = "pr:" + p.id + ":";
+        h += '<div class="m-rateline"><span class="inline-group"><span class="cap muted">תעריף לשעה</span><span class="muted mono">₪</span>' + inp(b + "rate", p.rate, { cls:"m-field mono", im:"decimal", num:true, label:"תעריף לשעה", dir:"ltr", ph:"0" }) + "</span>" +
+          '<span class="inline-group"><span class="cap muted">שעות למפגש</span>' + inp(b + "hoursPer", p.hoursPer, { cls:"m-field mono", im:"decimal", num:true, label:"שעות למפגש", dir:"ltr", ph:"0" }) + "</span>" +
+          '<span class="small muted">' + plural(c.count, "מפגש אחד", "מפגשים") + " · " + esc(c.hoursSum) + " שעות</span></div>";
+        h += '<div class="m-dates">' + c.rows.map(function(r){
+          var on = r.status === "held";
+          return '<div class="m-date-chip' + (on ? " on" : " off") + (r.future ? " future" : "") + '" data-k="sd-' + esc(p.id + r.date) + '">' +
+            '<button type="button" class="m-chipbtn" data-mact="hourToggle" data-id="' + r.date + '" data-arg="' + k + "|" + p.id + '" aria-pressed="' + on + '" title="' + (on ? "לחיצה מסמנת שהמפגש בוטל" : "לחיצה מחזירה את המפגש") + '"><b>' + DAYS_SHORT[wd(r.date)] + " " + dm(r.date) + "</b><span>" + (on ? (r.future ? "מתוכנן" : "התקיים") : "בוטל") + "</span></button>" +
+            (on ? '<span class="m-chiphours">' + inp("ph:" + k + ":" + p.id + ":" + r.date, r.own ? r.hours : "", { cls:"mono", ph:String(n(p.hoursPer)), im:"decimal", num:true, label:"שעות ב־" + dm(r.date), dir:"ltr" }) + "ש׳</span>" : "") + "</div>";
+        }).join("") + "</div>" +
+        '<div class="m-actions"><span class="small muted">מפגש ביום אחר:</span><input type="date" id="m-extra-' + esc(p.id) + '" class="row-input" aria-label="תאריך מפגש נוסף"><button type="button" class="btn btn-sm" data-mact="hourExtra" data-arg="' + k + "|" + p.id + '">+ להוסיף</button></div>';
+      }
+      return h + "</div>";
     }
     function vFarm(){
-      var k = currentMonthKey, m = monthOf(k), f = farmCalc(m), hc = f.hc, sc = f.sc, st = S.settings, b = biz();
+      var k = currentMonthKey, m = monthOf(k), f = farmCalc(m), st = S.settings, b = biz();
       var client = st.client.name || "החווה", contact = st.client.contact || "המנהלת";
       var h = monthNavHTML();
-      h += '<div class="cards">' +
-        '<div class="card" style="border-inline-start:4px solid var(--pine);"><div class="card-label">' + esc(st.hosen.program || "חוסן") + '</div><div class="card-value mono" style="color:var(--pine);">' + esc(ils(hc.pre)) + '</div><div class="card-delta">' + plural(hc.charged, "מפגש אחד", "מפגשים") + (hc.pending ? " · " + hc.pending + " לעדכן" : "") + " · לפני מע״מ</div></div>" +
-        '<div class="card" style="border-inline-start:4px solid var(--pine);"><div class="card-label">' + esc((st.shikum.name || "שיקום").split("·")[0].trim()) + '</div><div class="card-value mono" style="color:var(--pine);">' + esc(ils(sc.pre)) + '</div><div class="card-delta">' + plural(sc.count, "מפגש אחד", "מפגשים") + (sc.future ? " · " + sc.future + " עוד לפנינו" : "") + " · לפני מע״מ</div></div>" +
-        '<div class="card" style="border-inline-start:4px solid var(--brass);"><div class="card-label">יתרה מול ' + esc(client) + '</div><div class="card-value mono">' + esc(ils(Math.abs(f.net))) + '</div><div class="card-delta">' + (f.net >= 0 ? "לטובת " + esc(b.short) : "לטובת " + esc(client)) + " · לפני מע״מ</div></div></div>";
+      h += '<div class="cards m-cards">' + f.calcs.map(function(c){
+        return '<div class="card" data-k="c-' + esc(c.p.id) + '" style="border-inline-start:4px solid var(--pine);"><div class="card-label">' + esc(progShort(c.p)) + '</div><div class="card-value mono" style="color:var(--pine);">' + esc(ils(c.pre)) + '</div><div class="card-delta">' +
+          plural(c.count, "מפגש אחד", "מפגשים") + (c.pending ? " · " + c.pending + " לעדכן" : "") + (c.future ? " · " + c.future + " עוד לפנינו" : "") + " · לפני מע״מ</div></div>";
+      }).join("") +
+        '<div class="card" data-k="c-net" style="border-inline-start:4px solid var(--brass);"><div class="card-label">יתרה מול ' + esc(client) + '</div><div class="card-value mono">' + esc(ils(Math.abs(f.net))) + '</div><div class="card-delta">' + (f.net >= 0 ? "לטובת " + esc(b.short) : "לטובת " + esc(client)) + " · לפני מע״מ</div></div></div>";
 
-      /* Hosen */
-      var wdName = DAYS[n(st.hosen.weekday)] || "";
-      h += '<div class="panel" data-k="p-hosen"><div class="panel-head"><div><h4>' + esc(st.hosen.program || "חוסן") + (st.hosen.group ? " · " + esc(st.hosen.group) : "") + '</h4><div class="panel-sub">' +
-        esc(ils(hc.base)) + " למפגש + " + esc(ils(st.hosen.woodPerPerson)) + " למשתתף · אחרי כל מפגש מסמנים מה קרה וכמה הגיעו</div></div>" +
-        '<div class="panel-total mono" style="color:var(--pine);">' + esc(ils(hc.pre)) + "</div></div>" +
-        '<div class="panel-rows">' + (hc.rows.length ? hc.rows.map(function(r, i){ return sessionRow(k, r, i); }).join("") : '<p class="empty-note">אין מפגשים בחודש הזה עדיין.</p>') + "</div>" +
-        (m.hosen.specials.length ? '<div class="calc-section">פרויקטים מיוחדים, באישור החווה</div>' + m.hosen.specials.map(function(x){
-          var bb = "hx:" + k + ":" + x.id + ":";
-          return '<div class="row" data-k="x-' + esc(x.id) + '">' + inp(bb + "desc", x.desc, { cls:"row-input row-name", ph:"תיאור הפרויקט", label:"תיאור" }) +
-            '<span class="inline-group" dir="ltr"><span class="muted mono">₪</span>' + inp(bb + "amount", x.amount, { cls:"row-input row-amount mono", ph:"0", im:"decimal", num:true, label:"סכום לפני מע״מ", dir:"ltr" }) + "</span>" + del("spDel", x.id, k) + "</div>";
-        }).join("") : "") +
-        '<div class="m-actions"><button type="button" class="btn-add" data-mact="addSession" data-arg="' + k + '">+ מפגש</button>' +
-        '<button type="button" class="link-btn" data-mact="fillSessions" data-arg="' + k + '">להוסיף את כל ימי ' + esc(wdName) + " בחודש</button>" +
-        '<button type="button" class="link-btn" data-mact="addSpecial" data-arg="' + k + '">+ פרויקט מיוחד</button></div></div>';
-
-      /* Shikum */
-      var shName = st.shikum.name || "שיקום";
-      h += '<div class="panel" data-k="p-shikum"><div class="panel-head"><div><h4>' + esc(shName) + '</h4><div class="panel-sub">' +
-        (sc.price ? esc(ils(sc.price)) + " למפגש · " : "") + "ימי " + (st.shikum.weekdays || []).map(function(x){ return DAYS[x]; }).join(" ו") + " · כל מפגש נספר, מסמנים רק מפגש שבוטל</div></div>" +
-        '<div class="panel-total mono" style="color:var(--pine);">' + esc(ils(sc.pre)) + "</div></div>";
-      if (!sc.price) h += '<div class="warn-line">עוד לא נקבע מחיר למפגש. ' + '<span class="inline-group" dir="ltr"><span class="muted mono">₪</span>' + inp("s:shikum.price", st.shikum.price, { cls:"row-input row-amount mono", ph:"0", im:"decimal", num:true, label:"מחיר למפגש שיקום", dir:"ltr" }) + "</span></div>";
-      h += '<div class="m-dates">' + sc.rows.map(function(r){
-        var on = r.status === "held";
-        return '<button type="button" class="m-date-chip' + (on ? " on" : " off") + (r.future ? " future" : "") + '" data-k="sd-' + r.date + '" data-mact="shikumToggle" data-arg="' + k + '" data-id="' + r.date + '" aria-pressed="' + on + '" title="' + (on ? "לחיצה מסמנת שהמפגש בוטל" : "לחיצה מחזירה את המפגש") + '">' +
-          '<b>' + DAYS_SHORT[wd(r.date)] + " " + dm(r.date) + "</b><span>" + (on ? (r.future ? "מתוכנן" : "התקיים") : "בוטל") + "</span></button>";
-      }).join("") + "</div>" +
-      '<div class="m-actions"><span class="small muted">מפגש ביום אחר:</span>' + '<input type="date" id="m-shikum-extra" class="row-input" aria-label="תאריך מפגש נוסף">' + '<button type="button" class="btn btn-sm" data-mact="shikumExtra" data-arg="' + k + '">+ להוסיף</button></div></div>';
+      h += f.calcs.map(function(c){ return progPanel(k, c); }).join("");
+      var ended = programs().filter(function(p){ return f.calcs.every(function(c){ return c.p.id !== p.id; }); });
+      h += '<div class="m-actions" style="margin:-4px 0 16px;"><span class="small muted">תוכנית חדשה:</span>' +
+        bt("+ קבוצה עם משתתפים (כמו חוסן)", "progAdd", { cls:"btn-sm", arg:"group" }) + bt("+ מפגשים לפי שעות (כמו שיקום)", "progAdd", { cls:"btn-sm", arg:"hourly" }) +
+        (ended.length ? '<span class="small muted">לא בחודש הזה: ' + ended.map(function(p){
+          var later = p.active !== false && p.from && p.from > lastDay(k);
+          return '<button type="button" class="link-btn" data-mact="progShow" data-id="' + esc(p.id) + '" title="' + (later ? "מעבר לחודש שבו היא מתחילה" : "להחזיר לתוכניות הפעילות") + '">' + esc(progShort(p)) + (later ? " (מתחילה ב־" + esc(dmy(p.from)) + ")" : " (הסתיימה)") + "</button>";
+        }).join(" · ") + "</span>" : "") + "</div>";
 
       /* Month-end documents */
-      var srcs = [["hosen", st.hosen.program || "חוסן", hc.pre], ["shikum", shName.split("·")[0].trim(), sc.pre]];
+      var srcs = f.calcs.map(function(c){ return [c.p.id, progShort(c.p), c.pre]; });
       if (salesLines(m).length) srcs.push(["sales", "מכירות ופרויקטים", r2(salesLines(m).reduce(function(a, l){ return a + n(l.amount); }, 0))]);
       h += '<div class="panel" data-k="p-deals"><div class="panel-head"><div><h4>סוף החודש: חשבונות עסקה ל' + esc(client) + '</h4><div class="panel-sub">לחיצה מכינה חשבון עסקה ממוספר לפי המפגשים, מוכן לשליחה. כשהכסף נכנס מסמנים, ומקבלים תזכורת להוציא חשבונית מס קבלה במורנינג.</div></div></div><div class="panel-rows">' +
         srcs.map(function(x){
@@ -7455,14 +7593,14 @@
               bt("⬇ PDF", "dealPdf", { cls:"btn-sm", id:d.id }) + bt("📋 למורנינג", "morning", { cls:"btn-sm", id:d.id }) +
               (stale ? bt("לעדכן לפי המפגשים", "issueDeal", { cls:"btn-sm btn-brass", arg:k + "|" + x[0] }) : "");
           } else right = bt("להוציא חשבון עסקה", "issueDeal", { cls:"btn-primary btn-sm", arg:k + "|" + x[0], disabled: !pre });
-          return '<div class="row" data-k="deal-' + x[0] + '"><span class="row-name"><b>' + esc(x[1]) + '</b><br><span class="small muted">' + info + "</span></span>" + right + "</div>";
+          return '<div class="row" data-k="deal-' + esc(x[0]) + '"><span class="row-name"><b>' + esc(x[1]) + '</b><br><span class="small muted">' + info + "</span></span>" + right + "</div>";
         }).join("") + "</div></div>";
 
       /* Reconciliation */
-      h += '<div class="panel" data-k="p-recon"><div class="panel-head"><div><h4>התחשבנות עם ' + esc(contact) + '</h4><div class="panel-sub">לפני מע״מ. החוסן והשיקום נכנסים לבד מהמפגשים; מכירות, פרויקטים ורכישות מוסיפים כאן.</div></div></div>' +
+      h += '<div class="panel" data-k="p-recon"><div class="panel-head"><div><h4>התחשבנות עם ' + esc(contact) + '</h4><div class="panel-sub">לפני מע״מ. התוכניות נכנסות לבד מהמפגשים; מכירות, פרויקטים ורכישות מוסיפים כאן.</div></div></div>' +
         '<div class="columns" style="margin-top:12px;"><div><div class="col-title"><span class="dot" style="background:var(--pine);"></span>' + esc(client + " ל" + b.short) + "</div>" +
         f.toMe.map(function(x){
-          if (x.auto) return '<div class="row m-ro" data-k="tm-' + x.id + '"><span class="row-name">' + esc(x.name) + ' <span class="small muted">(מהמפגשים)</span></span>' + money(x.amount, true) + "</div>";
+          if (x.auto) return '<div class="row m-ro" data-k="tm-' + esc(x.id) + '"><span class="row-name">' + esc(x.name) + ' <span class="small muted">(מהמפגשים)</span></span>' + money(x.amount, true) + "</div>";
           var l = x.line, bb = "mf:" + k + ":toMe:" + l.id + ":";
           return '<div class="row" data-k="tm-' + esc(l.id) + '">' + inp(bb + "name", l.name, { cls:"row-input row-name", ph:"למשל: 10 אדניות", label:"תיאור" }) +
             sel(bb + "kind", l.kind || "other", FARM_KINDS, { cls:"row-select", label:"סוג" }) +
@@ -7528,11 +7666,25 @@
        ========================================================= */
     function orderCard(o){
       var done = o.steps.filter(function(s){ return s.done; }).length, total = o.steps.length;
-      var b = "or:" + o.id + ":";
+      var b = "or:" + o.id + ":", open = !!S.openOrders[o.id];
+      var badge = '<span class="badge ' + (done === total && total ? "badge-pine" : "badge-soft") + '">' + done + "/" + total + "</span>";
+      if (!open){
+        var next = o.steps.filter(function(s){ return !s.done; })[0];
+        var meta = [];
+        if (n(o.qty)) meta.push(o.qty + " יח׳");
+        if (next) meta.push("הבא: " + next.text + (next.day ? " (" + dm(next.day) + ")" : ""));
+        if (o.due) meta.push("עד " + dm(o.due));
+        return '<div class="panel m-order m-folded' + (o.closed ? " m-closed" : "") + '" data-k="o-' + esc(o.id) + '">' +
+          '<button type="button" class="m-ohead" data-mact="orderToggle" data-id="' + esc(o.id) + '" aria-expanded="false">' +
+          '<span class="m-chev" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></span><span class="m-otext"><b>' + esc(o.title || "הזמנה בלי שם") + "</b>" +
+          (meta.length ? '<span class="small muted">' + esc(meta.join(" · ")) + "</span>" : "") + "</span>" + badge + "</button>" +
+          '<div class="bar"><span style="width:' + (total ? Math.round(done / total * 100) : 0) + '%;background:var(--pine);"></span></div></div>';
+      }
       var q = o.quoteId ? (state.quotes || []).filter(function(x){ return x.id === o.quoteId; })[0] : null;
       var h = '<div class="panel m-order' + (o.closed ? " m-closed" : "") + '" data-k="o-' + esc(o.id) + '">' +
-        '<div class="panel-head"><div style="flex:1;min-width:0;">' + inp(b + "title", o.title, { cls:"row-input m-otitle", ph: o.kind === "make" ? "מה מייצרים? למשל 120 קוביות לסוקולנטים" : "מה החווה ביקשה? למשל רגל שבורה לשולחן", label:"שם ההזמנה" }) + "</div>" +
-        '<span class="badge ' + (done === total && total ? "badge-pine" : "badge-soft") + '">' + done + "/" + total + "</span>" + del("orderDel", o.id, null, "מחיקת ההזמנה") + "</div>" +
+        '<div class="panel-head"><button type="button" class="m-chevbtn" data-mact="orderToggle" data-id="' + esc(o.id) + '" aria-expanded="true" aria-label="לצמצם את ההזמנה" title="לצמצם"><span class="m-chev open" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></span></button>' +
+        '<div style="flex:1;min-width:0;">' + inp(b + "title", o.title, { cls:"row-input m-otitle", ph: o.kind === "make" ? "מה מייצרים? למשל 120 קוביות לסוקולנטים" : "מה החווה ביקשה? למשל רגל שבורה לשולחן", label:"שם ההזמנה" }) + "</div>" +
+        badge + del("orderDel", o.id, null, "מחיקת ההזמנה") + "</div>" +
         '<div class="m-ometa">' +
         '<span class="inline-group"><span class="cap muted">כמות</span>' + inp(b + "qty", o.qty, { cls:"row-input row-qty mono", ph:"–", im:"numeric", label:"כמות", dir:"ltr" }) + "</span>" +
         '<span class="inline-group"><span class="cap muted">בשביל</span>' + inp(b + "client", o.client, { cls:"row-input", ph:"חוות רום", label:"בשביל מי", style:"width:96px" }) + "</span>" +
@@ -7723,20 +7875,9 @@
         bf("עוסק מורשה מס׳", "taxId", { im:"numeric", dir:"ltr" }) + bf("טלפון", "phone", { im:"tel", dir:"ltr" }) + bf("אימייל", "email", { dir:"ltr" }) + bf("כתובת", "address") +
         sf("המספר הבא לחשבון עסקה", "dealSeq", { im:"numeric", num:true, dir:"ltr" }) + "</div>";
       h += '<div class="calc-section">החווה והמנהלת</div><div class="calc-grid">' + sf("שם הלקוח", "client.name") + sf("כתובת", "client.address") + sf("המנהלת האדמיניסטרטיבית", "client.contact") + sf("אימייל", "client.contactEmail", { dir:"ltr" }) + "</div>";
-      var ho = st.hosen;
-      h += '<div class="calc-section">חוסן</div><div class="calc-grid">' + sf("שם התכנית", "hosen.program") + sf("שם הקבוצה", "hosen.group") +
-        fld("יום המפגש", sel("s:hosen.weekday", ho.weekday, DAYS.map(function(d, i){ return [i, d]; }), { id:"m-set-hwd", num:true }), null, "m-set-hwd") +
-        sf("שכר עבודה למפגש (₪)", "hosen.labor", { im:"decimal", num:true }) + sf("אחזקה למפגש (₪)", "hosen.upkeep", { im:"decimal", num:true }) + sf("בלאי ציוד למפגש (₪)", "hosen.wear", { im:"decimal", num:true }) +
-        sf("תקציב עץ למשתתף (₪)", "hosen.woodPerPerson", { im:"decimal", num:true }) + sf("משתתפים שסוכמו", "hosen.agreed", { im:"numeric", num:true }) + sf("מקסימום משתתפים לחיוב", "hosen.maxBill", { im:"numeric", num:true }) +
-        sf("ביטול ללא התראה: חלק מהמחיר", "hosen.lateRate", { im:"decimal", num:true, hint:"1 = חיוב מלא" }) + sf("שעות עבודה למפגש", "hosen.hours", { im:"decimal", num:true }) + sf("פירוט שעות העבודה", "hosen.hoursDetail") + "</div>";
-      var sh = st.shikum;
-      h += '<div class="calc-section">שיקום</div><div class="calc-grid">' + sf("שם", "shikum.name") + sf("מחיר למפגש (₪, לפני מע״מ)", "shikum.price", { im:"decimal", num:true }) + "</div>" +
-        '<div class="m-flags"><span class="small muted">ימי המפגש:</span>' + DAYS.map(function(d, i){ return '<label class="m-flag"><input type="checkbox" id="m-shd-' + i + '" data-bind="shd:' + i + '"' + ((sh.weekdays || []).indexOf(i) >= 0 ? " checked" : "") + "> " + d + "</label>"; }).join("") + "</div>" +
-        '<div class="m-flags"><label class="m-flag"><input type="checkbox" id="m-sh-via" data-bind="s:shikum.viaFarm"' + (sh.viaFarm ? " checked" : "") + "> נכלל בהתחשבנות עם החווה</label>" +
-        '<label class="m-flag"><input type="checkbox" id="m-ho-via" data-bind="s:hosen.viaFarm"' + (ho.viaFarm ? " checked" : "") + "> חוסן נכלל בהתחשבנות עם החווה</label></div>";
       h += '<div class="calc-section">ההסכם עם החווה</div><div class="calc-grid">' + sf("שכירות חודשית (₪, לפני מע״מ)", "farm.rent", { im:"decimal", num:true }) +
-        sf("אחוז לחווה מחוסן", "farm.rates.hosen", { im:"decimal", num:true }) + sf("אחוז לחווה משיקום", "farm.rates.shikum", { im:"decimal", num:true }) +
-        sf("אחוז מפרויקטים לחווה", "farm.rates.farmwork", { im:"decimal", num:true }) + sf("אחוז ממכירות בחנות", "farm.rates.shop", { im:"decimal", num:true }) + sf("הערה מההסכם", "farm.note") + "</div>";
+        sf("אחוז מפרויקטים לחווה", "farm.rates.farmwork", { im:"decimal", num:true }) + sf("אחוז ממכירות בחנות", "farm.rates.shop", { im:"decimal", num:true }) + sf("הערה מההסכם", "farm.note") + "</div>" +
+        '<div class="small muted" style="margin-top:6px;">התמחור של חוסן, שיקום ושאר התוכניות (כולל האחוז לחווה מכל תוכנית) נמצא בלשונית חוות רום, ליד כל תוכנית.</div>';
       h += '<div class="calc-section">ימי עבודה (למשימות שעוברות ליום הבא)</div><div class="m-flags">' + DAYS.map(function(d, i){ return '<label class="m-flag"><input type="checkbox" id="m-hrs-' + i + '" data-bind="hrs:' + i + '"' + (st.hours && st.hours[i] ? " checked" : "") + "> " + d + "</label>"; }).join("") + "</div>";
       return modalWrap("הגדרות", "משנים פעם אחת, וכל הלשוניות מתעדכנות", h, bt("סיום", "closeSheet", { cls:"btn-primary" }));
     }
@@ -7874,7 +8015,7 @@
         cols: [{ label:"תיאור", w:0.56, align:"right" }, { label:"כמות", w:0.1, align:"right" }, { label:"מחיר", w:0.17, align:"left" }, { label:"סה״כ", w:0.17, align:"left" }],
         rows: (d.lines || []).map(function(l){ return [l.desc, String(l.qty), ils(l.price, true), ils(l.total, true)]; }),
         totals: [["סה״כ לפני מע״מ", ils(d.net, true)], ["מע״מ " + vatPct() + "%", ils(d.vat, true)], ["סה״כ לתשלום", ils(d.amount, true)]],
-        notes: ["חשבון עסקה זה אינו חשבונית מס. חשבונית מס קבלה תונפק עם קבלת התשלום."].concat(d.src === "hosen" && (st.hosen.notes || []).length ? st.hosen.notes : []),
+        notes: ["חשבון עסקה זה אינו חשבונית מס. חשבונית מס קבלה תונפק עם קבלת התשלום."].concat(progById(d.src) && progById(d.src).type === "group" ? progById(d.src).notes || [] : []),
         footer: b.name
       };
       if (!spec.rows.length) spec.rows = [[d.title || "שירות", "1", ils(d.net || d.amount, true), ils(d.net || d.amount, true)]];
@@ -8019,15 +8160,15 @@
       return zipFiles(files, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     }
 
-    function quoteNo(k) { return 'חוסן-' + k.slice(0, 4) + '-' + k.slice(5, 7); }
+    function quoteNo(k, p) { return progShort(p).replace(/\s+/g, '-') + '-' + k.slice(0, 4) + '-' + k.slice(5, 7); }
     function statusLabel(s) { var f = SESSION_STATUS.filter(function (x) { return x[0] === s; })[0]; return f ? f[1] : s; }
-    function quoteSheet(k) {
-      var st = S.settings, ho = st.hosen, m = monthOf(k), hc = hosenCalc(m), bz = biz();
+    function quoteSheet(k, hc) {
+      var st = S.settings, ho = hc.p, bz = biz();
       var R = [], merges = [];
       function add(row) { R.push(row); return R.length; }
       add([{ v: 'הצעת מחיר', s: 2 }]);
       merges.push('A1:J1');
-      add([{ v: (ho.program || 'תכנית חוסן') + ' · מפגש שבועי בימי ' + DAYS[n(ho.weekday)] + (ho.group ? ' (' + ho.group + ')' : '') + ' · ' + monthLabel(k), s: 1 }]);
+      add([{ v: (ho.name || 'תכנית חוסן') + ' · מפגש שבועי בימי ' + DAYS[n(ho.weekday)] + (ho.group ? ' (' + ho.group + ')' : '') + ' · ' + monthLabel(k), s: 1 }]);
       merges.push('A2:J2');
       add([]);
       add([{ v: 'מאת', s: 1 }, null, null, null, null, { v: 'לכבוד', s: 1 }]);
@@ -8037,10 +8178,10 @@
       add(['טלפון', bz.phone]);
       add(['אימייל', bz.email]);
       add([]);
-      add([{ v: 'מס׳ הצעה', s: 1 }, quoteNo(k), null, null, null, { v: 'חודש השירות', s: 1 }, monthLabel(k)]);
+      add([{ v: 'מס׳ הצעה', s: 1 }, quoteNo(k, ho), null, null, null, { v: 'חודש השירות', s: 1 }, monthLabel(k)]);
       add([{ v: 'תאריך', s: 1 }, dmy(lastDay(k)), null, null, null, { v: 'תמחור', s: 1 }, ils(hc.base) + ' למפגש + ' + ils(ho.woodPerPerson) + ' למשתתף']);
       add([]);
-      add([{ v: 'מפגשי ' + (ho.program || 'חוסן'), s: 1 }]);
+      add([{ v: 'מפגשי ' + progShort(ho), s: 1 }]);
       var head = add(['#', 'תאריך', 'סטטוס', 'משתתפים שסוכמו', 'הגיעו בפועל', 'משתתפים לחיוב', 'תשלום בסיסי (₪)', 'תקציב עץ (₪)', 'סה״כ למפגש (₪)', 'הערה'].map(function (x) { return { v: x, s: 4 }; }));
       var first = head + 1;
       hc.rows.forEach(function (r, i) {
@@ -8056,15 +8197,15 @@
       merges.push('A' + R.length + ':J' + R.length);
       add([]);
       var spRow = null;
-      if (m.hosen.specials.length) {
+      if (hc.d.specials.length) {
         add([{ v: 'פרויקטים מיוחדים – באישור החווה', s: 4 }, { v: '', s: 4 }, { v: '', s: 4 }, { v: '', s: 4 }, { v: '', s: 4 }, { v: '', s: 4 }, { v: '', s: 4 }, { v: '', s: 4 }, { v: 'סכום (₪)', s: 4 }]);
         var sf = R.length + 1;
-        m.hosen.specials.forEach(function (x) { add([{ v: x.desc || '', s: 7 }, null, null, null, null, null, null, null, { v: n(x.amount), s: 3 }]); merges.push('A' + R.length + ':H' + R.length); });
+        hc.d.specials.forEach(function (x) { add([{ v: x.desc || '', s: 7 }, null, null, null, null, null, null, null, { v: n(x.amount), s: 3 }]); merges.push('A' + R.length + ':H' + R.length); });
         spRow = add([{ v: 'סה״כ פרויקטים', s: 6 }, null, null, null, null, null, null, null, { v: hc.specials, s: 5, f: 'SUM(I' + sf + ':I' + (R.length) + ')' }]);
         add([]);
       }
       var vat = vatPct();
-      var a = add([null, null, null, null, null, null, { v: 'תשלום בסיסי (' + plural(hc.charged, 'מפגש אחד', 'מפגשים') + ')', s: 0 }, null, { v: r2(hc.baseSum + hc.fixedSum), f: 'G' + tot }]);
+      var a = add([null, null, null, null, null, null, { v: 'תשלום בסיסי (' + plural(hc.count, 'מפגש אחד', 'מפגשים') + ')', s: 0 }, null, { v: r2(hc.baseSum + hc.fixedSum), f: 'G' + tot }]);
       var b = add([null, null, null, null, null, null, { v: 'תקציב עץ (' + hc.billedSum + ' משתתפים)' }, null, { v: hc.woodSum, f: 'H' + tot }]);
       var c = add([null, null, null, null, null, null, { v: 'פרויקטים מיוחדים' }, null, { v: hc.specials, f: spRow ? 'I' + spRow : null }]);
       var d = add([null, null, null, null, null, null, { v: 'סה״כ לפני מע״מ', s: 1 }, null, { v: hc.pre, s: 5, f: 'I' + a + '+I' + b + '+I' + c }]);
@@ -8085,10 +8226,10 @@
       }
       add([]);
       add([{ v: 'בברכה, ' + (bz.owner || bz.name) }, null, null, null, null, null, { v: 'חתימה: ____________________' }]);
-      return { name: 'הצעת מחיר ' + monthName(k), cols: [5, 11, 14, 10, 10, 10, 14, 13, 14, 18], rows: R, merges: merges };
+      return { name: 'הצעת מחיר ' + progShort(ho), cols: [5, 11, 14, 10, 10, 10, 14, 13, 14, 18], rows: R, merges: merges };
     }
     function reconSheet(k) {
-      var st = S.settings, m = monthOf(k), f = farmCalc(m), hc = f.hc, sc = f.sc, bz = biz();
+      var st = S.settings, m = monthOf(k), f = farmCalc(m), bz = biz();
       var client = st.client.name || 'החווה', short = bz.short;
       var R = [], merges = [];
       function add(row) { R.push(row); return R.length; }
@@ -8111,26 +8252,29 @@
       var nr = add([{ v: netLabel + ' (לפני מע״מ)', s: 1 }, { v: Math.abs(f.net), s: 5, f: f.net >= 0 ? 'B' + tot + '-E' + tot : 'E' + tot + '-B' + tot }]);
       add([{ v: 'מע״מ ' + vat + '%' }, { v: r2(Math.abs(f.net) * vat / 100), f: 'ROUND(B' + nr + '*' + (vat / 100) + ',2)' }]);
       add([{ v: netLabel + ' (כולל מע״מ)', s: 6 }, { v: Math.abs(f.netVat), s: 5, f: 'B' + nr + '+B' + (nr + 1) }]);
-      if (hc.rows.length) {
+      f.calcs.forEach(function (c) {
+        if (!c.rows.length || !c.pre) return;
         add([]);
-        add([{ v: 'פירוט פעילות ' + (st.hosen.program || 'חוסן'), s: 4 }, { v: 'סכום (₪)', s: 4 }, null, { v: 'סטטוס', s: 4 }]);
-        hc.rows.forEach(function (r) { add([{ v: dmy(r.s.date), s: 7 }, { v: r.total, s: 3 }, null, { v: statusLabel(r.s.status) + (r.s.note ? ' · ' + r.s.note : ''), s: 7 }]); });
-        if (hc.specials) add([{ v: 'פרויקטים מיוחדים', s: 7 }, { v: hc.specials, s: 3 }]);
-      }
-      if (sc.rows.length && sc.price) {
-        add([]);
-        add([{ v: 'פירוט ' + (st.shikum.name || 'שיקום'), s: 4 }, { v: 'סכום (₪)', s: 4 }, null, { v: 'סטטוס', s: 4 }]);
-        sc.rows.forEach(function (r) { add([{ v: dmy(r.date), s: 7 }, { v: r.status === 'held' ? sc.price : 0, s: 3 }, null, { v: r.status === 'held' ? (r.future ? 'מתוכנן' : 'התקיים') : 'בוטל', s: 7 }]); });
-      }
+        if (c.type === 'group') {
+          add([{ v: 'פירוט פעילות ' + progShort(c.p), s: 4 }, { v: 'סכום (₪)', s: 4 }, null, { v: 'סטטוס', s: 4 }]);
+          c.rows.forEach(function (r) { add([{ v: dmy(r.s.date), s: 7 }, { v: r.total, s: 3 }, null, { v: statusLabel(r.s.status) + (r.s.note ? ' · ' + r.s.note : ''), s: 7 }]); });
+          if (c.specials) add([{ v: 'פרויקטים מיוחדים', s: 7 }, { v: c.specials, s: 3 }]);
+        } else {
+          add([{ v: 'פירוט ' + progShort(c.p) + ' · ' + ils(c.rate, true) + ' לשעה', s: 4 }, { v: 'סכום (₪)', s: 4 }, null, { v: 'סטטוס', s: 4 }]);
+          c.rows.forEach(function (r) { add([{ v: dmy(r.date), s: 7 }, { v: r.amount, s: 3 }, null, { v: r.status === 'held' ? (r.future ? 'מתוכנן' : 'התקיים') + ' · ' + r.hours + ' שעות' : 'בוטל', s: 7 }]); });
+        }
+      });
       if (st.farm.note) { add([]); add([{ v: 'מההסכם: ' + st.farm.note, s: 8 }]); }
       return { name: 'התחשבנות ' + monthName(k), cols: [34, 14, 3, 34, 14], rows: R, merges: merges };
     }
 
     function summaryText(k){
-      var st = S.settings, m = monthOf(k), f = farmCalc(m), hc = f.hc, sc = f.sc, b = biz(), client = st.client.name || "החווה", L = [];
+      var st = S.settings, m = monthOf(k), f = farmCalc(m), b = biz(), client = st.client.name || "החווה", L = [];
       L.push((st.client.contact ? "היי " + st.client.contact + "," : "היי,") + " הסיכום של " + monthLabel(k) + ":");
-      if (m.hosen.sessions.length || hc.pre) L.push((st.hosen.program || "חוסן") + ": " + plural(hc.charged, "מפגש אחד", "מפגשים") + ", " + ils(hc.pre, true) + " לפני מע״מ.");
-      if (sc.pre) L.push((st.shikum.name || "שיקום") + ": " + plural(sc.count, "מפגש אחד", "מפגשים") + ", " + ils(sc.pre, true) + " לפני מע״מ.");
+      f.calcs.forEach(function(c){
+        if (!c.pre) return;
+        L.push(progShort(c.p) + ": " + plural(c.count, "מפגש אחד", "מפגשים") + (c.type === "hourly" ? " (" + c.hoursSum + " שעות)" : "") + ", " + ils(c.pre, true) + " לפני מע״מ.");
+      });
       L.push("מגיע לי מ" + client + ": " + ils(f.toMeTotal, true) + ".");
       var parts = ["שכירות " + ils(f.rent)];
       if (f.pctTotal) parts.push("אחוזים " + ils(f.pctTotal, true));
@@ -8153,6 +8297,7 @@
       if (e.type === "checkbox") return e.checked;
       var t = e.getAttribute("data-type"), v = e.value;
       if (t === "num") return v.trim() === "" ? "" : n(v);
+      if (t === "lines") return v.split("\n").map(function(x){ return x.trim(); }).filter(Boolean);
       return v;
     }
     function bindTarget(addr){
@@ -8164,10 +8309,12 @@
           return { obj:o, key:path[path.length - 1], save:"app/settings", after: function(){ syncAllLedgerAuto(); } };
         }
         case "biz": return { obj: state.business, key:p[1], after: function(){ saveNow(); } };
-        case "shd": return { special: function(v){ var w = (S.settings.shikum.weekdays || []).filter(function(x){ return x !== +p[1]; }); if (v) w.push(+p[1]); S.settings.shikum.weekdays = w.sort(); persist("app/settings"); syncAllLedgerAuto(); } };
+        case "pr": it = progById(p[1]); return it ? { obj:it, key:p[2], save:"app/settings", after: function(){ syncAllLedgerAuto(); } } : null;
+        case "prw": it = progById(p[1]); return it ? { special: function(v){ var w = (it.weekdays || []).filter(function(x){ return x !== +p[2]; }); if (v) w.push(+p[2]); it.weekdays = w.sort(); persist("app/settings"); syncAllLedgerAuto(); } } : null;
+        case "ph": return { special: function(v){ mutMonth(p[1], function(mm){ var d = pdata(mm, p[2]); if (v === "") delete d.hours[p[3]]; else d.hours[p[3]] = v; }); } };
         case "hrs": return { special: function(v){ S.settings.hours[p[1]] = v ? ["08:00","18:00"] : null; persist("app/settings"); } };
-        case "hs": k = p[1]; m = S.months[k]; it = m ? findIn(m.hosen.sessions, p[2]) : null; return it ? { obj:it, key:p[3], save:"months/" + k } : null;
-        case "hx": k = p[1]; m = S.months[k]; it = m ? findIn(m.hosen.specials, p[2]) : null; return it ? { obj:it, key:p[3], save:"months/" + k } : null;
+        case "hs": k = p[1]; m = S.months[k]; it = m ? findIn(pdata(m, p[2]).sessions, p[3]) : null; return it ? { obj:it, key:p[4], save:"months/" + k } : null;
+        case "hx": k = p[1]; m = S.months[k]; it = m ? findIn(pdata(m, p[2]).specials, p[3]) : null; return it ? { obj:it, key:p[4], save:"months/" + k } : null;
         case "mf": k = p[1]; m = S.months[k]; it = m ? findIn(m.farm[p[2]], p[3]) : null; return it ? { obj:it, key:p[4], save:"months/" + k } : null;
         case "mr": return { special: function(v){ mutMonth(p[1], function(mm){ mm.farm.rent = v === "" ? null : v; }); } };
         case "or": it = S.orders[p[1]]; return it ? { obj:it, key:p[2], save:"orders/" + p[1] } : null;
@@ -8194,6 +8341,7 @@
     /* =========================================================
        Actions
        ========================================================= */
+    function saveOpenOrders(){ LSX.set("ui:openOrders", S.openOrders); }
     function arm(key){ if (S.armed === key){ S.armed = null; return true; } S.armed = key; render(); return false; }
     function openSheet(sh){ S.sheet = sh; S.armed = null; render(); }
     function closeSheet(){
@@ -8212,51 +8360,101 @@
       month: function(i, a){ goToMonth(a === "0" ? todayMonthKey() : shiftMonth(currentMonthKey, +a)); render(); },
       week: function(i, a){ S.week = a === "0" ? weekStartOf(today()) : addD(S.week, 7 * +a); render(); },
 
-      /* Hosen */
-      sesStatus: function(sid, v){ mutMonth(currentMonthKey, function(m){ var s = findIn(m.hosen.sessions, sid); if (s) s.status = v; }); },
-      sesDel: function(sid, k){ if (!arm("sesDel|" + sid)) return; mutMonth(k, function(m){ m.hosen.sessions = m.hosen.sessions.filter(function(s){ return s.id !== sid; }); }); },
-      addSession: function(i, k){
-        var w = n(S.settings.hosen.weekday), nid = id();
-        mutMonth(k, function(m){
-          var last = m.hosen.sessions.map(function(s){ return s.date; }).sort().pop();
-          var d = last ? addD(last, 7) : k + "-01";
-          if (!last) while (wd(d) !== w) d = addD(d, 1);
-          m.hosen.sessions.push({ id:nid, date:d, status:"pending", agreed:"", arrived:"", price:"", note:"" });
+      /* Programs: sessions of a group program */
+      sesStatus: function(sid, a){ var p = a.split("|"); mutMonth(currentMonthKey, function(m){ var s = findIn(pdata(m, p[0]).sessions, sid); if (s) s.status = p[1]; }); },
+      sesStep: function(sid, a){
+        var p = a.split("|"), pr = progById(p[0]);
+        mutMonth(currentMonthKey, function(m){
+          var s = findIn(pdata(m, p[0]).sessions, sid); if (!s) return;
+          var cur = s[p[1]] === "" || s[p[1]] == null ? (p[1] === "agreed" ? n(pr && pr.agreed) : 0) : n(s[p[1]]);
+          s[p[1]] = Math.max(0, cur + n(p[2]));
         });
       },
-      fillSessions: function(i, k){
-        var w = n(S.settings.hosen.weekday), added = 0;
+      sesDel: function(sid, a){ var p = a.split("|"); if (!arm("sesDel|" + sid)) return; mutMonth(p[0], function(m){ var d = pdata(m, p[1]); d.sessions = d.sessions.filter(function(s){ return s.id !== sid; }); }); },
+      addSession: function(i, a){
+        var p = a.split("|"), k = p[0], pr = progById(p[1]); if (!pr) return;
+        var w = n(pr.weekday), nid = id();
         mutMonth(k, function(m){
-          var d = k + "-01";
+          var d0 = pdata(m, pr.id), last = d0.sessions.map(function(s){ return s.date; }).sort().pop();
+          var d = last ? addD(last, 7) : (pr.from && pr.from > k + "-01" ? pr.from : k + "-01");
+          if (!last) while (wd(d) !== w) d = addD(d, 1);
+          d0.sessions.push({ id:nid, date:d, status:"pending", agreed:"", arrived:"", price:"", note:"" });
+        });
+      },
+      fillSessions: function(i, a){
+        var p = a.split("|"), k = p[0], pr = progById(p[1]), added = 0; if (!pr) return;
+        var w = n(pr.weekday);
+        mutMonth(k, function(m){
+          var d0 = pdata(m, pr.id), d = k + "-01";
           while (wd(d) !== w) d = addD(d, 1);
           for (; mk(d) === k; d = addD(d, 7)){
-            if (m.hosen.sessions.some(function(s){ return s.date === d; })) continue;
+            if (pr.from && d < pr.from) continue;
+            if (d0.sessions.some(function(s){ return s.date === d; })) continue;
             var off = fixedOn(d).filter(function(f){ return f.off; })[0];
-            m.hosen.sessions.push({ id:id(), date:d, status: off ? "notice" : "pending", agreed:"", arrived:"", price:"", note: off ? off.title : "" });
+            d0.sessions.push({ id:id(), date:d, status: off ? "notice" : "pending", agreed:"", arrived:"", price:"", note: off ? off.title : "" });
             added++;
           }
-          m.hosen.sessions.sort(function(a, b){ return a.date < b.date ? -1 : 1; });
+          d0.sessions.sort(function(x, y){ return x.date < y.date ? -1 : 1; });
         });
         toast(added ? plural(added, "מפגש אחד נוסף", "מפגשים נוספו") + "." : "כל הימים כבר ברשימה.");
       },
-      addSpecial: function(i, k){ var nid = id(); mutMonth(k, function(m){ m.hosen.specials.push({ id:nid, desc:"", amount:"" }); }); S.focus = fid("hx:" + k + ":" + nid + ":desc"); },
-      spDel: function(sid, k){ mutMonth(k, function(m){ m.hosen.specials = m.hosen.specials.filter(function(s){ return s.id !== sid; }); }); },
+      addSpecial: function(i, a){ var p = a.split("|"), nid = id(); mutMonth(p[0], function(m){ pdata(m, p[1]).specials.push({ id:nid, desc:"", amount:"" }); }); S.focus = fid("hx:" + p[0] + ":" + p[1] + ":" + nid + ":desc"); },
+      spDel: function(sid, a){ var p = a.split("|"); mutMonth(p[0], function(m){ var d = pdata(m, p[1]); d.specials = d.specials.filter(function(s){ return s.id !== sid; }); }); },
 
-      /* Shikum */
-      shikumToggle: function(d, k){
-        var m = monthOf(k), row = shikumCalc(m, k).rows.filter(function(r){ return r.date === d; })[0];
-        mutMonth(k, function(mm){
+      /* Programs: dates of an hourly program */
+      hourToggle: function(date, a){
+        var p = a.split("|"), k = p[0], pr = progById(p[1]); if (!pr) return;
+        var row = progCalc(pr, monthOf(k), k).rows.filter(function(r){ return r.date === date; })[0];
+        mutMonth(k, function(m){
+          var d = pdata(m, pr.id);
           if (row && row.status === "held"){
-            if (mm.shikum.extra.indexOf(d) >= 0) mm.shikum.extra = mm.shikum.extra.filter(function(x){ return x !== d; });
-            else mm.shikum.marks[d] = "cancel";
-          } else mm.shikum.marks[d] = "held";
+            if (d.extra.indexOf(date) >= 0){ d.extra = d.extra.filter(function(x){ return x !== date; }); delete d.hours[date]; }
+            else d.marks[date] = "cancel";
+          } else d.marks[date] = "held";
         });
       },
-      shikumExtra: function(i, k){
-        var e = document.getElementById("m-shikum-extra"), d = e && e.value;
-        if (!d){ toast("לבחור תאריך."); return; }
-        if (mk(d) !== k){ toast("התאריך לא בחודש הזה."); return; }
-        mutMonth(k, function(m){ if (m.shikum.extra.indexOf(d) < 0) m.shikum.extra.push(d); delete m.shikum.marks[d]; });
+      hourExtra: function(i, a){
+        var p = a.split("|"), k = p[0], e = document.getElementById("m-extra-" + p[1]), date = e && e.value;
+        if (!date){ toast("לבחור תאריך."); return; }
+        if (mk(date) !== k){ toast("התאריך לא בחודש הזה."); return; }
+        mutMonth(k, function(m){ var d = pdata(m, p[1]); if (d.extra.indexOf(date) < 0) d.extra.push(date); delete d.marks[date]; });
+      },
+
+      /* Programs: add, settings, end, delete */
+      progAdd: function(i, type){
+        var base = programs().filter(function(p){ return p.type === type; }).slice(-1)[0];
+        var nk = shiftMonth(todayMonthKey(), 1), pid = "p" + id();
+        var p = base ? cl(base) : programsFrom({}, {}, {}).filter(function(x){ return x.type === type; })[0];
+        p.id = pid; p.active = true; p.from = nk + "-01"; delete p.until;
+        if (type === "group"){ p.group = ""; p.name = String(p.name || "תכנית חוסן").replace(/\s*\d+$/, "") + " " + (programs().filter(function(x){ return x.type === "group"; }).length + 1); }
+        else p.name = "תוכנית חדשה";
+        S.settings.programs.push(p);
+        S.openProg[pid] = true;
+        persist("app/settings", 0);
+        if (currentMonthKey < nk) goToMonth(nk);
+        S.focus = fid("pr:" + pid + ":name");
+        toast("נוספה תוכנית שמתחילה ב־" + dmy(p.from) + ". אפשר לשנות את התאריך ואת התמחור.");
+      },
+      progSet: function(pid){ S.openProg[pid] = !S.openProg[pid]; render(); },
+      progEnd: function(pid){
+        var p = progById(pid); if (!p) return;
+        p.active = p.active === false;
+        if (p.active) delete p.until; else p.until = lastDay(currentMonthKey);
+        persist("app/settings", 0); syncAllLedgerAuto();
+        toast(p.active ? "התוכנית חזרה לרשימה." : "התוכנית סומנה כהסתיימה. החודשים שכבר עברו נשארים כמו שהם.");
+      },
+      progShow: function(pid){
+        var p = progById(pid); if (!p) return;
+        if (p.active !== false && p.from && p.from > lastDay(currentMonthKey)){ goToMonth(mk(p.from)); render(); return; }
+        p.active = true; delete p.until; S.openProg[pid] = true;
+        persist("app/settings", 0); syncAllLedgerAuto();
+      },
+      progDel: function(pid){
+        if (!arm("progDel|" + pid)) return;
+        S.settings.programs = programs().filter(function(p){ return p.id !== pid; });
+        delete S.openProg[pid];
+        persist("app/settings", 0); syncAllLedgerAuto();
+        toast("התוכנית נמחקה.");
       },
 
       /* Month-end */
@@ -8268,7 +8466,15 @@
       },
       dealPdf: function(did){ var d = S.docs[did]; if (d) saveFile("חשבון עסקה " + d.number + " - " + d.title + ".pdf", dealPdf(d)); },
       morning: function(did){ var d = S.docs[did]; if (d) copy(morningText(d), "השורות הועתקו. אפשר להדביק במסמך חדש במורנינג."); },
-      xlsx: function(i, k){ saveFile(biz().name + " - " + monthLabel(k) + ".xlsx", buildXlsx([quoteSheet(k), reconSheet(k)])); },
+      xlsx: function(i, k){
+        var used = {}, sheets = farmCalc(monthOf(k)).calcs.filter(function(c){ return c.type === "group" && c.rows.length; }).map(function(c){ return quoteSheet(k, c); }).concat([reconSheet(k)]);
+        sheets.forEach(function(sh){
+          var nm = String(sh.name).replace(/[\[\]:*?\/\\]/g, " ").slice(0, 28).trim() || "גיליון", x = nm, i2 = 2;
+          while (used[x]) x = nm + " " + i2++;
+          used[x] = true; sh.name = x;
+        });
+        saveFile(biz().name + " - " + monthLabel(k) + ".xlsx", buildXlsx(sheets));
+      },
       copySummary: function(i, k){ copy(summaryText(k), "הסיכום הועתק. אפשר להדביק בוואטסאפ או במייל."); },
       markSent: function(i, k){ mutMonth(k, function(m){ m.close.sent = m.close.sent ? null : today(); }); },
       addFarm: function(i, a){
@@ -8305,8 +8511,9 @@
       docDel: function(did){ if (!arm("docDel|" + did)) return; delete S.docs[did]; Store.remove("docs/" + did); S.sheet = null; render(); toast("נמחק."); },
 
       /* Orders */
-      orderAdd: function(i, kind){ var o = newOrder(kind); persist("orders/" + o.id, 0); S.focus = fid("or:" + o.id + ":title"); },
-      orderDel: function(oid){ if (!arm("orderDel|" + oid)) return; delete S.orders[oid]; Store.remove("orders/" + oid); render(); },
+      orderAdd: function(i, kind){ var o = newOrder(kind); S.openOrders[o.id] = true; saveOpenOrders(); persist("orders/" + o.id, 0); S.focus = fid("or:" + o.id + ":title"); },
+      orderToggle: function(oid){ if (S.openOrders[oid]) delete S.openOrders[oid]; else S.openOrders[oid] = true; saveOpenOrders(); render(); },
+      orderDel: function(oid){ if (!arm("orderDel|" + oid)) return; delete S.orders[oid]; delete S.openOrders[oid]; saveOpenOrders(); Store.remove("orders/" + oid); render(); },
       orderClose: function(oid){ var o = S.orders[oid]; if (!o) return; o.closed = !o.closed; persist("orders/" + oid, 0); },
       stepToggle: function(sid, oid){ var o = S.orders[oid], s = o && findIn(o.steps, sid); if (!s) return; s.done = !s.done; persist("orders/" + oid, 0); },
       stepAdd: function(oid){ var o = S.orders[oid]; if (!o) return; var s = { id:id(), text:"", done:false, day:null, act:"" }; o.steps.push(s); persist("orders/" + oid, 0); S.focus = fid("os:" + oid + ":" + s.id + ":text"); },
@@ -8447,7 +8654,7 @@
       backupExtra: function(){ return { settings:S.settings, months:S.months, docs:S.docs, tasks:S.tasks, orders:S.orders, prep:S.prep }; },
       restoreExtra: function(x){
         if (!x || typeof x !== "object") return;
-        if (x.settings){ S.settings = fillDefaults(x.settings, defaultSettings()); persist("app/settings", 0); }
+        if (x.settings){ var old = n(x.settings.v) < 3; S.settings = fillDefaults(x.settings, defaultSettings()); if (old) ensurePrograms(S.settings); persist("app/settings", 0); }
         ["months","docs","tasks","orders","prep"].forEach(function(c){
           Object.keys(x[c] || {}).forEach(function(k){
             if (!/^[A-Za-z0-9_\-.~:@+]{1,200}$/.test(k)) return;
