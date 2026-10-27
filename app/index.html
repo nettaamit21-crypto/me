@@ -480,6 +480,9 @@
   .m-chevbtn:hover, .m-ohead:hover .m-chev{ color:var(--walnut); background:rgba(176,141,87,.12); border-radius:8px; }
   .m-caltools{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:-4px 0 12px; }
   .m-ev.ws{ background:var(--pine); }
+  .m-ev.meet{ background:#4E6B86; }
+  .m-ev.meet .mono{ color:#D5E2EE; }
+  .m-ev.meet .small{ color:rgba(242,236,221,.8); }
   .m-ev.ws .mono{ color:#CFE3D6; }
   .m-ev.ws .small{ color:rgba(242,236,221,.8); }
   .m-recur{ margin-top:10px; display:flex; flex-direction:column; gap:6px; align-items:flex-start; }
@@ -6777,7 +6780,7 @@
           { id:"couple", name:"סדנה זוגית", unit:"workshop", price:"", hours:3, people:2 },
           { id:"family", name:"סדנה משפחתית", unit:"workshop", price:"", hours:3, people:4 },
           { id:"group", name:"סדנה קבוצתית", unit:"person", price:"", hours:3, people:8 }] },
-        gcal: { cal:"", calName:"", tasks:true, untimed:true, steps:true, ws:true, fixed:false, auto:false },
+        gcal: { cal:"", calName:"", tasks:true, untimed:true, steps:true, ws:true, meets:true, fixed:false, auto:false },
         dealSeq: 1001,
         hours: { 0:["08:00","18:00"], 1:["08:00","18:00"], 2:["08:00","18:00"], 3:["08:00","18:00"], 4:["08:00","18:00"], 5:["08:00","13:00"], 6:null },
         fixed: []
@@ -7108,6 +7111,9 @@
         var old = d && n(d.v) < 3;
         S.settings = fillDefaults(d || {}, defaultSettings());
         if (old && ensurePrograms(S.settings)) Store.save("app/settings", 0);
+        /* Meetings used to be copied into the fixed schedule; the calendar now reads them from the programs. */
+        var linked = (S.settings.fixed || []).filter(function(f){ return /^prog:/.test(f.link || ""); });
+        if (linked.length){ S.settings.fixed = S.settings.fixed.filter(function(f){ return linked.indexOf(f) < 0; }); Store.save("app/settings", 0); }
         S.settingsLoaded = true;
         autoRoll();
         syncAllLedgerAuto();
@@ -7259,6 +7265,7 @@
       if (!d.marks || typeof d.marks !== "object") d.marks = {};
       d.extra = Array.isArray(d.extra) ? d.extra : [];
       if (!d.hours || typeof d.hours !== "object") d.hours = {};
+      if (!d.mdate || typeof d.mdate !== "object") d.mdate = {};
       return d;
     }
     function hasData(m, pid){
@@ -7301,6 +7308,30 @@
       }
       return out;
     }
+    /* A program's paid meeting: every week on a weekday, or once a month (the first..fourth or last weekday, or a date set for that month). */
+    var NTH = [[1, "הראשון"], [2, "השני"], [3, "השלישי"], [4, "הרביעי"], [-1, "האחרון"]];
+    function nthWeekday(k, nth, w){
+      var d;
+      if (nth < 0){ d = lastDay(k); while (wd(d) !== w) d = addD(d, -1); return d; }
+      d = k + "-01"; while (wd(d) !== w) d = addD(d, 1);
+      d = addD(d, 7 * ((nth || 1) - 1));
+      return mk(d) === k ? d : null;
+    }
+    function recurDates(p, d, k, r){
+      if (r.freq !== "month") return hourlyDates(p, k, [n(r.weekday)]);
+      var x = (d.mdate && d.mdate[r.id]) || nthWeekday(k, n(r.nth) || 1, n(r.weekday));
+      return x && mk(x) === k && !(p.from && x < p.from) && !(p.until && x > p.until) ? [x] : [];
+    }
+    function meetingsOn(date){
+      var k = mk(date), m = monthOf(k), out = [];
+      programs().forEach(function(p){
+        if (p.type !== "hourly" || !(p.recur || []).length || !progInMonth(p, k)) return;
+        hourlyCalc(p, pdata(m, p.id), k).rows.forEach(function(r){
+          if (r.rid && r.date === date && r.status === "held") out.push({ p:p, r:r, rec:findIn(p.recur, r.rid) });
+        });
+      });
+      return out;
+    }
     function hourlyCalc(p, d, k){
       var t = today(), rate = n(p.rate), dates = hourlyDates(p, k);
       d.extra.forEach(function(x){ if (dates.indexOf(x) < 0 && mk(x) === k) dates.push(x); });
@@ -7315,7 +7346,7 @@
           amount: status === "held" ? r2(hours * rate) : 0, future: date > t, extra: !r && d.extra.indexOf(date) >= 0 };
       }
       var rows = dates.map(function(date){ return row(date, null); });
-      (p.recur || []).forEach(function(r){ hourlyDates(p, k, [n(r.weekday)]).forEach(function(date){ rows.push(row(date, r)); }); });
+      (p.recur || []).forEach(function(r){ recurDates(p, d, k, r).forEach(function(date){ rows.push(row(date, r)); }); });
       rows.sort(function(a, b){ return a.date < b.date ? -1 : a.date > b.date ? 1 : (a.rid ? 1 : 0) - (b.rid ? 1 : 0); });
       var held = rows.filter(function(r){ return r.status === "held"; });
       var pre = r2(held.reduce(function(a, r){ return a + r.amount; }, 0));
@@ -7732,11 +7763,14 @@
           var rb = "prr:" + p.id + ":" + r.id + ":";
           return '<div class="row" data-k="rc-' + esc(r.id) + '"><span class="badge badge-soft">קבוע</span>' +
             inp(rb + "name", r.name, { cls:"row-input row-name", ph:"למשל: ישיבת צוות", label:"שם הפגישה" }) +
-            sel(rb + "weekday", r.weekday, DAYS.map(function(d, i){ return [i, "כל " + d]; }), { cls:"row-select", num:true, label:"יום" }) +
+            sel(rb + "freq", r.freq || "week", [["month", "פעם בחודש"], ["week", "כל שבוע"]], { cls:"row-select", label:"כל כמה זמן" }) +
+            (r.freq === "month" ? sel(rb + "nth", n(r.nth) || 1, NTH, { cls:"row-select", num:true, label:"איזה שבוע בחודש" }) + sel(rb + "weekday", r.weekday, DAYS.map(function(d, i){ return [i, "יום " + d]; }), { cls:"row-select", num:true, label:"יום" })
+              : sel(rb + "weekday", r.weekday, DAYS.map(function(d, i){ return [i, "כל " + d]; }), { cls:"row-select", num:true, label:"יום" })) +
             '<span class="inline-group"><span class="cap muted">משעה</span>' + inp(rb + "start", r.start, { type:"time", cls:"row-input", label:"שעת התחלה" }) + "</span>" +
             '<span class="inline-group"><span class="cap muted">שעות</span>' + inp(rb + "hours", r.hours, { cls:"m-field mono", im:"decimal", num:true, label:"כמה שעות", dir:"ltr", ph:"1" }) + "</span>" +
+            (r.freq === "month" ? '<span class="inline-group"><span class="cap muted">ב' + esc(monthName(k)) + "</span>" + inp("pmd:" + k + ":" + p.id + ":" + r.id, recurDates(p, c.d, k, r)[0] || "", { type:"date", cls:"row-input", label:"התאריך החודש" }) + "</span>" : "") +
             '<span class="small muted">' + esc(ils(n(r.hours) * n(p.rate), true)) + "</span>" + del("recurDel", r.id, p.id, "מחיקת הפגישה הקבועה") + "</div>";
-        }).join("") + '<button type="button" class="link-btn" data-mact="recurAdd" data-id="' + esc(p.id) + '">+ פגישה קבועה בתשלום (למשל ישיבת צוות פעם בשבוע)</button></div>';
+        }).join("") + '<button type="button" class="link-btn" data-mact="recurAdd" data-id="' + esc(p.id) + '">+ פגישה קבועה בתשלום (למשל ישיבת צוות פעם בחודש)</button></div>';
         h += '<div class="m-dates">' + c.rows.map(function(r){
           var on = r.status === "held", what = r.rid ? r.name : on ? (r.future ? "מתוכנן" : "התקיים") : "";
           return '<div class="m-date-chip' + (on ? " on" : " off") + (r.future ? " future" : "") + (r.rid ? " meet" : "") + '" data-k="sd-' + esc(p.id + r.key) + '">' +
@@ -7978,6 +8012,10 @@
           var when = f.allDay || f.off ? "" : (f.start || "") + (f.end ? "–" + f.end : "");
           h += '<button type="button" class="m-ev' + (f.soft ? " soft" : "") + (f.off ? " offev" : "") + '" data-k="ev-' + esc(f.id) + '" data-mact="openEvent" data-id="' + esc(f.id) + '">' + (when ? '<span class="mono">' + esc(when) + "</span>" : "") + "<b>" + esc(f.title || "אירוע") + "</b>" + ((f.prep || []).length ? '<span class="small muted">' + (f.prep || []).length + " הכנות</span>" : "") + "</button>";
         });
+        meetingsOn(d).forEach(function(x){
+          var st = x.rec && x.rec.start, when = st ? st + "–" + endOf(st, x.r.hours * 60) : "";
+          h += '<button type="button" class="m-ev meet" data-k="mt-' + esc(x.p.id + x.r.key) + '" data-mact="goProg" data-id="' + esc(x.p.id) + '" data-arg="' + mk(d) + '">' + (when ? '<span class="mono">' + esc(when) + "</span>" : "") + "<b>" + esc(x.r.name) + '</b><span class="small">' + esc(progShort(x.p)) + "</span></button>";
+        });
         wsOn(d).forEach(function(w){
           var when = w.start ? w.start + (n(w.hours) ? "–" + endOf(w.start, n(w.hours) * 60) : "") : "";
           h += '<button type="button" class="m-ev ws" data-k="ws-' + esc(w.id) + '" data-mact="goWs" data-id="' + esc(w.id) + '">' + (when ? '<span class="mono">' + esc(when) + "</span>" : "") + "<b>🪚 " + esc(wsName(w)) + "</b>" + (w.client ? '<span class="small">' + esc(w.client) + (n(w.people) ? " · " + esc(w.people) + " משתתפים" : "") + "</span>" : "") + "</button>";
@@ -8148,9 +8186,9 @@
       if (!S.mcp){
         body += '<div class="m-pnotes"><p>הסנכרון ליומן גוגל עובד כשהפנקס פתוח ב־claude.ai ו־Google Calendar מחובר שם (הגדרות ← Connectors). מכאן אפשר להוריד קובץ יומן לשבוע ולייבא אותו ליומן גוגל.</p></div>';
       } else {
-        body += '<p class="small muted" style="margin:0 0 10px;">מה שבלוח של הפנקס נכנס ליומן גוגל: משימה חדשה נוספת, משימה שזזה זזה גם שם, ומשימה שנמחקה יורדת. הסנכרון מכסה את השבוע שעבר וחמשת השבועות הבאים.</p>';
+        body += '<p class="small muted" style="margin:0 0 10px;">מה שבלוח של הפנקס נכנס ליומן גוגל: משימה חדשה נוספת, משימה שזזה זזה גם שם, משימה שבוצעה מקבלת ✓ והופכת לאפורה, ומשימה שנמחקה יורדת. הסנכרון מכסה את השבוע שעבר וחמשת השבועות הבאים.</p>';
         body += '<div class="calc-section">מה להכניס ליומן</div><div class="m-flags" style="flex-direction:column;align-items:flex-start;">' +
-          [["tasks", "משימות עם שעה"], ["untimed", "משימות ושלבים בלי שעה, כאירוע של כל היום"], ["steps", "שלבים של הזמנות"], ["ws", "סדנאות פרטיות"], ["fixed", "הלו״ז הקבוע (רק אם הוא עוד לא ביומן גוגל)"]].map(function(o){
+          [["tasks", "משימות עם שעה"], ["untimed", "משימות ושלבים בלי שעה, כאירוע של כל היום"], ["steps", "שלבים של הזמנות"], ["ws", "סדנאות פרטיות"], ["meets", "פגישות קבועות של התוכניות (כמו ישיבת צוות)"], ["fixed", "הלו״ז הקבוע (רק אם הוא עוד לא ביומן גוגל)"]].map(function(o){
             return '<label class="m-flag"><input type="checkbox" id="m-g-' + o[0] + '" data-bind="s:gcal.' + o[0] + '"' + (g[o[0]] ? " checked" : "") + "> " + o[1] + "</label>";
           }).join("") + "</div>";
         body += '<div class="calc-section">לאיזה יומן</div>';
@@ -8631,6 +8669,7 @@
       for (var i = 0; i < 7; i++){
         var d = addD(ws, i), hrs = S.settings.hours ? S.settings.hours[wd(d)] : null, items = [];
         fixedOn(d).forEach(function(f){ items.push(f.off ? "יום חופש: " + f.title : (f.allDay ? "כל היום" : (f.start || "") + (f.end ? "–" + f.end : "")) + " " + (f.title || "אירוע") + " (קבוע)"); });
+        meetingsOn(d).forEach(function(x){ var st = x.rec && x.rec.start; items.push((st ? st + "–" + endOf(st, x.r.hours * 60) + " " : "") + x.r.name + " · " + progShort(x.p) + " (קבוע)"); });
         wsOn(d).forEach(function(w){ items.push((w.start || "") + (w.start && n(w.hours) ? "–" + endOf(w.start, n(w.hours) * 60) : "") + " " + wsName(w) + (w.client ? " עם " + w.client : "")); });
         prepOn(d).forEach(function(x){ items.push("הכנה: " + x.p.text + (prepDone(x.ev, x.f, x.p) ? " (בוצע)" : "")); });
         stepsOn(d).forEach(function(x){ items.push("שלב בהזמנה: " + x.s.text + " · " + (x.o.title || "")); });
@@ -8745,11 +8784,11 @@
       if (g.tasks) allTasks().forEach(function(t){
         if (!inR(t.day) || !t.title.trim() || (!t.start && !g.untimed)) return;
         var subs = (t.subtasks || []).map(function(s){ return (s.done ? "✓ " : "• ") + s.text; }).join("\n");
-        out["t:" + t.id] = { date:t.day, start:t.start, mins:t.mins, title:(t.done ? "✓ " : "") + t.title, desc:[subs, t.notes].filter(Boolean).join("\n\n") };
+        out["t:" + t.id] = { date:t.day, start:t.start, mins:t.mins, title:(t.done ? "✓ " : "") + t.title, done:!!t.done, desc:[subs, t.notes].filter(Boolean).join("\n\n") };
       });
       if (g.steps && g.untimed) allOrders().forEach(function(o){
         if (o.closed) return;
-        o.steps.forEach(function(s){ if (inR(s.day) && s.text) out["s:" + o.id + ":" + s.id] = { date:s.day, title:(s.done ? "✓ " : "") + s.text + " · " + (o.title || "הזמנה"), desc:"שלב בהזמנה" }; });
+        o.steps.forEach(function(s){ if (inR(s.day) && s.text) out["s:" + o.id + ":" + s.id] = { date:s.day, title:(s.done ? "✓ " : "") + s.text + " · " + (o.title || "הזמנה"), done:!!s.done, desc:"שלב בהזמנה" }; });
       });
       if (g.ws) Object.keys(S.months).forEach(function(k){
         (S.months[k].workshops || []).forEach(function(w){
@@ -8758,6 +8797,11 @@
             desc:[n(w.people) ? w.people + " משתתפים" : "", w.phone ? "טלפון: " + w.phone : "", w.note].filter(Boolean).join("\n") };
         });
       });
+      if (g.meets !== false) for (var dd = from; dd <= to; dd = addD(dd, 1)){
+        meetingsOn(dd).forEach(function(x){
+          out["m:" + x.p.id + ":" + x.r.key] = { date:x.r.date, start:x.rec && x.rec.start, mins:x.r.hours * 60, title:x.r.name + " · " + progShort(x.p), desc:"" };
+        });
+      }
       if (g.fixed) for (var d = from; d <= to; d = addD(d, 1)){
         fixedOn(d).forEach(function(f){ out["f:" + f.id + ":" + d] = { date:d, start: f.allDay || f.off ? null : f.start, end:f.end, title:f.title || "אירוע", allDay: !!(f.allDay || f.off), desc:"" }; });
       }
@@ -8766,6 +8810,7 @@
     function gcalInput(it, cal){
       var o = { summary:it.title, description:(it.desc ? it.desc + "\n\n" : "") + "מפנקס בית המלאכה", notificationLevel:"NONE" };
       if (cal) o.calendarId = cal;
+      if (it.done) o.colorId = "8";
       var st = it.allDay ? null : toMin(it.start);
       if (st == null){
         o.allDay = true; o.startTime = it.date + "T00:00:00"; o.endTime = addD(it.date, 1) + "T00:00:00"; o.availability = "AVAILABILITY_FREE";
@@ -8813,14 +8858,16 @@
       Object.keys(want).forEach(function(key){
         var input = gcalInput(want[key], cal), sig = stable(input), e = map[key];
         if (e && e.sig === sig && (e.cal || "") === cal) return;
-        ops.push({ kind: !e ? "new" : (e.cal || "") === cal ? "upd" : "move", key:key, input:input, sig:sig, date:want[key].date });
+        /* Un-ticking a task brings back the calendar's own colour, which an update cannot clear, so the event is made again. */
+        var back = e && e.done && !want[key].done;
+        ops.push({ kind: !e ? "new" : (e.cal || "") === cal && !back ? "upd" : "move", key:key, input:input, sig:sig, date:want[key].date, done:!!want[key].done });
       });
       gs.busy = true; gs.done = 0; gs.total = ops.length; gs.msg = ""; gs.fail = 0;
       render();
       function create(op){
         return S.mcp.callTool(GCAL, "create_event", op.input).then(function(res){
           var eid = eventIdOf(res);
-          if (eid) map[op.key] = { id:eid, sig:op.sig, date:op.date, cal:cal };
+          if (eid) map[op.key] = { id:eid, sig:op.sig, date:op.date, cal:cal, done:op.done };
           else gs.fail++;
         });
       }
@@ -8835,7 +8882,7 @@
         if (op.kind === "new") return create(op);
         if (op.kind === "move") return delOld(e).then(function(){ delete map[op.key]; return create(op); });
         return S.mcp.callTool(GCAL, "update_event", Object.assign({ eventId:e.id }, op.input)).then(function(){
-          map[op.key] = { id:e.id, sig:op.sig, date:op.date, cal:cal };
+          map[op.key] = { id:e.id, sig:op.sig, date:op.date, cal:cal, done:op.done };
         }, function(err){
           if (err && err.code === "tool_error"){ delete map[op.key]; return create(op); }
           throw err;
@@ -8933,7 +8980,12 @@
         case "biz": return { obj: state.business, key:p[1], after: function(){ saveNow(); } };
         case "pr": it = progById(p[1]); return it ? { obj:it, key:p[2], save:"app/settings", after: function(){ syncAllLedgerAuto(); } } : null;
         case "prw": it = progById(p[1]); return it ? { special: function(v){ var w = (it.weekdays || []).filter(function(x){ return x !== +p[2]; }); if (v) w.push(+p[2]); it.weekdays = w.sort(); persist("app/settings"); syncAllLedgerAuto(); } } : null;
-        case "prr": { var pp = progById(p[1]); it = pp ? findIn(pp.recur, p[2]) : null; return it ? { obj:it, key:p[3], save:"app/settings", after: function(){ recurFixed(pp, it); syncAllLedgerAuto(); } } : null; }
+        case "prr": { var pp = progById(p[1]); it = pp ? findIn(pp.recur, p[2]) : null; return it ? { obj:it, key:p[3], save:"app/settings", after: function(){ syncAllLedgerAuto(); } } : null; }
+        case "pmd": return { special: function(v){
+          var pr = progById(p[2]), r = pr ? findIn(pr.recur, p[3]) : null; if (!r) return;
+          if (v && mk(v) !== p[1]){ toast("התאריך צריך להיות ב" + monthLabel(p[1]) + "."); render(); return; }
+          mutMonth(p[1], function(mm){ var d = pdata(mm, pr.id); if (!v || v === nthWeekday(p[1], n(r.nth) || 1, n(r.weekday))) delete d.mdate[r.id]; else d.mdate[r.id] = v; });
+        } };
         case "ws": {
           k = p[1]; m = S.months[k]; it = m ? findIn(m.workshops, p[2]) : null; if (!it) return null;
           var w = it, fld2 = p[3];
@@ -8997,13 +9049,6 @@
       if (!date || date === base) delete d.moved[key]; else d.moved[key] = date;
       persist("prep/" + ev, 0);
       if (date && date !== base) toast("הוזז ל" + dayLabel(date) + ", רק הפעם.");
-    }
-    /* A paid weekly meeting also shows in the calendar, as a fixed event that follows it. */
-    function recurFixed(p, r){
-      var link = "prog:" + p.id + ":" + r.id, f = (S.settings.fixed || []).filter(function(x){ return x.link === link; })[0];
-      if (!f){ f = { id:"fx" + id(), link:link, date:null, soft:false, off:false, skip:[], prep:[] }; S.settings.fixed.push(f); }
-      f.title = (r.name || "פגישה") + " · " + progShort(p);
-      f.weekday = n(r.weekday); f.start = r.start || ""; f.end = r.start && n(r.hours) ? endOf(r.start, n(r.hours) * 60) : ""; f.allDay = !r.start;
     }
     function saveOpenOrders(){ LSX.set("ui:openOrders", S.openOrders); }
     function arm(key){ if (S.armed === key){ S.armed = null; return true; } S.armed = key; render(); return false; }
@@ -9084,21 +9129,19 @@
         mutMonth(k, function(m){ var d = pdata(m, p[1]); if (d.extra.indexOf(date) < 0) d.extra.push(date); delete d.marks[date]; });
       },
 
-      /* Programs: a paid meeting that repeats every week (e.g. staff meeting) */
+      /* Programs: a paid meeting that repeats (e.g. a monthly staff meeting) */
       recurAdd: function(pid){
         var p = progById(pid); if (!p) return;
-        var r = { id:"r" + id(), name:"ישיבת צוות", weekday:1, start:"", hours:1 };
+        var r = { id:"r" + id(), name:"ישיבת צוות", freq:"month", nth:1, weekday:(p.weekdays || [0])[0] || 0, start:"", hours:1 };
         p.recur = (p.recur || []).concat([r]);
-        recurFixed(p, r);
         persist("app/settings", 0); syncAllLedgerAuto();
         S.focus = fid("prr:" + pid + ":" + r.id + ":name");
-        toast("נוספה פגישה קבועה. היא נספרת בחיוב ומופיעה גם בלוח השנה.");
+        toast("נוספה פגישה קבועה, פעם בחודש. היא נספרת בחיוב ומופיעה בלוח השנה.");
       },
       recurDel: function(rid, pid){
         if (!arm("recurDel|" + rid)) return;
         var p = progById(pid); if (!p) return;
         p.recur = (p.recur || []).filter(function(r){ return r.id !== rid; });
-        S.settings.fixed = S.settings.fixed.filter(function(f){ return f.link !== "prog:" + pid + ":" + rid; });
         persist("app/settings", 0); syncAllLedgerAuto();
       },
 
@@ -9128,6 +9171,10 @@
       wsSet: function(){ S.wsSet = !S.wsSet; render(); },
       wsTypeAdd: function(){ var t = { id:"t" + id(), name:"", unit:"workshop", price:"", hours:2, people:"" }; S.settings.ws.types.push(t); persist("app/settings", 0); S.focus = fid("wst:" + t.id + ":name"); },
       wsTypeDel: function(tid){ if (!arm("wsTypeDel|" + tid)) return; S.settings.ws.types = wsTypes().filter(function(t){ return t.id !== tid; }); persist("app/settings", 0); },
+      goProg: function(pid, k){
+        goToMonth(k); switchView("farm");
+        setTimeout(function(){ var e = document.querySelector('[data-k="p-' + pid + '"]'); if (e) e.scrollIntoView({ block:"start" }); }, 120);
+      },
       goWs: function(wid){
         var x = wsFind(wid); if (!x) return;
         goToMonth(x.k); switchView("farm");
