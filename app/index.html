@@ -580,6 +580,8 @@
   .m-money b{ font-size:1.15rem; direction:ltr; text-align:right; }
   .m-syncwarn{ border:1.5px solid var(--rust); background:var(--rust-light); border-radius:12px; padding:10px 12px; margin-bottom:12px; }
   .m-syncwarn p{ margin:4px 0; font-size:0.84rem; }
+  .m-steps-help{ margin:4px 0; padding-inline-start:20px; font-size:0.84rem; }
+  .m-steps-help li{ margin:3px 0; }
   .m-synccard{ border:1.5px solid var(--rust); background:var(--rust-light); border-radius:12px; padding:10px 12px; display:flex; flex-direction:column; gap:6px; align-items:flex-start; }
   .m-synccard.ok{ border-color:var(--pine); background:var(--pine-light); }
   .m-synccard p{ margin:0; }
@@ -7069,7 +7071,7 @@
       lastErr = Date.now();
       var c = e && e.code;
       if (c === "quota_exceeded") toast("המאגר מלא. כדאי למחוק משימות ישנות שבוצעו.");
-      else if (c === "invalid_argument") toast("אין הרשאה לשמור כאן. רק הבעלים יכולים לערוך.");
+      else if (c === "invalid_argument"){ S.denied = true; toast("החשבון הזה לא יכול לשמור בפנקס. ב״עוד״ ← סנכרון יש הסבר."); }
       else if (c === "local_full") toast("הדפדפן לא שומר. כדאי לייצא גיבוי.");
       else toast("השמירה לא הצליחה. ננסה שוב בשינוי הבא.");
     }
@@ -8361,7 +8363,17 @@
       return h;
     }
 
+    function readOnly(){ return S.mode === "db" && ((S.access && !S.access.owner && S.access.write === false) || S.denied); }
+    function readOnlyHelp(){
+      return '<p>הפנקס שותף עם החשבון הזה בלי הרשאת עריכה, ולכן הוא לא רואה את הנתונים ולא שומר שינויים. כדי לתקן, במחשב, בחשבון שבו נבנה הפנקס:</p><ol class="m-steps-help">' +
+        "<li>פותחים את הפנקס ← כפתור השיתוף (Share) ← לשונית Share.</li>" +
+        "<li>ליד החשבון של הטלפון בוחרים <b>Editor (עורך)</b>, לא Viewer או Commenter.</li>" +
+        "<li>מוודאים שהפנקס <b>לא</b> משותף גם בקישור (General access / Anyone with the link כבוי). כשיש קישור ציבורי, חשבון מחוץ לארגון יורד לצפייה בלבד.</li>" +
+        "<li>בטלפון סוגרים ופותחים את הפנקס מחדש.</li></ol>" +
+        "<p>אם אין אפשרות לבחור Editor לחשבון הזה, אפשר להתחבר בדפדפן בטלפון לחשבון של הפנקס, והאפליקציה של Claude נשארת על החשבון הרגיל.</p>";
+    }
     function syncBanner(){
+      if (readOnly()) return '<div class="m-syncwarn" data-k="syncwarn"><b>⚠ החשבון הזה יכול רק לצפות בפנקס</b>' + readOnlyHelp() + "</div>";
       if (S.mode === "local") return '<div class="m-syncwarn" data-k="syncwarn"><b>⚠ הפנקס לא מחובר לחשבון כאן</b><p>מה שתעשה במכשיר הזה נשמר רק בו, ולא יגיע למחשב. כדי שהכל יסתנכרן, פותחים את הקישור של הפנקס דרך claude.ai, מחוברים לאותו חשבון (באפליקציית Claude המעודכנת או בדפדפן).</p><button type="button" class="link-btn" data-mact="nav" data-arg="more">פרטים ובדיקת חיבור</button></div>';
       if (S.saveError) return '<div class="m-syncwarn" data-k="syncwarn"><b>⚠ השמירה לא הצליחה</b><p>השינויים האחרונים עוד לא נשמרו בחשבון. כדאי לבדוק את החיבור לאינטרנט.</p></div>';
       return "";
@@ -8420,12 +8432,13 @@
     }
     function sheetMore(){
       var b = biz(), lm = Object.keys(state.months || {}).filter(isMonthKey).length;
-      var mode = S.mode === "db" ? (S.saveError ? "⚠ מחובר, אבל השמירה האחרונה לא הצליחה" : "☁ מחובר לחשבון ומסונכרן") : S.mode === "local" ? "⚠ לא מחובר לחשבון. הנתונים נשמרים רק במכשיר הזה" : "⏳ מתחבר…";
+      var mode = readOnly() ? "⚠ מחובר, אבל לחשבון הזה אין הרשאת עריכה" : S.mode === "db" ? (S.saveError ? "⚠ מחובר, אבל השמירה האחרונה לא הצליחה" : "☁ מחובר לחשבון ומסונכרן") : S.mode === "local" ? "⚠ לא מחובר לחשבון. הנתונים נשמרים רק במכשיר הזה" : "⏳ מתחבר…";
+      var who = S.access ? (S.access.owner ? "החשבון של הפנקס (בעלים)" : S.access.edit || S.access.write ? "חשבון ששותף איתו לעריכה" : S.access.write === false ? "חשבון ששותף איתו לצפייה בלבד" : "חשבון ששותף איתו") : "";
       var nav = [["ledger","📒","פנקס חודשי"],["docs","🧾","חשבוניות"],["cashflow","📅","תזרים מזומנים"],["clients","👥","לקוחות והצעות"],["capture","₪","הוצאה או מכירה"],["settings","⚙","הגדרות"]];
       var body = '<div class="m-moregrid">' + nav.map(function(x){ return '<button type="button" data-mact="nav" data-arg="' + x[0] + '"><span>' + x[1] + "</span>" + esc(x[2]) + "</button>"; }).join("") + "</div>";
-      body += '<div class="calc-section">סנכרון בין הטלפון למחשב</div><div class="m-synccard' + (S.mode === "db" && !S.saveError ? " ok" : "") + '"><b>' + esc(mode) + "</b>" +
+      body += '<div class="calc-section">סנכרון בין הטלפון למחשב</div><div class="m-synccard' + (S.mode === "db" && !S.saveError && !readOnly() ? " ok" : "") + '"><b>' + esc(mode) + "</b>" + (who ? '<div class="small">מחובר כ: ' + esc(who) + "</div>" : "") +
         '<div class="small muted">בפנקס כאן: ' + plural(lm, "חודש אחד", "חודשים") + " · " + plural(allTasks().length, "משימה אחת", "משימות") + " · " + plural(allOrders().length, "הזמנה אחת", "הזמנות") + " · " + plural(allDocs().length, "מסמך אחד", "מסמכים") + "</div>" +
-        (S.mode === "db" ? '<p class="small">כל שינוי נשמר בחשבון ומופיע גם במחשב תוך כמה שניות. אין צורך לייבא או לייצא.</p>'
+        (readOnly() ? '<div class="small">' + readOnlyHelp() + "</div>" : S.mode === "db" ? '<p class="small">כל שינוי נשמר בחשבון ומופיע גם במחשב תוך כמה שניות. אין צורך לייבא או לייצא.</p>'
           : '<p class="small">כדי שהטלפון והמחשב יראו את אותו פנקס, פותחים את הקישור של הפנקס ב־claude.ai עם אותו חשבון: באפליקציית Claude המעודכנת או בדפדפן (כרום או ספארי) כשמחוברים. אם זה עדיין לא מתחבר, אפשר להעביר את הנתונים בגיבוי.</p>') +
         bt("🔄 לטעון מחדש", "reload", { cls:"btn-sm" }) + "</div>";
       body += '<div class="calc-section">גיבוי</div><div class="m-actions" style="margin-top:0;">' + bt("⬇ ייצוא גיבוי", "backupOut", { cls:"btn-sm" }) + bt("⬆ ייבוא גיבוי מקובץ", "backupIn", { cls:"btn-sm" }) + bt("📄 דוח חודשי", "report", { cls:"btn-sm" }) + "</div>" +
@@ -10146,6 +10159,11 @@
       if (hasRuntime) window.claude.use("downloads").then(function(d){ S.dl = d || null; }, function(){ /* no downloads */ });
       if (hasRuntime) window.claude.use("sample").then(function(x){ S.sample = x || null; render(); }, function(){ /* no Claude */ });
       if (hasRuntime) window.claude.use("mcp").then(function(x){ S.mcp = x || null; render(); }, function(){ /* no connectors */ });
+      /* Who is looking: the owner, someone it was shared with to edit, or someone who can only view */
+      if (hasRuntime) window.claude.use("user").then(function(u){
+        if (!u) return;
+        return Promise.all([u.isOwner(), u.canEdit(), u.can("data.write")]).then(function(r){ S.access = { owner:!!r[0], edit:!!r[1], write:r[2] }; render(); });
+      }).catch(function(){ /* nothing known about the viewer */ });
       dbP.then(function(db){
         Store.db = db;
         S.mode = db ? "db" : "local";
