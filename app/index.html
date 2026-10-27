@@ -532,6 +532,97 @@
   input.m-ptitle{ width:100%; font-weight:700; }
   .m-pmeta{ display:flex; flex-wrap:wrap; gap:6px 10px; align-items:center; }
   @media (prefers-reduced-motion: reduce){ .m-spin{ animation:none; } }
+
+  .m-calcwrap{ position:fixed; inset:0; z-index:300; background:var(--paper); display:flex; flex-direction:column; }
+  .m-calcbar{ display:flex; align-items:center; gap:12px; padding:8px 14px; background:var(--walnut); color:var(--paper); }
+  .m-calcbar b{ font-family:Georgia,serif; }
+  .m-calcbar .small{ flex:1; color:rgba(242,236,221,.7); }
+  .m-calcframe{ flex:1; width:100%; border:0; background:#fff; }
+
+  /* ---------- the phone ---------- */
+  .m-bottom{ display:none; }
+  .m-dlabel{ font-size:0.7rem; color:var(--brass-dark); font-weight:600; margin:-2px 0 2px; }
+  .m-who-tag{ font-size:0.66rem; font-weight:700; color:#fff; background:#7A8B4E; border-radius:999px; padding:0 6px; margin-inline-start:4px; }
+  .m-item.m-admin .m-itext{ color:#5B4A8A; }
+  .m-tag.late{ color:var(--rust); }
+  .m-kind{ font-size:0.7rem; font-weight:700; background:var(--pine-light); color:var(--pine); border-radius:999px; padding:1px 8px; }
+  .m-obill{ display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px; margin:6px 0 2px; font-size:0.84rem; }
+  .m-obill.on{ background:var(--pine-light); border-radius:10px; padding:6px 10px; color:var(--pine); }
+  .m-obill.on b{ direction:ltr; }
+  input.m-oclient{ width:110px; }
+  input.m-field.m-wide{ width:96px; }
+  select.m-who{ max-width:110px; font-size:0.78rem; border:1px solid var(--border); border-radius:8px; padding:3px 4px; background:#fff; color:var(--walnut); }
+  input.m-stepday{ width:132px; }
+  .m-weekrows{ display:flex; flex-direction:column; gap:8px; }
+  .m-weekrow{ display:grid; grid-template-columns:56px minmax(0,1fr) 150px; gap:6px 10px; align-items:center; border:1px solid var(--border); border-radius:12px; padding:8px 10px; background:rgba(255,255,255,.5); }
+  .m-weekrow .m-flags{ grid-column:2 / -1; }
+  .m-todayhead{ margin:2px 0 12px; }
+  .m-tdate{ font-family:Georgia,serif; font-size:1.35rem; font-weight:700; }
+  .m-quick{ display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:8px; margin-bottom:14px; }
+  .m-quick button{ display:flex; flex-direction:column; align-items:center; gap:4px; padding:12px 4px; border:1px solid var(--border); border-radius:14px; background:var(--card); font-family:inherit; font-size:0.8rem; font-weight:600; color:var(--walnut); cursor:pointer; min-height:72px; }
+  .m-quick button span{ font-size:1.3rem; line-height:1; }
+  .m-atts{ display:flex; flex-direction:column; gap:6px; margin-top:8px; }
+  .m-att{ text-align:right; border:1px solid var(--border); border-radius:10px; padding:10px 12px; background:#fff; font-family:inherit; font-size:0.88rem; color:var(--walnut); cursor:pointer; }
+  .m-att.late{ border-color:#E3C9C0; background:var(--rust-light); }
+  .m-dayp .panel-head{ align-items:center; }
+  .m-dayp .m-ev, .m-dayp .m-item{ margin-top:6px; }
+  .m-money{ display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:4px 0 12px; }
+  .m-money button{ display:flex; flex-direction:column; gap:2px; text-align:right; border:1px solid var(--border); border-radius:12px; padding:10px 12px; background:var(--card); font-family:inherit; color:var(--walnut); cursor:pointer; }
+  .m-money span{ font-size:0.74rem; color:var(--muted); }
+  .m-money b{ font-size:1.15rem; direction:ltr; text-align:right; }
+  .m-syncwarn{ border:1.5px solid var(--rust); background:var(--rust-light); border-radius:12px; padding:10px 12px; margin-bottom:12px; }
+  .m-syncwarn p{ margin:4px 0; font-size:0.84rem; }
+  .m-synccard{ border:1.5px solid var(--rust); background:var(--rust-light); border-radius:12px; padding:10px 12px; display:flex; flex-direction:column; gap:6px; align-items:flex-start; }
+  .m-synccard.ok{ border-color:var(--pine); background:var(--pine-light); }
+  .m-synccard p{ margin:0; }
+  .m-moregrid{ display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:8px; }
+  .m-moregrid button{ display:flex; flex-direction:column; align-items:center; gap:4px; padding:12px 4px; border:1px solid var(--border); border-radius:14px; background:#fff; font-family:inherit; font-size:0.82rem; font-weight:600; color:var(--walnut); cursor:pointer; min-height:70px; }
+  .m-moregrid button span{ font-size:1.3rem; line-height:1; }
+  .m-pnav{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px; }
+  .m-pnav b{ flex:1; text-align:center; font-family:Georgia,serif; font-size:1.05rem; }
+  .m-pnav .btn{ min-width:44px; min-height:40px; font-size:1.1rem; }
+  .m-strip{ display:grid; grid-template-columns:repeat(7, minmax(0,1fr)); gap:4px; margin-bottom:12px; }
+  .m-sday{ display:flex; flex-direction:column; align-items:center; gap:1px; padding:6px 0 4px; border:1.5px solid var(--border); border-radius:12px; background:var(--card); font-family:inherit; color:var(--walnut); cursor:pointer; min-height:62px; }
+  .m-sday span{ font-size:0.72rem; color:var(--muted); }
+  .m-sday b{ font-size:1.05rem; }
+  .m-sday i{ font-style:normal; font-size:0.66rem; color:var(--brass-dark); min-height:0.9em; font-weight:700; }
+  .m-sday.today{ border-color:var(--brass); }
+  .m-sday.off{ background:repeating-linear-gradient(45deg, var(--card) 0 8px, #F3EBDA 8px 16px); }
+  .m-sday[aria-selected="true"]{ background:var(--walnut); border-color:var(--walnut); color:var(--paper); }
+  .m-sday[aria-selected="true"] span, .m-sday[aria-selected="true"] i{ color:var(--brass); }
+  .m-dayptitle{ display:flex; justify-content:space-between; align-items:baseline; padding-bottom:6px; border-bottom:1px dashed var(--border); }
+  .m-dayptitle b{ font-family:Georgia,serif; font-size:1.05rem; margin-inline-end:8px; }
+  .m-fold{ margin-top:12px; }
+  .m-fold > summary{ cursor:pointer; font-weight:700; padding:10px 2px; color:var(--brass-dark); }
+  .m-desk{ }
+  @media (max-width:760px){
+    .viewnav{ display:none !important; }
+    .header-actions .btn, .header-actions input{ display:none !important; }
+    .header-actions{ width:auto !important; }
+    header.app-header{ padding:10px 14px 10px; position:sticky; top:0; z-index:40; }
+    .header-row{ align-items:center; }
+    .brand p{ display:none; }
+    .brand h1{ font-size:1.1rem; }
+    .brand-badge{ width:34px; height:34px; font-size:1rem; }
+    .save-indicator{ background:rgba(255,255,255,.1); padding:4px 10px; border-radius:999px; font-size:0.72rem; white-space:nowrap; }
+    main{ padding:12px 12px 96px; }
+    .m-bottom{ display:flex; position:fixed; bottom:0; left:0; right:0; z-index:60; background:var(--walnut); padding:4px 4px calc(4px + env(safe-area-inset-bottom, 0px)); box-shadow:0 -6px 18px rgba(0,0,0,.18); }
+    .m-bottom button{ flex:1; background:none; border:0; color:rgba(242,236,221,.62); font-family:inherit; font-size:0.7rem; display:flex; flex-direction:column; align-items:center; gap:2px; padding:6px 2px; min-height:52px; cursor:pointer; }
+    .m-bottom button .ic{ font-size:1.3rem; line-height:1; }
+    .m-bottom button[aria-current="page"]{ color:var(--paper); font-weight:700; }
+    .m-bottom button[aria-current="page"] .ic{ transform:translateY(-1px); }
+    input[type="text"], input[type="date"], input[type="time"], input:not([type]), select, textarea{ font-size:16px; }
+    .m-item{ padding:6px 0; }
+    .m-item .m-check{ width:24px; height:24px; }
+    .m-itext{ font-size:0.95rem; }
+    .m-ev{ padding:9px 11px; }
+    .m-desk{ display:none !important; }
+    .m-weekrow{ grid-template-columns:48px minmax(0,1fr); }
+    .m-weekrow select{ grid-column:2; }
+    .m-caltools{ margin-top:12px; }
+    .m-order .m-ometa .inline-group{ flex-wrap:wrap; }
+    .modal-backdrop .modal{ max-height:calc(100vh - 24px); }
+  }
   @media (max-width:620px){
     .m-pgrid{ grid-template-columns:1fr 1fr; }
     .m-pgrid .hero{ grid-column:1 / -1; }
@@ -733,6 +824,7 @@
   </section>
 
   <!-- ============ FARM / DOCS / ORDERS / CALENDAR ============ -->
+  <section class="view" id="view-today"><div id="m-today"></div></section>
   <section class="view" id="view-farm"><div id="m-farm"></div></section>
   <section class="view" id="view-docs"><div id="m-docs"></div></section>
   <section class="view" id="view-orders"><div id="m-orders"></div></section>
@@ -794,6 +886,13 @@
 
 <div id="toast"></div>
 <div id="m-sheet-root"></div>
+<nav class="m-bottom" id="m-bottom" aria-label="ניווט ראשי">
+  <button type="button" data-mact="nav" data-arg="today"><span class="ic" aria-hidden="true">🏠</span>היום</button>
+  <button type="button" data-mact="nav" data-arg="calendar"><span class="ic" aria-hidden="true">🗓</span>לוח שנה</button>
+  <button type="button" data-mact="nav" data-arg="orders"><span class="ic" aria-hidden="true">📦</span>הזמנות</button>
+  <button type="button" data-mact="nav" data-arg="farm"><span class="ic" aria-hidden="true">🌿</span>חוות רום</button>
+  <button type="button" data-mact="nav" data-arg="more"><span class="ic" aria-hidden="true">☰</span>עוד</button>
+</nav>
 
 <script>
 (function(){
@@ -6656,7 +6755,7 @@
 
   function switchView(view){
     currentView = view;
-    ["ledger","farm","docs","orders","calendar","cashflow","pricing","hourly","cutting","clients","capture"].forEach(function(v){
+    ["ledger","today","farm","docs","orders","calendar","cashflow","pricing","hourly","cutting","clients","capture"].forEach(function(v){
       var sec = document.getElementById("view-" + v);
       if (sec) sec.className = "view" + (v === view ? " active" : "");
     });
@@ -6669,7 +6768,7 @@
     if (view === "cashflow") renderCashflowView();
     if (view === "hourly") renderHourlyView();
     if (view === "capture") renderCaptureView();
-    if (view === "ledger" || view === "farm" || view === "docs" || view === "orders" || view === "calendar") M.render();
+    if (view === "ledger" || view === "today" || view === "farm" || view === "docs" || view === "orders" || view === "calendar") M.render();
     window.scrollTo(0,0);
   }
 
@@ -6685,9 +6784,13 @@
 
   function importBackup(file){
     var reader = new FileReader();
-    reader.onload = function(e){
+    reader.onload = function(e){ importBackupText(e.target.result); };
+    reader.readAsText(file, "UTF-8");
+  }
+  function importBackupText(text){
+    {
       try{
-        var parsed = JSON.parse(e.target.result);
+        var parsed = JSON.parse(text);
         if (!parsed || typeof parsed !== "object" || !parsed.months) throw new Error("invalid");
         var extra = parsed.extra; delete parsed.extra;
         state = migrateState(parsed);
@@ -6699,9 +6802,9 @@
         switchView(currentView);
         renderLedger();
         toast("הנתונים יובאו בהצלחה.");
-      }catch(err){ toast("קובץ הגיבוי לא תקין."); }
-    };
-    reader.readAsText(file, "UTF-8");
+        return true;
+      }catch(err){ toast("קובץ הגיבוי לא תקין."); return false; }
+    }
   }
 
 
@@ -6764,7 +6867,8 @@
       openProg: {}, openOrders: LSX0("ui:openOrders") || {},
       gcal: { map:{} }, gsync: { busy:false, ok:false, msg:"", last:null, done:0, total:0 },
       plan: { text: LSX0("ui:planDraft") || "", busy:false, items:null, err:null, summary:"" },
-      sample: null, mcp: null, wsSet: false
+      sample: null, mcp: null, wsSet: false, day: null, opt: null,
+      calc: {}, calcq: {}
     };
     function LSX0(p){ try{ var v = localStorage.getItem("pnk:" + p); return v ? JSON.parse(v) : null; }catch(e){ return null; } }
 
@@ -6780,7 +6884,8 @@
           { id:"couple", name:"סדנה זוגית", unit:"workshop", price:"", hours:3, people:2 },
           { id:"family", name:"סדנה משפחתית", unit:"workshop", price:"", hours:3, people:4 },
           { id:"group", name:"סדנה קבוצתית", unit:"person", price:"", hours:3, people:8 }] },
-        gcal: { cal:"", calName:"", tasks:true, untimed:true, steps:true, ws:true, meets:true, fixed:false, auto:false },
+        gcal: { cal:"", calName:"", tasks:true, untimed:true, steps:true, ws:true, meets:true, admin:true, fixed:false, auto:false },
+        week: defaultWeek(),
         dealSeq: 1001,
         hours: { 0:["08:00","18:00"], 1:["08:00","18:00"], 2:["08:00","18:00"], 3:["08:00","18:00"], 4:["08:00","18:00"], 5:["08:00","13:00"], 6:null },
         fixed: []
@@ -6838,6 +6943,8 @@
       o.id = o.id || oid; o.title = o.title || "";
       o.kind = o.kind === "request" ? "request" : "make";
       o.steps = Array.isArray(o.steps) ? o.steps : [];
+      if (o.billedMonth && !o.billMonth) o.billMonth = o.billedMonth;
+      delete o.billedMonth;
       return o;
     }
 
@@ -6930,6 +7037,8 @@
       var a = p.split("/"), c = a[0], k = a[1];
       if (c === "app" && k === "settings") return S.settings;
       if (c === "app" && k === "gcal") return S.gcal;
+      if (c === "calc") return S.calc[k] || null;
+      if (c === "calcq") return S.calcq[k] || null;
       if (c === "months") return S.months[k] || null;
       if (c === "docs") return S.docs[k] || null;
       if (c === "tasks") return S.tasks[k] || null;
@@ -7124,6 +7233,7 @@
         mergeColl("months", S.months, all, fixMonth);
         old.forEach(function(k){ if (S.months[k] && !Store.busy("months/" + k)) Store.save("months/" + k, 0); });
         S.seen.months = true;
+        migrateOrderLines();
         syncAllLedgerAuto();
         render();
       });
@@ -7135,7 +7245,9 @@
       });
       Store.watchColl("docs", function(all){ mergeColl("docs", S.docs, all); render(); });
       Store.watchColl("tasks", function(all){ mergeColl("tasks", S.tasks, all, fixTask); S.seen.tasks = true; autoRoll(); render(); });
-      Store.watchColl("orders", function(all){ mergeColl("orders", S.orders, all, fixOrder); S.seen.orders = true; autoRoll(); render(); });
+      Store.watchColl("orders", function(all){ mergeColl("orders", S.orders, all, fixOrder); S.seen.orders = true; migrateOrderLines(); autoRoll(); syncAllLedgerAuto(); render(); });
+      Store.watchColl("calc", function(all){ Object.keys(all).forEach(function(k){ if (!Store.busy("calc/" + k)) S.calc[k] = all[k]; }); });
+      Store.watchColl("calcq", function(all){ mergeColl("calcq", S.calcq, all); });
       Store.watchColl("prep", function(all){ mergeColl("prep", S.prep, all); render(); });
     }
     function monthOf(k){ return S.months[k] || fixMonth({ key:k }, k); }
@@ -7372,6 +7484,10 @@
         var rate = l.rate === "" || l.rate == null ? n(rates[l.kind || "other"]) : n(l.rate);
         toMe.push({ id:l.id, name:l.name || "שורה", amount:n(l.amount), rate:rate, kind:l.kind || "other", line:l });
       });
+      farmOrders(k).forEach(function(o){
+        var kind = orderKind(o);
+        toMe.push({ id:"o-" + o.id, name:orderName(o), amount:orderTotal(o), rate:n(rates[kind]), kind:kind, auto:true, order:o });
+      });
       var toMeTotal = r2(toMe.reduce(function(a, x){ return a + x.amount; }, 0));
       var rent = m.farm.rent === "" || m.farm.rent == null ? n(st.farm.rent) : n(m.farm.rent);
       var pct = toMe.filter(function(x){ return x.rate && x.amount; }).map(function(x){ return { id:"pct-" + x.id, name:x.rate + "% " + pfx("מ", x.name), amount:r2(x.amount * x.rate / 100) }; });
@@ -7459,6 +7575,62 @@
       return out;
     }
 
+    /* Orders: their price, and the month they are billed in (the farm's reconciliation, or the ledger) */
+    function orderTotal(o){ return n(o.unitPrice) ? r2((n(o.qty) || 1) * n(o.unitPrice)) : n(o.amount); }
+    function orderName(o){ return (o.title || "הזמנה") + (n(o.qty) > 1 ? " (" + o.qty + ")" : ""); }
+    function orderKind(o){ return o.kind === "request" ? "farmwork" : "shop"; }
+    function ordersBilled(k){ return allOrders().filter(function(o){ return o.billMonth === k && orderTotal(o); }); }
+    function farmOrders(k){ return ordersBilled(k).filter(function(o){ return isFarmClient(o.client); }); }
+    function salesTotal(m){ return r2(salesLines(m).reduce(function(a, l){ return a + n(l.amount); }, 0) + farmOrders(m.key).reduce(function(a, o){ return a + orderTotal(o); }, 0)); }
+    /* Earlier versions copied a billed order into the month as a line of its own; now the order itself is the record. */
+    function migrateOrderLines(){
+      if (!S.seen.months || !S.seen.orders) return;
+      Object.keys(S.months).forEach(function(k){
+        var m = S.months[k], moved = false;
+        m.farm.toMe = m.farm.toMe.filter(function(l){
+          var o = l.orderId && S.orders[l.orderId];
+          if (!o) return true;
+          if (!o.billMonth){ o.billMonth = k; }
+          if (!orderTotal(o)) o.amount = n(l.amount);
+          Store.save("orders/" + o.id, 0);
+          moved = true;
+          return false;
+        });
+        if (moved) Store.save("months/" + k, 0);
+      });
+    }
+
+    /* =========================================================
+       Invoices and month-end paperwork go on the admin day
+       ========================================================= */
+    function adminDays(){
+      var w = S.settings.week || {}, out = [];
+      for (var i = 0; i < 7; i++) if (w[i] && (w[i].focus || []).indexOf("admin") >= 0) out.push(i);
+      return out.length ? out : [1];
+    }
+    function nextAdminDay(from){ var ds = adminDays(); for (var i = 0; i < 14; i++){ var d = addD(from, i); if (ds.indexOf(wd(d)) >= 0) return d; } return from; }
+    function lastAdminDayOf(k){ var ds = adminDays(), d = lastDay(k); for (var i = 0; i < 7; i++){ if (ds.indexOf(wd(d)) >= 0) return d; d = addD(d, -1); } return lastDay(k); }
+    function docDay(d){ var t = today(); return d.planDay && d.planDay >= t ? d.planDay : nextAdminDay(t); }
+    function docsOn(date){ return allDocs().filter(function(d){ return d.state === "todo" && docDay(d) === date; }); }
+    function monthEndDay(k){
+      var m = S.months[k], t = today();
+      if (m && m.close && m.close.planDay && m.close.planDay >= t) return m.close.planDay;
+      var last = lastAdminDayOf(k);
+      return k >= mk(t) && last >= t ? last : nextAdminDay(t);
+    }
+    function monthEndOn(date){
+      var t = today(), out = [];
+      [shiftMonth(mk(t), -1), mk(t)].forEach(function(k){
+        var m = S.months[k];
+        if (!m || (m.close && m.close.sent)) return;
+        if (k < mk(t) && allDocs().some(function(d){ return d.month === k && (d.kind === "invoice" || d.kind === "deal") && d.src !== "order" && isFarmClient(d.party); })) return;
+        var f = farmCalc(m);
+        if (!f.toMeTotal && !f.calcs.some(function(c){ return c.rows.length; })) return;
+        if (monthEndDay(k) === date) out.push({ k:k, m:m, late: k < mk(t) });
+      });
+      return out;
+    }
+
     function salesLines(m){ return m.farm.toMe.filter(function(l){ return n(l.amount); }); }
 
     /* The month's farm figures appear in the ledger as locked lines, so the books always match. */
@@ -7481,6 +7653,10 @@
         if (c.net) out.oneTimeIncome.push(line("ws-" + w.id, wsName(w) + (w.client ? " · " + w.client : "") + " · " + dm(w.date), c.net, 1));
       });
       salesLines(m).forEach(function(l){ out.oneTimeIncome.push(line("tm-" + l.id, l.name || "מכירה לחווה", n(l.amount), 1)); });
+      ordersBilled(k).forEach(function(o){
+        var farm = isFarmClient(o.client);
+        out.oneTimeIncome.push(line("o-" + o.id, (farm ? "הזמנה: " : "") + orderName(o) + (farm ? "" : " · " + (o.client || "לקוח")), orderTotal(o), n(o.qty) || 1));
+      });
       if (f.rent) out.recurringExpenses.push(line("rent", "שכירות · " + (st.client.name || "החווה"), f.rent));
       if (f.pctTotal) out.recurringExpenses.push(line("pct", "עמלות ל" + (st.client.name || "חווה"), f.pctTotal));
       f.purchases.forEach(function(p){ if (p.amount) out.oneTimeExpenses.push(line("tf-" + p.id, "דרך " + (st.client.name || "החווה") + ": " + p.name, p.amount)); });
@@ -7541,6 +7717,7 @@
       if (src === "sales"){
         title = "מכירות ופרויקטים · " + monthLabel(k);
         salesLines(m).forEach(function(l){ lines.push({ desc:l.name || "פריט", qty:1, price:n(l.amount), total:n(l.amount) }); });
+        farmOrders(k).forEach(function(o){ var q = n(o.qty) || 1, t = orderTotal(o); lines.push({ desc:o.title || "הזמנה", qty:q, price:r2(t / q), total:t }); });
       } else {
         var p = progById(src);
         if (p){
@@ -7845,7 +8022,7 @@
 
       /* Month-end documents */
       var srcs = f.calcs.map(function(c){ return [c.p.id, progShort(c.p), c.pre]; });
-      if (salesLines(m).length) srcs.push(["sales", "מכירות ופרויקטים", r2(salesLines(m).reduce(function(a, l){ return a + n(l.amount); }, 0))]);
+      if (salesTotal(m)) srcs.push(["sales", "מכירות, פרויקטים והזמנות", salesTotal(m)]);
       h += '<div class="panel" data-k="p-deals"><div class="panel-head"><div><h4>סוף החודש: חשבונות עסקה ל' + esc(client) + '</h4><div class="panel-sub">לחיצה מכינה חשבון עסקה ממוספר לפי המפגשים, מוכן לשליחה. כשהכסף נכנס מסמנים, ומקבלים תזכורת להוציא חשבונית מס קבלה במורנינג.</div></div></div><div class="panel-rows">' +
         srcs.map(function(x){
           var d = dealFor(k, x[0]), pre = x[2], gross = r2(pre * (1 + vatPct()/100));
@@ -7865,7 +8042,7 @@
       h += '<div class="panel" data-k="p-recon"><div class="panel-head"><div><h4>התחשבנות עם ' + esc(contact) + '</h4><div class="panel-sub">לפני מע״מ. התוכניות נכנסות לבד מהמפגשים; מכירות, פרויקטים ורכישות מוסיפים כאן.</div></div></div>' +
         '<div class="columns" style="margin-top:12px;"><div><div class="col-title"><span class="dot" style="background:var(--pine);"></span>' + esc(client + " ל" + b.short) + "</div>" +
         f.toMe.map(function(x){
-          if (x.auto) return '<div class="row m-ro" data-k="tm-' + esc(x.id) + '"><span class="row-name">' + esc(x.name) + ' <span class="small muted">(מהמפגשים)</span></span>' + money(x.amount, true) + "</div>";
+          if (x.auto) return '<div class="row m-ro" data-k="tm-' + esc(x.id) + '"><span class="row-name">' + esc(x.name) + ' <span class="small muted">' + (x.order ? '(<button type="button" class="link-btn" data-mact="goOrder" data-id="' + esc(x.order.id) + '">מהזמנות</button>)' : "(מהמפגשים)") + "</span></span>" + money(x.amount, true) + "</div>";
           var l = x.line, bb = "mf:" + k + ":toMe:" + l.id + ":";
           return '<div class="row" data-k="tm-' + esc(l.id) + '">' + inp(bb + "name", l.name, { cls:"row-input row-name", ph:"למשל: 10 אדניות", label:"תיאור" }) +
             sel(bb + "kind", l.kind || "other", FARM_KINDS, { cls:"row-select", label:"סוג" }) +
@@ -7929,32 +8106,54 @@
     /* =========================================================
        📦 הזמנות
        ========================================================= */
+    var CHEV = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>';
+    function billLine(o){
+      var tot = orderTotal(o), farm = isFarmClient(o.client), bd = o.docId ? S.docs[o.docId] : null;
+      if (o.billMonth){
+        var months = [-2, -1, 0, 1, 2].map(function(x){ var k = shiftMonth(mk(today()), x); return [k, monthLabel(k)]; });
+        if (!months.some(function(x){ return x[0] === o.billMonth; })) months.unshift([o.billMonth, monthLabel(o.billMonth)]);
+        return '<div class="m-obill on"><span>💰 ' + (farm ? "בהתחשבנות עם " + esc(S.settings.client.name || "החווה") + " ובפנקס של" : "בפנקס של") + "</span>" +
+          sel("or:" + o.id + ":billMonth", o.billMonth, months, { cls:"row-select", label:"באיזה חודש" }) + '<b class="mono">' + esc(ils(tot, true)) + "</b>" +
+          (bd ? '<button type="button" class="link-btn" data-mact="openDoc" data-id="' + esc(bd.id) + '">ח״ע ' + esc(bd.number) + " · " + esc(docState(bd).label) + "</button>" : "") +
+          '<button type="button" class="link-btn" data-mact="orderUnbill" data-id="' + esc(o.id) + '">ביטול</button></div>';
+      }
+      if (!tot) return '<div class="m-obill"><span class="small muted">כשיש מחיר, ההזמנה נכנסת ל' + (farm ? "התחשבנות ול" : "") + "פנקס החודשי בלחיצה, או לבד כשמסמנים שהיא הושלמה.</span></div>";
+      return '<div class="m-obill"><button type="button" class="btn btn-sm" data-mact="orderBill" data-id="' + esc(o.id) + '">' + (farm ? "💰 להכניס להתחשבנות של " + esc(monthName(mk(today()))) : "💰 להוציא חשבון עסקה ולרשום בפנקס") + "</button>" +
+        '<span class="small muted">או לבד, כשמסמנים שההזמנה הושלמה</span></div>';
+    }
     function orderCard(o){
-      var done = o.steps.filter(function(s){ return s.done; }).length, total = o.steps.length;
+      var done = o.steps.filter(function(s){ return s.done; }).length, total = o.steps.length, tot = orderTotal(o);
       var b = "or:" + o.id + ":", open = !!S.openOrders[o.id];
       var badge = '<span class="badge ' + (done === total && total ? "badge-pine" : "badge-soft") + '">' + done + "/" + total + "</span>";
       if (!open){
         var next = o.steps.filter(function(s){ return !s.done; })[0];
         var meta = [];
         if (n(o.qty)) meta.push(o.qty + " יח׳");
+        if (tot) meta.push(ils(tot));
         if (next) meta.push("הבא: " + next.text + (next.day ? " (" + dm(next.day) + ")" : ""));
         if (o.due) meta.push("עד " + dm(o.due));
+        if (o.billMonth) meta.push("💰 " + monthName(o.billMonth));
         return '<div class="panel m-order m-folded' + (o.closed ? " m-closed" : "") + '" data-k="o-' + esc(o.id) + '">' +
           '<button type="button" class="m-ohead" data-mact="orderToggle" data-id="' + esc(o.id) + '" aria-expanded="false">' +
-          '<span class="m-chev" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></span><span class="m-otext"><b>' + esc(o.title || "הזמנה בלי שם") + "</b>" +
+          '<span class="m-chev" aria-hidden="true">' + CHEV + '</span><span class="m-otext"><b>' + esc(o.title || "הזמנה בלי שם") + "</b>" +
           (meta.length ? '<span class="small muted">' + esc(meta.join(" · ")) + "</span>" : "") + "</span>" + badge + "</button>" +
           '<div class="bar"><span style="width:' + (total ? Math.round(done / total * 100) : 0) + '%;background:var(--pine);"></span></div></div>';
       }
       var q = o.quoteId ? (state.quotes || []).filter(function(x){ return x.id === o.quoteId; })[0] : null;
       var h = '<div class="panel m-order' + (o.closed ? " m-closed" : "") + '" data-k="o-' + esc(o.id) + '">' +
-        '<div class="panel-head"><button type="button" class="m-chevbtn" data-mact="orderToggle" data-id="' + esc(o.id) + '" aria-expanded="true" aria-label="לצמצם את ההזמנה" title="לצמצם"><span class="m-chev open" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></span></button>' +
+        '<div class="panel-head"><button type="button" class="m-chevbtn" data-mact="orderToggle" data-id="' + esc(o.id) + '" aria-expanded="true" aria-label="לצמצם את ההזמנה" title="לצמצם"><span class="m-chev open" aria-hidden="true">' + CHEV + "</span></button>" +
         '<div style="flex:1;min-width:0;">' + inp(b + "title", o.title, { cls:"row-input m-otitle", ph: o.kind === "make" ? "מה מייצרים? למשל 120 קוביות לסוקולנטים" : "מה החווה ביקשה? למשל רגל שבורה לשולחן", label:"שם ההזמנה" }) + "</div>" +
         badge + del("orderDel", o.id, null, "מחיקת ההזמנה") + "</div>" +
         '<div class="m-ometa">' +
-        '<span class="inline-group"><span class="cap muted">כמות</span>' + inp(b + "qty", o.qty, { cls:"row-input row-qty mono", ph:"–", im:"numeric", label:"כמות", dir:"ltr" }) + "</span>" +
-        '<span class="inline-group"><span class="cap muted">בשביל</span>' + inp(b + "client", o.client, { cls:"row-input", ph:"חוות רום", label:"בשביל מי", style:"width:96px" }) + "</span>" +
+        '<span class="inline-group"><span class="cap muted">בשביל</span>' + inp(b + "client", o.client, { cls:"row-input m-oclient", ph:"חוות רום", label:"בשביל מי" }) + "</span>" +
         '<span class="inline-group"><span class="cap muted">עד</span>' + inp(b + "due", o.due, { type:"date", cls:"row-input", label:"עד מתי" }) + "</span>" +
-        '<span class="inline-group" dir="ltr"><span class="muted mono">₪</span>' + inp(b + "amount", o.amount, { cls:"row-input row-amount mono", ph:"0", im:"decimal", num:true, label:"סכום לפני מע״מ", dir:"ltr" }) + "</span></div>" +
+        '<span class="inline-group"><span class="cap muted">כמות</span>' + inp(b + "qty", o.qty, { cls:"m-field mono", ph:"1", im:"numeric", num:true, label:"כמות", dir:"ltr" }) + "</span>" +
+        '<span class="inline-group"><span class="cap muted">ליחידה</span><span class="muted mono">₪</span>' + inp(b + "unitPrice", o.unitPrice, { cls:"m-field mono", ph:"0", im:"decimal", num:true, label:"מחיר ליחידה לפני מע״מ", dir:"ltr" }) + "</span>" +
+        (n(o.unitPrice) ? '<span class="inline-group"><span class="cap muted">סה״כ</span><b class="mono">' + esc(ils(tot, true)) + "</b></span>"
+          : '<span class="inline-group"><span class="cap muted">או סה״כ</span><span class="muted mono">₪</span>' + inp(b + "amount", o.amount, { cls:"m-field mono m-wide", ph:"0", im:"decimal", num:true, label:"סכום כולל לפני מע״מ", dir:"ltr" }) + "</span>") +
+        '<span class="small muted">לפני מע״מ</span>' +
+        '<button type="button" class="btn btn-sm m-desk" data-mact="calcOpen" data-id="' + esc(o.id) + '" title="לשרטט ולתמחר במחשבון העלות והייצור">📐 ' + (o.calc ? "המחשבון · " + esc(ils(o.calc.beforeVat)) : "תמחור במחשבון") + "</button></div>" +
+        billLine(o) +
         '<div class="bar"><span style="width:' + (total ? Math.round(done / total * 100) : 0) + '%;background:var(--pine);"></span></div><div class="m-steps">';
       o.steps.forEach(function(s){
         var sb = "os:" + o.id + ":" + s.id + ":";
@@ -7962,15 +8161,12 @@
         if (s.act === "quote"){
           extra = q ? '<button type="button" class="link-btn" data-mact="orderQuote" data-id="' + esc(o.id) + '">' + esc(quoteNumberLabel(q)) + " · " + esc(QUOTE_STATUS[q.status] ? QUOTE_STATUS[q.status].label : "") + "</button>" :
             '<button type="button" class="link-btn" data-mact="orderQuote" data-id="' + esc(o.id) + '">📝 ליצור הצעת מחיר</button>';
-        } else if (s.act === "bill"){
-          var bd = o.docId ? S.docs[o.docId] : null;
-          extra = o.billedMonth ? '<span class="small muted">נוסף להתחשבנות ' + esc(monthName(o.billedMonth)) + "</span>" :
-            bd ? '<button type="button" class="link-btn" data-mact="openDoc" data-id="' + esc(bd.id) + '">ח״ע ' + esc(bd.number) + " · " + esc(docState(bd).label) + "</button>" :
-            '<button type="button" class="link-btn" data-mact="orderBill" data-id="' + esc(o.id) + '">' + (isFarmClient(o.client) ? "💰 להוסיף להתחשבנות של " + esc(monthName(currentMonthKey)) : "💰 להוציא חשבון עסקה") + "</button>";
         }
+        var kind = stepKind(s);
         h += '<div class="subrow m-step' + (s.done ? " done" : "") + '" data-k="st-' + esc(s.id) + '">' + check("stepToggle", s.id, o.id, s.done, s.text) +
           inp(sb + "text", s.text, { cls:"nm", label:"שלב" }) + extra +
-          inp(sb + "day", s.day, { type:"date", label:"באיזה יום", style:"width:132px" }) +
+          (kind === "production" || kind === "maintenance" ? sel(sb + "who", s.who || "any", WHO, { cls:"m-who", label:"מי עושה" }) : "") +
+          inp(sb + "day", s.day, { type:"date", label:"באיזה יום", cls:"m-stepday" }) +
           (s.rolledFrom && !s.done ? '<span class="badge badge-soft">הועבר מ־' + esc(dm(s.rolledFrom)) + "</span>" : "") +
           del("stepDel", s.id, o.id) + "</div>";
       });
@@ -7996,71 +8192,6 @@
     /* =========================================================
        🗓 לוח שנה
        ========================================================= */
-    function vCalendar(){
-      var ws = S.week, we = addD(ws, 6), t = today();
-      var h = '<div class="month-nav"><button type="button" class="btn" data-mact="week" data-arg="-1">‹ שבוע קודם</button><div class="center"><span class="m-month">שבוע ' + esc(dm(ws) + "–" + dm(we)) + "</span>" +
-        (ws !== weekStartOf(t) ? '<button type="button" class="btn btn-sm" data-mact="week" data-arg="0">לשבוע הזה</button>' : "") + '</div><button type="button" class="btn" data-mact="week" data-arg="1">שבוע הבא ›</button></div>';
-      var gs = S.gsync;
-      h += '<div class="m-caltools">' + bt("🎙 תכנון שבוע עם קלוד", "planOpen", { cls:"btn-primary btn-sm" }) + bt("📅 יומן גוגל", "gcalOpen", { cls:"btn-sm" }) +
-        '<span class="small muted">' + esc(gs.busy ? "מעדכן את יומן גוגל… " + gs.done + "/" + gs.total : gs.last ? "יומן גוגל עודכן ב־" + pad2(gs.last.getHours()) + ":" + pad2(gs.last.getMinutes()) + (S.settings.gcal.auto ? " · מתעדכן לבד" : "") : "") + "</span></div>";
-      h += '<div class="m-days">';
-      for (var i = 0; i < 7; i++){
-        var d = addD(ws, i), fx = fixedOn(d), prep = prepOn(d), tasks = tasksOn(d), steps = stepsOn(d);
-        h += '<div class="m-day' + (d === t ? " today" : "") + (d < t ? " past" : "") + (fx.some(function(f){ return f.off; }) ? " off" : "") + '" data-k="day-' + d + '">' +
-          '<div class="m-dayhead"><b>' + DAYS[i] + "</b><span>" + dm(d) + (d === t ? " · היום" : "") + "</span></div>";
-        fx.forEach(function(f){
-          var when = f.allDay || f.off ? "" : (f.start || "") + (f.end ? "–" + f.end : "");
-          h += '<button type="button" class="m-ev' + (f.soft ? " soft" : "") + (f.off ? " offev" : "") + '" data-k="ev-' + esc(f.id) + '" data-mact="openEvent" data-id="' + esc(f.id) + '">' + (when ? '<span class="mono">' + esc(when) + "</span>" : "") + "<b>" + esc(f.title || "אירוע") + "</b>" + ((f.prep || []).length ? '<span class="small muted">' + (f.prep || []).length + " הכנות</span>" : "") + "</button>";
-        });
-        meetingsOn(d).forEach(function(x){
-          var st = x.rec && x.rec.start, when = st ? st + "–" + endOf(st, x.r.hours * 60) : "";
-          h += '<button type="button" class="m-ev meet" data-k="mt-' + esc(x.p.id + x.r.key) + '" data-mact="goProg" data-id="' + esc(x.p.id) + '" data-arg="' + mk(d) + '">' + (when ? '<span class="mono">' + esc(when) + "</span>" : "") + "<b>" + esc(x.r.name) + '</b><span class="small">' + esc(progShort(x.p)) + "</span></button>";
-        });
-        wsOn(d).forEach(function(w){
-          var when = w.start ? w.start + (n(w.hours) ? "–" + endOf(w.start, n(w.hours) * 60) : "") : "";
-          h += '<button type="button" class="m-ev ws" data-k="ws-' + esc(w.id) + '" data-mact="goWs" data-id="' + esc(w.id) + '">' + (when ? '<span class="mono">' + esc(when) + "</span>" : "") + "<b>🪚 " + esc(wsName(w)) + "</b>" + (w.client ? '<span class="small">' + esc(w.client) + (n(w.people) ? " · " + esc(w.people) + " משתתפים" : "") + "</span>" : "") + "</button>";
-        });
-        prep.forEach(function(x){
-          var on = prepDone(x.ev, x.f, x.p);
-          h += '<div class="m-item' + (on ? " done" : "") + '" data-k="pp-' + esc(x.ev + x.f.id + x.p.id) + '">' + check("prepToggle", x.f.id + ":" + x.p.id, x.ev, on, x.p.text) +
-            '<button type="button" class="m-itext m-open" data-mact="openPrep" data-id="' + esc(x.f.id + ":" + x.p.id) + '" data-arg="' + x.ev + '" title="להזיז ליום אחר">' + esc(x.p.text) + '<span class="m-tag">' + (x.moved ? "הוזז · " : "") + (x.before ? "הכנה ל" + esc(x.f.title) + " (" + DAYS[wd(x.ev)] + ")" : esc(x.f.title)) + "</span></button></div>";
-        });
-        steps.forEach(function(x){
-          h += '<div class="m-item' + (x.s.done ? " done" : "") + '" data-k="sp-' + esc(x.s.id) + '">' + check("stepToggle", x.s.id, x.o.id, x.s.done, x.s.text) +
-            '<span class="m-itext">' + esc(x.s.text) + '<span class="m-tag">📦 ' + esc(x.o.title || "הזמנה") + "</span></span></div>";
-        });
-        tasks.forEach(function(x){
-          var subs = x.subtasks || [], sd = subs.filter(function(s){ return s.done; }).length;
-          h += '<div class="m-item' + (x.done ? " done" : "") + '" data-k="t-' + esc(x.id) + '">' + check("taskToggle", x.id, null, x.done, x.title) +
-            '<button type="button" class="m-itext m-open" data-mact="openTask" data-id="' + esc(x.id) + '">' + (x.start ? '<span class="mono">' + esc(x.start + (x.mins ? "–" + endOf(x.start, x.mins) : "")) + "</span> " : "") + esc(x.title || "(בלי שם)") +
-            (subs.length ? '<span class="m-tag">' + sd + "/" + subs.length + " תתי־משימות</span>" : "") + (x.rolledFrom && !x.done ? '<span class="m-tag">הועבר מ־' + esc(dm(x.rolledFrom)) + "</span>" : "") + "</button></div>";
-        });
-        if (d >= t) h += '<button type="button" class="m-add" data-mact="newTask" data-arg="' + d + '">+ משימה</button>';
-        h += "</div>";
-      }
-      h += "</div>";
-
-      var fixed = (S.settings.fixed || []).slice().sort(function(a, b){
-        var x = a.date ? 10 : a.weekday, y = b.date ? 10 : b.weekday;
-        return x - y || (toMin(a.start) || 0) - (toMin(b.start) || 0);
-      }).filter(function(f){ return !f.date || f.date >= t; });
-      h += '<div class="columns" style="margin-top:18px;"><div class="panel"><div class="panel-head"><div><h4>הלו״ז הקבוע</h4><div class="panel-sub">מה חוזר כל שבוע, ולכל דבר רשימת ההכנות שלו. לוחצים על אירוע כדי לכתוב מה צריך להכין</div></div></div><div class="panel-rows">' +
-        (fixed.length ? fixed.map(function(f){
-          var when = f.date ? dayLabel(f.date) : "כל " + DAYS[f.weekday];
-          var time = f.allDay ? "כל היום" : f.off ? "יום חופש" : (f.start || "") + (f.end ? "–" + f.end : "");
-          return '<button type="button" class="row m-fxrow" data-k="fx-' + esc(f.id) + '" data-mact="openEvent" data-id="' + esc(f.id) + '"><b>' + esc(when) + '</b><span class="mono small">' + esc(time) + '</span><span class="row-name">' + esc(f.title || "אירוע") + "</span>" +
-            ((f.prep || []).length ? '<span class="badge badge-soft">' + f.prep.length + " הכנות</span>" : '<span class="small muted">בלי הכנות</span>') + "</button>";
-        }).join("") : '<p class="empty-note">עוד אין לו״ז קבוע.</p>') +
-        '</div><button type="button" class="btn-add" style="margin-top:10px;" data-mact="newEvent">+ אירוע קבוע</button></div>';
-      var backlog = allTasks().filter(function(x){ return !x.done && !x.day; });
-      h += '<div class="panel"><div class="panel-head"><div><h4>משימות בלי יום</h4><div class="panel-sub">כשיש להן יום, הן עוברות ללוח</div></div><div class="panel-total mono">' + backlog.length + '</div></div><div class="panel-rows">' +
-        (backlog.length ? backlog.map(function(x){
-          return '<div class="m-item" data-k="bl-' + esc(x.id) + '">' + check("taskToggle", x.id, null, false, x.title) + '<button type="button" class="m-itext m-open" data-mact="openTask" data-id="' + esc(x.id) + '">' + esc(x.title || "(בלי שם)") + ((x.subtasks || []).length ? '<span class="m-tag">' + x.subtasks.length + " תתי־משימות</span>" : "") + "</button></div>";
-        }).join("") : '<p class="empty-note">אין.</p>') +
-        '</div><button type="button" class="btn-add" style="margin-top:10px;" data-mact="newTask" data-arg="">+ משימה בלי יום</button></div></div>';
-      return h;
-    }
-
     /* =========================================================
        💰 Profit and how it is split (bottom of the monthly ledger)
        ========================================================= */
@@ -8098,6 +8229,191 @@
     }
 
     /* =========================================================
+       🗓 Calendar (a week grid on the computer, a day at a time on the phone)
+       and 🏠 Today (the phone's home screen)
+       ========================================================= */
+    function isPhone(){ return !!(window.matchMedia && window.matchMedia("(max-width: 760px)").matches); }
+    function whoTag(w){ return w && w !== "me" ? '<span class="m-who-tag">' + esc(w === "denis" ? "דניס" : w === "shikum" ? "שיקום" : "מי שפנוי") + "</span>" : ""; }
+    function dayCount(d){ return fixedOn(d).length + meetingsOn(d).length + wsOn(d).length + prepOn(d).length + stepsOn(d).length + docsOn(d).length + monthEndOn(d).length + tasksOn(d).length; }
+    function dayItems(d){
+      var t = today(), h = "", contact = S.settings.client.contact || "המנהלת";
+      fixedOn(d).forEach(function(f){
+        var when = f.allDay || f.off ? "" : (f.start || "") + (f.end ? "–" + f.end : "");
+        h += '<button type="button" class="m-ev' + (f.soft ? " soft" : "") + (f.off ? " offev" : "") + '" data-k="ev-' + esc(f.id) + '" data-mact="openEvent" data-id="' + esc(f.id) + '">' + (when ? '<span class="mono">' + esc(when) + "</span>" : "") + "<b>" + esc(f.title || "אירוע") + "</b>" + ((f.prep || []).length ? '<span class="small muted">' + (f.prep || []).length + " הכנות</span>" : "") + "</button>";
+      });
+      meetingsOn(d).forEach(function(x){
+        var st = x.rec && x.rec.start, when = st ? st + "–" + endOf(st, x.r.hours * 60) : "";
+        h += '<button type="button" class="m-ev meet" data-k="mt-' + esc(x.p.id + x.r.key) + '" data-mact="goProg" data-id="' + esc(x.p.id) + '" data-arg="' + mk(d) + '">' + (when ? '<span class="mono">' + esc(when) + "</span>" : "") + "<b>" + esc(x.r.name) + '</b><span class="small">' + esc(progShort(x.p)) + "</span></button>";
+      });
+      wsOn(d).forEach(function(w){
+        var when = w.start ? w.start + (n(w.hours) ? "–" + endOf(w.start, n(w.hours) * 60) : "") : "";
+        h += '<button type="button" class="m-ev ws" data-k="ws-' + esc(w.id) + '" data-mact="goWs" data-id="' + esc(w.id) + '">' + (when ? '<span class="mono">' + esc(when) + "</span>" : "") + "<b>🪚 " + esc(wsName(w)) + "</b>" + (w.client ? '<span class="small">' + esc(w.client) + (n(w.people) ? " · " + esc(w.people) + " משתתפים" : "") + "</span>" : "") + "</button>";
+      });
+      monthEndOn(d).forEach(function(x){
+        h += '<div class="m-item m-admin" data-k="me-' + x.k + '">' + check("monthEndDone", x.k, null, false, "סוף חודש") +
+          '<button type="button" class="m-itext m-open" data-mact="goFarmMonth" data-arg="' + x.k + '">סוף ' + esc(monthName(x.k)) + ": חשבונות עסקה והתחשבנות ל" + esc(contact) +
+          (x.late ? '<span class="m-tag late">באיחור</span>' : "") + '<span class="m-tag">🧾 הנהלת חשבונות</span></button></div>';
+      });
+      docsOn(d).forEach(function(x){
+        h += '<div class="m-item m-admin" data-k="dc-' + esc(x.id) + '">' + check("docIssued", x.id, null, false, "הוצא") +
+          '<button type="button" class="m-itext m-open" data-mact="openDoc" data-id="' + esc(x.id) + '">להוציא ' + esc(DOC_KINDS[x.kind]) + (x.party ? " · " + esc(x.party) : "") + (n(x.amount) ? ' <span class="mono">' + esc(ils(x.amount)) + "</span>" : "") +
+          (x.by && x.by < t ? '<span class="m-tag late">מחכה מ־' + esc(dm(x.by)) + "</span>" : "") + '<span class="m-tag">🧾 מורנינג</span></button></div>';
+      });
+      prepOn(d).forEach(function(x){
+        var on = prepDone(x.ev, x.f, x.p);
+        h += '<div class="m-item' + (on ? " done" : "") + '" data-k="pp-' + esc(x.ev + x.f.id + x.p.id) + '">' + check("prepToggle", x.f.id + ":" + x.p.id, x.ev, on, x.p.text) +
+          '<button type="button" class="m-itext m-open" data-mact="openPrep" data-id="' + esc(x.f.id + ":" + x.p.id) + '" data-arg="' + x.ev + '" title="להזיז ליום אחר">' + esc(x.p.text) + '<span class="m-tag">' + (x.moved ? "הוזז · " : "") + (x.before ? "הכנה ל" + esc(x.f.title) + " (" + DAYS[wd(x.ev)] + ")" : esc(x.f.title)) + "</span></button></div>";
+      });
+      stepsOn(d).forEach(function(x){
+        h += '<div class="m-item' + (x.s.done ? " done" : "") + '" data-k="sp-' + esc(x.s.id) + '">' + check("stepToggle", x.s.id, x.o.id, x.s.done, x.s.text) +
+          '<button type="button" class="m-itext m-open" data-mact="goOrder" data-id="' + esc(x.o.id) + '">' + esc(x.s.text) + whoTag(x.s.who) + '<span class="m-tag">📦 ' + esc(x.o.title || "הזמנה") + "</span></button></div>";
+      });
+      tasksOn(d).forEach(function(x){
+        var subs = x.subtasks || [], sd = subs.filter(function(s){ return s.done; }).length;
+        h += '<div class="m-item' + (x.done ? " done" : "") + '" data-k="t-' + esc(x.id) + '">' + check("taskToggle", x.id, null, x.done, x.title) +
+          '<button type="button" class="m-itext m-open" data-mact="openTask" data-id="' + esc(x.id) + '">' + (x.start ? '<span class="mono">' + esc(x.start + (x.mins ? "–" + endOf(x.start, x.mins) : "")) + "</span> " : "") + esc(x.title || "(בלי שם)") + whoTag(x.who) +
+          (subs.length ? '<span class="m-tag">' + sd + "/" + subs.length + " תתי־משימות</span>" : "") + (x.rolledFrom && !x.done ? '<span class="m-tag">הועבר מ־' + esc(dm(x.rolledFrom)) + "</span>" : "") + "</button></div>";
+      });
+      return h;
+    }
+    function calTools(){
+      var gs = S.gsync;
+      return '<div class="m-caltools">' + bt("🎙 תכנון עם קלוד", "planOpen", { cls:"btn-primary btn-sm" }) + bt("✨ סידור חכם", "optOpen", { cls:"btn-sm btn-brass" }) + bt("📅 יומן גוגל", "gcalOpen", { cls:"btn-sm" }) +
+        '<span class="small muted">' + esc(gs.busy ? "מעדכן את יומן גוגל… " + gs.done + "/" + gs.total : gs.last ? "יומן גוגל עודכן ב־" + pad2(gs.last.getHours()) + ":" + pad2(gs.last.getMinutes()) + (S.settings.gcal.auto ? " · מתעדכן לבד" : "") : "") + "</span></div>";
+    }
+    function calExtras(){
+      var t = today(), h = "";
+      var fixed = (S.settings.fixed || []).slice().sort(function(a, b){
+        var x = a.date ? 10 : a.weekday, y = b.date ? 10 : b.weekday;
+        return x - y || (toMin(a.start) || 0) - (toMin(b.start) || 0);
+      }).filter(function(f){ return !f.date || f.date >= t; });
+      h += '<div class="panel" data-k="cal-fixed"><div class="panel-head"><div><h4>הלו״ז הקבוע</h4><div class="panel-sub">מה חוזר כל שבוע, ולכל דבר רשימת ההכנות שלו. לוחצים על אירוע כדי לכתוב מה צריך להכין</div></div></div><div class="panel-rows">' +
+        (fixed.length ? fixed.map(function(f){
+          var when = f.date ? dayLabel(f.date) : "כל " + DAYS[f.weekday];
+          var time = f.allDay ? "כל היום" : f.off ? "יום חופש" : (f.start || "") + (f.end ? "–" + f.end : "");
+          return '<button type="button" class="row m-fxrow" data-k="fx-' + esc(f.id) + '" data-mact="openEvent" data-id="' + esc(f.id) + '"><b>' + esc(when) + '</b><span class="mono small">' + esc(time) + '</span><span class="row-name">' + esc(f.title || "אירוע") + "</span>" +
+            ((f.prep || []).length ? '<span class="badge badge-soft">' + f.prep.length + " הכנות</span>" : '<span class="small muted">בלי הכנות</span>') + "</button>";
+        }).join("") : '<p class="empty-note">עוד אין לו״ז קבוע.</p>') +
+        '</div><button type="button" class="btn-add" style="margin-top:10px;" data-mact="newEvent">+ אירוע קבוע</button></div>';
+      var backlog = allTasks().filter(function(x){ return !x.done && !x.day; });
+      h += '<div class="panel" data-k="cal-backlog"><div class="panel-head"><div><h4>משימות בלי יום</h4><div class="panel-sub">״סידור חכם״ מציע להן יום כשיש מקום</div></div><div class="panel-total mono">' + backlog.length + '</div></div><div class="panel-rows">' +
+        (backlog.length ? backlog.map(function(x){
+          return '<div class="m-item" data-k="bl-' + esc(x.id) + '">' + check("taskToggle", x.id, null, false, x.title) + '<button type="button" class="m-itext m-open" data-mact="openTask" data-id="' + esc(x.id) + '">' + esc(x.title || "(בלי שם)") + whoTag(x.who) + (x.due ? '<span class="m-tag">עד ' + esc(dm(x.due)) + "</span>" : "") + ((x.subtasks || []).length ? '<span class="m-tag">' + x.subtasks.length + " תתי־משימות</span>" : "") + "</button></div>";
+        }).join("") : '<p class="empty-note">אין.</p>') +
+        '</div><button type="button" class="btn-add" style="margin-top:10px;" data-mact="newTask" data-arg="">+ משימה בלי יום</button></div>';
+      return h;
+    }
+    function vCalendar(){
+      var ws = S.week, we = addD(ws, 6), t = today();
+      if (isPhone()) return vCalendarPhone();
+      var h = '<div class="month-nav"><button type="button" class="btn" data-mact="week" data-arg="-1">‹ שבוע קודם</button><div class="center"><span class="m-month">שבוע ' + esc(dm(ws) + "–" + dm(we)) + "</span>" +
+        (ws !== weekStartOf(t) ? '<button type="button" class="btn btn-sm" data-mact="week" data-arg="0">לשבוע הזה</button>' : "") + '</div><button type="button" class="btn" data-mact="week" data-arg="1">שבוע הבא ›</button></div>';
+      h += calTools() + '<div class="m-days">';
+      for (var i = 0; i < 7; i++){
+        var d = addD(ws, i), p = dayProfile(i);
+        h += '<div class="m-day' + (d === t ? " today" : "") + (d < t ? " past" : "") + (fixedOn(d).some(function(f){ return f.off; }) ? " off" : "") + '" data-k="day-' + d + '">' +
+          '<div class="m-dayhead"><b>' + DAYS[i] + "</b><span>" + dm(d) + (d === t ? " · היום" : "") + "</span></div>" + (p.label ? '<div class="m-dlabel">' + esc(p.label) + (p.denis ? " · דניס" : "") + "</div>" : "") +
+          dayItems(d) + (d >= t ? '<button type="button" class="m-add" data-mact="newTask" data-arg="' + d + '">+ משימה</button>' : "") + "</div>";
+      }
+      return h + '</div><div class="columns" style="margin-top:18px;">' + calExtras() + "</div>";
+    }
+    function selDay(){
+      var ws = S.week, t = today();
+      if (S.day && S.day >= ws && S.day <= addD(ws, 6)) return S.day;
+      return t >= ws && t <= addD(ws, 6) ? t : ws;
+    }
+    function vCalendarPhone(){
+      var ws = S.week, t = today(), d = selDay(), p = dayProfile(wd(d));
+      var h = '<div class="m-pnav"><button type="button" class="btn btn-sm" data-mact="week" data-arg="-1" aria-label="שבוע קודם">›</button><b>' + esc(dm(ws) + "–" + dm(addD(ws, 6))) + "</b>" +
+        (ws !== weekStartOf(t) ? '<button type="button" class="btn btn-sm" data-mact="week" data-arg="0">היום</button>' : "") + '<button type="button" class="btn btn-sm" data-mact="week" data-arg="1" aria-label="שבוע הבא">‹</button></div>';
+      h += '<div class="m-strip" role="tablist">';
+      for (var i = 0; i < 7; i++){
+        var x = addD(ws, i), c = dayCount(x);
+        h += '<button type="button" role="tab" class="m-sday' + (x === t ? " today" : "") + (fixedOn(x).some(function(f){ return f.off; }) ? " off" : "") + '" data-mact="pickDay" data-arg="' + x + '" aria-selected="' + (x === d) + '"><span>' + DAYS_SHORT[i] + "</span><b>" + (+x.slice(8, 10)) + "</b><i>" + (c ? c : "") + "</i></button>";
+      }
+      h += "</div>";
+      h += '<div class="panel m-dayp" data-k="pday-' + d + '"><div class="m-dayptitle"><div><b>' + DAYS[wd(d)] + " " + dm(d) + (d === t ? " · היום" : "") + "</b>" + (p.label ? '<span class="small muted">' + esc(p.label) + (p.denis ? " · דניס בסדנה" : "") + "</span>" : "") + "</div></div>" +
+        (dayItems(d) || '<p class="empty-note">אין כלום ביום הזה.</p>') +
+        (d >= t ? '<button type="button" class="btn-add" data-mact="newTask" data-arg="' + d + '">+ משימה ל' + esc(DAYS[wd(d)]) + "</button>" : "") + "</div>";
+      h += calTools();
+      h += '<details class="m-fold" data-k="cal-more"><summary>הלו״ז הקבוע ומשימות בלי יום</summary>' + calExtras() + "</details>";
+      return h;
+    }
+
+    function syncBanner(){
+      if (S.mode === "local") return '<div class="m-syncwarn" data-k="syncwarn"><b>⚠ הפנקס לא מחובר לחשבון כאן</b><p>מה שתעשה במכשיר הזה נשמר רק בו, ולא יגיע למחשב. כדי שהכל יסתנכרן, פותחים את הקישור של הפנקס דרך claude.ai, מחוברים לאותו חשבון (באפליקציית Claude המעודכנת או בדפדפן).</p><button type="button" class="link-btn" data-mact="nav" data-arg="more">פרטים ובדיקת חיבור</button></div>';
+      if (S.saveError) return '<div class="m-syncwarn" data-k="syncwarn"><b>⚠ השמירה לא הצליחה</b><p>השינויים האחרונים עוד לא נשמרו בחשבון. כדאי לבדוק את החיבור לאינטרנט.</p></div>';
+      return "";
+    }
+    function attention(){
+      var t = today(), out = [];
+      programs().forEach(function(p){
+        if (p.type !== "group") return;
+        [shiftMonth(mk(t), -1), mk(t)].forEach(function(k){
+          var m = S.months[k]; if (!m) return;
+          pdata(m, p.id).sessions.forEach(function(s){ if (s.status === "pending" && s.date && s.date <= t) out.push('<button type="button" class="m-att" data-mact="goProg" data-id="' + esc(p.id) + '" data-arg="' + k + '">✏️ לעדכן את מפגש ' + esc(progShort(p)) + " מ־" + esc(dm(s.date)) + ": מה קרה וכמה הגיעו</button>"); });
+        });
+      });
+      var todo = allDocs().filter(function(d){ return d.state === "todo"; });
+      if (todo.length) out.push('<button type="button" class="m-att" data-mact="nav" data-arg="docs">🧾 ' + plural(todo.length, "חשבונית אחת", "חשבוניות") + " להוציא במורנינג · ביום " + esc(DAYS[wd(nextAdminDay(t))]) + "</button>");
+      allDocs().filter(function(d){ return docState(d).late; }).forEach(function(d){ out.push('<button type="button" class="m-att late" data-mact="openDoc" data-id="' + esc(d.id) + '">💰 ' + esc((d.party || "") + " " + DOC_KINDS[d.kind] + " " + (d.number || "")) + " · עבר מועד התשלום</button>"); });
+      allOrders().filter(function(o){ return !o.closed && o.due && o.due <= addD(t, 7); }).forEach(function(o){ out.push('<button type="button" class="m-att' + (o.due < t ? " late" : "") + '" data-mact="goOrder" data-id="' + esc(o.id) + '">📦 ' + esc(o.title || "הזמנה") + " · עד " + esc(dayLabel(o.due)) + "</button>"); });
+      return out;
+    }
+    function vToday(){
+      var t = today(), p = dayProfile(wd(t)), tm = addD(t, 1), h = syncBanner();
+      h += '<div class="m-todayhead"><div class="m-tdate">' + DAYS[wd(t)] + " " + dmy(t) + "</div>" + (p.label ? '<div class="small muted">' + esc(p.label) + (p.denis ? " · דניס בסדנה" : "") + "</div>" : "") + "</div>";
+      h += '<div class="m-quick">' +
+        '<button type="button" data-mact="newTask" data-arg="' + t + '"><span>✔︎</span>משימה</button>' +
+        '<button type="button" data-mact="quickOrder" data-arg="make"><span>📦</span>הזמנה</button>' +
+        '<button type="button" data-mact="quickOrder" data-arg="request"><span>🛠</span>בקשה מהחווה</button>' +
+        '<button type="button" data-mact="nav" data-arg="capture"><span>₪</span>הוצאה או מכירה</button></div>';
+      var att = attention();
+      if (att.length) h += '<div class="panel m-attp" data-k="att"><div class="panel-head"><h4>מחכה לך</h4></div><div class="m-atts">' + att.join("") + "</div></div>";
+      h += '<div class="panel m-dayp" data-k="today"><div class="panel-head"><h4>היום</h4><button type="button" class="link-btn" data-mact="nav" data-arg="calendar">לכל השבוע</button></div>' + (dayItems(t) || '<p class="empty-note">אין כלום היום.</p>') + "</div>";
+      h += '<div class="panel m-dayp" data-k="tomorrow"><div class="panel-head"><h4>מחר · ' + esc(DAYS[wd(tm)]) + '</h4><span class="small muted">' + esc(dayProfile(wd(tm)).label || "") + "</span></div>" + (dayItems(tm) || '<p class="empty-note">אין כלום מחר.</p>') + "</div>";
+      var k = mk(t), pr = profitOf(k), f = farmCalc(monthOf(k));
+      h += '<div class="m-money" data-k="money"><button type="button" data-mact="nav" data-arg="ledger"><span>רווח העסק ב' + esc(monthName(k)) + '</span><b class="mono">' + esc(ils(pr.net)) + "</b></button>" +
+        '<button type="button" data-mact="nav" data-arg="farm"><span>יתרה מול ' + esc(S.settings.client.name || "החווה") + '</span><b class="mono">' + esc(ils(Math.abs(f.net))) + "</b></button></div>";
+      return h;
+    }
+
+    /* The smart arrangement: a preview to approve */
+    function sheetOpt(){
+      var o = S.opt;
+      if (!o) return "";
+      var changes = o.list.filter(function(x){ return !x.same || (x.it.who === "any" && x.ex !== "me"); }), same = o.list.length - changes.length;
+      var exName = { me:"אני", denis:"דניס", shikum:"שיקום" };
+      var body = '<p class="small muted" style="margin:0 0 10px;">לפי ״השבוע שלי״ (מה מתאים לכל יום ומי בסדנה), כמה כבר יש בכל יום, ועד מתי צריך. מסמנים מה לקבל. ' + (same ? plural(same, "פריט אחד כבר", "פריטים כבר") + " במקום טוב." : "") + "</p>";
+      if (!changes.length) body += '<p class="empty-note">הכל כבר מסודר טוב לשבוע הזה.</p>';
+      body += '<div class="m-plist">' + changes.map(function(x){
+        var i = o.list.indexOf(x), it = x.it;
+        return '<div class="m-pitem' + (x.on ? "" : " off") + '" data-k="op-' + i + '">' + check("optToggle", String(i), null, x.on, it.title) +
+          '<div class="m-pbody"><b>' + esc(it.title) + '</b><div class="m-pmeta"><span class="m-kind">' + esc(KIND_SHORT[it.kind] || "") + "</span>" +
+          '<span class="small">' + (it.cur ? esc(DAYS_SHORT[wd(it.cur)] + " " + dm(it.cur)) + " ← " : "בלי יום ← ") + "<b>" + esc(DAYS[wd(x.day)] + " " + dm(x.day)) + "</b>" + (x.ex !== "me" ? " · " + esc(exName[x.ex]) : "") + "</span></div>" +
+          (x.why ? '<div class="small muted">' + esc(x.why) + "</div>" : "") + "</div></div>";
+      }).join("") + "</div>";
+      var on = changes.filter(function(x){ return x.on; }).length;
+      return modalWrap("סידור חכם לשבוע", "שבוע " + dm(o.week) + "–" + dm(addD(o.week, 6)), body,
+        bt("⚙ השבוע שלי", "openWeekSet") + bt("סגירה", "closeSheet") + bt("לסדר (" + on + ")", "optApply", { cls:"btn-primary", disabled:!on }));
+    }
+    function sheetMore(){
+      var b = biz(), lm = Object.keys(state.months || {}).filter(isMonthKey).length;
+      var mode = S.mode === "db" ? (S.saveError ? "⚠ מחובר, אבל השמירה האחרונה לא הצליחה" : "☁ מחובר לחשבון ומסונכרן") : S.mode === "local" ? "⚠ לא מחובר לחשבון. הנתונים נשמרים רק במכשיר הזה" : "⏳ מתחבר…";
+      var nav = [["ledger","📒","פנקס חודשי"],["docs","🧾","חשבוניות"],["cashflow","📅","תזרים מזומנים"],["clients","👥","לקוחות והצעות"],["capture","₪","הוצאה או מכירה"],["settings","⚙","הגדרות"]];
+      var body = '<div class="m-moregrid">' + nav.map(function(x){ return '<button type="button" data-mact="nav" data-arg="' + x[0] + '"><span>' + x[1] + "</span>" + esc(x[2]) + "</button>"; }).join("") + "</div>";
+      body += '<div class="calc-section">סנכרון בין הטלפון למחשב</div><div class="m-synccard' + (S.mode === "db" && !S.saveError ? " ok" : "") + '"><b>' + esc(mode) + "</b>" +
+        '<div class="small muted">בפנקס כאן: ' + plural(lm, "חודש אחד", "חודשים") + " · " + plural(allTasks().length, "משימה אחת", "משימות") + " · " + plural(allOrders().length, "הזמנה אחת", "הזמנות") + " · " + plural(allDocs().length, "מסמך אחד", "מסמכים") + "</div>" +
+        (S.mode === "db" ? '<p class="small">כל שינוי נשמר בחשבון ומופיע גם במחשב תוך כמה שניות. אין צורך לייבא או לייצא.</p>'
+          : '<p class="small">כדי שהטלפון והמחשב יראו את אותו פנקס, פותחים את הקישור של הפנקס ב־claude.ai עם אותו חשבון: באפליקציית Claude המעודכנת או בדפדפן (כרום או ספארי) כשמחוברים. אם זה עדיין לא מתחבר, אפשר להעביר את הנתונים בגיבוי.</p>') +
+        bt("🔄 לטעון מחדש", "reload", { cls:"btn-sm" }) + "</div>";
+      body += '<div class="calc-section">גיבוי</div><div class="m-actions" style="margin-top:0;">' + bt("⬇ ייצוא גיבוי", "backupOut", { cls:"btn-sm" }) + bt("⬆ ייבוא גיבוי מקובץ", "backupIn", { cls:"btn-sm" }) + bt("📄 דוח חודשי", "report", { cls:"btn-sm" }) + "</div>" +
+        '<details class="m-more"><summary>ייבוא גיבוי מטקסט (כשבחירת קובץ לא עובדת)</summary><p class="small muted">פותחים את קובץ הגיבוי, מעתיקים את כל הטקסט שלו ומדביקים כאן.</p>' +
+        '<textarea id="m-paste" class="m-plantext" rows="4" placeholder="{ ... }"></textarea>' + bt("לייבא מהטקסט", "pasteImport", { cls:"btn-sm btn-primary" }) + "</details>";
+      return modalWrap("עוד", b.name || "פנקס בית המלאכה", body, bt("סגירה", "closeSheet", { cls:"btn-primary" }));
+    }
+
+    /* =========================================================
        Dialogs (same look as the ledger's own modals)
        ========================================================= */
     function modalWrap(title, sub, body, foot){
@@ -8114,7 +8430,10 @@
         fld("מה צריך לעשות", inp(b + "title", t.title, { id:"m-task-title", ph:"למשל: להזמין עצים לחוסן" }), null, "m-task-title", true) +
         fld("יום", inp(b + "day", t.day, { type:"date", id:"m-task-day" }), "ריק = בלי יום", "m-task-day") +
         fld("שעה", inp(b + "start", t.start, { type:"time", id:"m-task-start" }), "רק אם יש שעה קבועה", "m-task-start") +
-        (t.start ? fld("כמה זמן (דקות)", inp(b + "mins", t.mins, { id:"m-task-mins", im:"numeric", num:true, dir:"ltr", ph:"60" }), t.mins ? "עד " + endOf(t.start, t.mins) : "בשביל יומן גוגל", "m-task-mins") : "") + "</div>";
+        fld("כמה זמן (דקות)", inp(b + "mins", t.mins, { id:"m-task-mins", im:"numeric", num:true, dir:"ltr", ph:String(KIND_MINS[taskKind(t)] || 60) }), t.start && t.mins ? "עד " + endOf(t.start, t.mins) : "לסידור החכם וליומן גוגל", "m-task-mins") +
+        fld("עד מתי", inp(b + "due", t.due, { type:"date", id:"m-task-due" }), "לא חובה", "m-task-due") +
+        fld("סוג", sel(b + "kind", t.kind || "", [["", "לפי הטקסט: " + KIND_SHORT[guessKind(t.title)]]].concat(KINDS), { id:"m-task-kind" }), null, "m-task-kind") +
+        fld("מי עושה", sel(b + "who", t.who || "me", WHO, { id:"m-task-who" }), null, "m-task-who") + "</div>";
       body += '<div class="calc-section">תתי־משימות</div>' + (t.subtasks || []).map(function(s){
         return '<div class="subrow" data-k="sub-' + esc(s.id) + '">' + check("subToggle", s.id, t.id, s.done, s.text) +
           inp("ts:" + t.id + ":" + s.id + ":text", s.text, { cls:"nm", label:"תת־משימה", ph:"מה צריך" }) + del("subDel", s.id, t.id) + "</div>";
@@ -8188,7 +8507,7 @@
       } else {
         body += '<p class="small muted" style="margin:0 0 10px;">מה שבלוח של הפנקס נכנס ליומן גוגל: משימה חדשה נוספת, משימה שזזה זזה גם שם, משימה שבוצעה מקבלת ✓ והופכת לאפורה, ומשימה שנמחקה יורדת. הסנכרון מכסה את השבוע שעבר וחמשת השבועות הבאים.</p>';
         body += '<div class="calc-section">מה להכניס ליומן</div><div class="m-flags" style="flex-direction:column;align-items:flex-start;">' +
-          [["tasks", "משימות עם שעה"], ["untimed", "משימות ושלבים בלי שעה, כאירוע של כל היום"], ["steps", "שלבים של הזמנות"], ["ws", "סדנאות פרטיות"], ["meets", "פגישות קבועות של התוכניות (כמו ישיבת צוות)"], ["fixed", "הלו״ז הקבוע (רק אם הוא עוד לא ביומן גוגל)"]].map(function(o){
+          [["tasks", "משימות עם שעה"], ["untimed", "משימות ושלבים בלי שעה, כאירוע של כל היום"], ["steps", "שלבים של הזמנות"], ["ws", "סדנאות פרטיות"], ["meets", "פגישות קבועות של התוכניות (כמו ישיבת צוות)"], ["admin", "חשבוניות להוציא וסוף חודש, ביום הנהלת החשבונות"], ["fixed", "הלו״ז הקבוע (רק אם הוא עוד לא ביומן גוגל)"]].map(function(o){
             return '<label class="m-flag"><input type="checkbox" id="m-g-' + o[0] + '" data-bind="s:gcal.' + o[0] + '"' + (g[o[0]] ? " checked" : "") + "> " + o[1] + "</label>";
           }).join("") + "</div>";
         body += '<div class="calc-section">לאיזה יומן</div>';
@@ -8240,6 +8559,7 @@
         (d.state === "todo" ? fld("להוציא עד", inp(b + "by", d.by, { type:"date", id:"m-doc-by" }), null, "m-doc-by") : fld("תאריך הוצאה", inp(b + "issued", d.issued, { type:"date", id:"m-doc-issued" }), null, "m-doc-issued")) +
         (d.state !== "todo" && (d.kind === "deal" || d.kind === "invoice") ? fld("לתשלום עד", inp(b + "due", d.due, { type:"date", id:"m-doc-due" }), "לא חובה", "m-doc-due") : "") +
         (d.state === "paid" ? fld("תאריך תשלום", inp(b + "paid", d.paid, { type:"date", id:"m-doc-paid" }), null, "m-doc-paid") : "") +
+        (d.state === "todo" ? fld("ביומן ביום", inp(b + "planDay", d.planDay || docDay(d), { type:"date", id:"m-doc-plan" }), "רגיל: יום הנהלת החשבונות הבא", "m-doc-plan") : "") +
         fld("הערה", inp(b + "note", d.note, { id:"m-doc-note" }), null, "m-doc-note", true) + "</div>";
       var states = d.kind === "deal" || d.kind === "invoice" ? [["todo", "להוציא"], ["sent", "יצא, ממתין לתשלום"], ["paid", "שולם"]] : [["todo", "להוציא"], ["sent", "הוצא"]];
       body += '<div class="calc-section">מצב</div><div class="m-seg">' + states.map(function(s){
@@ -8266,6 +8586,15 @@
       h += '<div class="calc-section">ההסכם עם החווה</div><div class="calc-grid">' + sf("שכירות חודשית (₪, לפני מע״מ)", "farm.rent", { im:"decimal", num:true }) +
         sf("אחוז מפרויקטים לחווה", "farm.rates.farmwork", { im:"decimal", num:true }) + sf("אחוז ממכירות בחנות", "farm.rates.shop", { im:"decimal", num:true }) + sf("הערה מההסכם", "farm.note") + "</div>" +
         '<div class="small muted" style="margin-top:6px;">התמחור של חוסן, שיקום ושאר התוכניות (כולל האחוז לחווה מכל תוכנית) נמצא בלשונית חוות רום, ליד כל תוכנית.</div>';
+      h += '<div class="calc-section" id="m-weekset">השבוע שלי</div><p class="small muted" style="margin:0 0 8px;">מה מתאים לכל יום, אם אני בנגרייה ומתי דניס עובד. ״סידור חכם״ בלוח השנה מסדר לפי זה, וחשבוניות נכנסות ליום של הנהלת החשבונות. ימי השיקום נלקחים מהתוכניות.</p>' +
+        '<div class="m-weekrows">' + DAYS.map(function(dn, i){
+          var p = dayProfile(i), b2 = "wk:" + i + ":";
+          return '<div class="m-weekrow" data-k="wk-' + i + '"><b>' + dn + "</b>" + inp(b2 + "label", p.label, { cls:"row-input", ph:"למשל: שיקום וייצור", label:"מה היום הזה" }) +
+            sel(b2 + "me", p.me, ME_LEVELS, { cls:"row-select", label:"אני" }) +
+            '<div class="m-flags" style="margin-top:0;">' + KINDS.filter(function(x){ return x[0] !== "other" && x[0] !== "message"; }).map(function(x){
+              return '<label class="m-flag"><input type="checkbox" id="' + fid("wkf:" + i + ":" + x[0]) + '" data-bind="wkf:' + i + ":" + x[0] + '"' + ((p.focus || []).indexOf(x[0]) >= 0 ? " checked" : "") + "> " + esc(KIND_SHORT[x[0]]) + "</label>";
+            }).join("") + '<label class="m-flag"><input type="checkbox" id="' + fid(b2 + "denis") + '" data-bind="' + b2 + 'denis"' + (p.denis ? " checked" : "") + "> דניס</label></div></div>";
+        }).join("") + "</div>";
       h += '<div class="calc-section">ימי עבודה (למשימות שעוברות ליום הבא)</div><div class="m-flags">' + DAYS.map(function(d, i){ return '<label class="m-flag"><input type="checkbox" id="m-hrs-' + i + '" data-bind="hrs:' + i + '"' + (st.hours && st.hours[i] ? " checked" : "") + "> " + d + "</label>"; }).join("") + "</div>";
       return modalWrap("הגדרות", "משנים פעם אחת, וכל הלשוניות מתעדכנות", h, bt("סיום", "closeSheet", { cls:"btn-primary" }));
     }
@@ -8278,6 +8607,8 @@
       if (S.sheet.type === "prep") return sheetPrep();
       if (S.sheet.type === "plan") return sheetPlan();
       if (S.sheet.type === "gcal") return sheetGcal();
+      if (S.sheet.type === "opt") return sheetOpt();
+      if (S.sheet.type === "more") return sheetMore();
       return "";
     }
 
@@ -8683,11 +9014,14 @@
       var backlog = allTasks().filter(function(t){ return !t.done && !t.day; }).map(function(t){ return "- " + t.title; });
       return L.join("\n") + (orders.length ? "\n\nהזמנות פתוחות:\n" + orders.join("\n") : "") + (backlog.length ? "\n\nמשימות שעוד אין להן יום:\n" + backlog.join("\n") : "");
     }
-    var PLAN_FORMAT = '{"tasks":[{"title":"להזמין עצים לחוסן","day":"YYYY-MM-DD","start":"09:00","minutes":60,"subtasks":["לבדוק מה נשאר במחסן"],"notes":""}],"summary":"משפט קצר על השבוע"}';
+    var PLAN_FORMAT = '{"tasks":[{"title":"להזמין עצים לחוסן","day":"YYYY-MM-DD","start":"09:00","minutes":60,"kind":"errand","who":"me","subtasks":["לבדוק מה נשאר במחסן"],"notes":""}],"summary":"משפט קצר על השבוע"}';
     function planPrompt(text, ws){
       return [
         "אני נגר ומנהל נגרייה קטנה בחוות רום. תעזור לי לסדר את שבוע העבודה ביומן.",
         "השבוע: ראשון " + dmy(ws) + " עד שבת " + dmy(addD(ws, 6)) + ". היום " + dmy(today()) + ".",
+        "",
+        "איך בנוי השבוע שלי:",
+        weekText(),
         "",
         "מה כבר ביומן השבוע (לא לשבץ משימות שחופפות לזה):",
         weekContext(ws),
@@ -8702,6 +9036,8 @@
         "- עבודה גדולה לפרק לתתי־משימות קצרות (subtasks).",
         "- לא לשכפל משימות, הכנות או אירועים שכבר ביומן.",
         "- משימה בלי יום ברור: day = null.",
+        "- kind: production (ייצור), maintenance (שיפוץ), errand (נסיעה או קנייה), admin (הנהלת חשבונות ובירוקרטיה, עדיף ביום של הנהלת החשבונות), other.",
+        "- who: me, denis (דניס יכול לבד בסדנה, רק בימים שהוא עובד), shikum (ייצור עם השיקום בימי שיקום), any.",
         "",
         (text ? "תחזיר" : "אחרי שאספר, תחזיר") + " רק JSON בצורה הזו, בלי שום טקסט נוסף:",
         PLAN_FORMAT
@@ -8714,7 +9050,8 @@
       return list.filter(function(x){ return x && String(x.title || "").trim(); }).slice(0, 60).map(function(x){
         return { on:true, title:String(x.title).trim().slice(0, 200), day:validDay(x.day), start:validTime(x.start), mins: n(x.minutes) ? Math.round(n(x.minutes)) : "",
           subtasks:(Array.isArray(x.subtasks) ? x.subtasks : []).map(function(s){ return String(s && s.text || s || "").trim(); }).filter(Boolean).slice(0, 20),
-          notes:String(x.notes || "").slice(0, 1000) };
+          notes:String(x.notes || "").slice(0, 1000),
+          kind: KIND_SHORT[x.kind] ? x.kind : "", who: ["me", "denis", "shikum", "any"].indexOf(x.who) >= 0 ? x.who : "me" };
       });
     }
     function extractPlan(text){
@@ -8756,7 +9093,7 @@
       var items = (S.plan.items || []).filter(function(x){ return x.on && x.title.trim(); });
       if (!items.length){ toast("לא נבחרו משימות."); return; }
       items.forEach(function(x){
-        var t = newTask({ title:x.title.trim(), day:x.day || null, start:x.day ? x.start || null : null, mins:x.mins || "", notes:x.notes || "",
+        var t = newTask({ title:x.title.trim(), day:x.day || null, start:x.day ? x.start || null : null, mins:x.mins || "", notes:x.notes || "", kind:x.kind || "", who:x.who || "me",
           subtasks:x.subtasks.map(function(s){ return { id:id(), text:s, done:false }; }) });
         delete Store.fresh["tasks/" + t.id];
         saveTask(t, 0);
@@ -8801,6 +9138,10 @@
         meetingsOn(dd).forEach(function(x){
           out["m:" + x.p.id + ":" + x.r.key] = { date:x.r.date, start:x.rec && x.rec.start, mins:x.r.hours * 60, title:x.r.name + " · " + progShort(x.p), desc:"" };
         });
+      }
+      if (g.admin !== false) for (var da = from; da <= to; da = addD(da, 1)){
+        docsOn(da).forEach(function(x){ out["d:" + x.id] = { date:da, title:"🧾 להוציא " + DOC_KINDS[x.kind] + (x.party ? " · " + x.party : ""), desc:(n(x.amount) ? ils(x.amount, true) + "\n" : "") + (x.title || "") }; });
+        monthEndOn(da).forEach(function(x){ out["me:" + x.k] = { date:da, title:"🧾 סוף " + monthName(x.k) + ": חשבונות עסקה והתחשבנות", desc:"" }; });
       }
       if (g.fixed) for (var d = from; d <= to; d = addD(d, 1)){
         fixedOn(d).forEach(function(f){ out["f:" + f.id + ":" + d] = { date:d, start: f.allDay || f.off ? null : f.start, end:f.end, title:f.title || "אירוע", allDay: !!(f.allDay || f.off), desc:"" }; });
@@ -8937,6 +9278,218 @@
       return new Blob([L.join("\r\n")], { type:"text/calendar" });
     }
 
+    /* =========================================================
+       My week: what each day is for, who is around, and a smart
+       arrangement of the week's loose work around it
+       ========================================================= */
+    var KINDS = [["production","ייצור"],["maintenance","שיפוץ ותחזוקה"],["errand","נסיעות וקניות"],["admin","הנהלת חשבונות ובירוקרטיה"],["message","הודעה או שיחה"],["other","אחר"]];
+    var KIND_SHORT = { production:"ייצור", maintenance:"שיפוץ", errand:"נסיעה", admin:"משרד", message:"הודעה", other:"אחר" };
+    var WHO = [["me","אני"],["denis","דניס"],["shikum","שיקום"],["any","מי שפנוי"]];
+    var ME_LEVELS = [["full","בנגרייה כל היום"],["part","חלק מהיום"],["away","לא בנגרייה"]];
+    var KIND_MINS = { production:120, maintenance:120, errand:90, admin:30, message:10, other:60 };
+    var ME_CAP = { full:360, part:150, away:90 };
+    function defaultWeek(){
+      return {
+        "0": { label:"שיקום וייצור", me:"full", focus:["production","maintenance","errand"], denis:true },
+        "1": { label:"לימודים · הנהלת חשבונות", me:"away", focus:["admin","errand"], denis:false },
+        "2": { label:"חוסן", me:"part", focus:["errand"], denis:false },
+        "3": { label:"שיפוץ ומוצרים", me:"full", focus:["maintenance","production","errand"], denis:true },
+        "4": { label:"שיקום וייצור", me:"full", focus:["production","maintenance"], denis:false },
+        "5": { label:"יום קצר", me:"part", focus:["errand","other"], denis:false },
+        "6": { label:"מנוחה ותכנון", me:"away", focus:[], denis:false }
+      };
+    }
+    function dayProfile(i){ var w = S.settings.week || {}; return w[i] || w[String(i)] || { label:"", me:"full", focus:[], denis:false }; }
+    function guessKind(text){
+      var t = String(text || "");
+      if (/חשבונית|קבלה|חשבון עסקה|לחייב|הצעת מחיר|התחשבנות|מורנינג|ביטוח|מס |רו״ח|רואה חשבון|דוח|טופס|בירוקרט|לשלם|תשלום/.test(t)) return "admin";
+      if (/^(לעדכן|להודיע|להתקשר|לדבר עם|לתאם|לשאול|לכתוב ל|לשלוח הודעה)/.test(t.trim())) return "message";
+      if (/לקנות|להביא|לאסוף|להזמין|למסור|לנסוע|ספק|בדרך|נסיעה/.test(t)) return "errand";
+      if (/לשפץ|לסדר את הסדנה|לנקות|תחזוקה|מדפים|עמדת|להתקין|לתקן את הסדנה/.test(t)) return "maintenance";
+      if (/לייצר|לחתוך|לשייף|לבנות|להרכיב|לצבוע|לשמן|לקדוח|לתקן|ייצור|קוביות|שולחן|ספסל|אדניות/.test(t)) return "production";
+      return "other";
+    }
+    function stepKind(s){ return s.kind || (s.act === "quote" || s.act === "bill" ? "admin" : guessKind(s.text)); }
+    function taskKind(t){ return t.kind || guessKind(t.title); }
+    function shikumDay(d){
+      return programs().some(function(p){ return p.type === "hourly" && progInMonth(p, mk(d)) && (p.weekdays || []).indexOf(wd(d)) >= 0 && !fixedOn(d).some(function(f){ return f.off; }); });
+    }
+    function shikumMins(d){
+      var m = 0;
+      programs().forEach(function(p){ if (p.type === "hourly" && progInMonth(p, mk(d)) && (p.weekdays || []).indexOf(wd(d)) >= 0) m = Math.max(m, n(p.hoursPer) * 60); });
+      return m;
+    }
+    function weekText(){
+      var L = [];
+      for (var i = 0; i < 7; i++){
+        var p = dayProfile(i), who = [];
+        if (p.denis) who.push("דניס עובד");
+        if (programs().some(function(x){ return x.type === "hourly" && (x.weekdays || []).indexOf(i) >= 0 && x.active !== false; })) who.push("יש שיקום (אפשר לייצר איתם)");
+        L.push("- " + DAYS[i] + ": " + (p.label || "") + " · " + (ME_LEVELS.filter(function(x){ return x[0] === p.me; })[0] || ["", ""])[1] +
+          (p.focus && p.focus.length ? " · מתאים ל: " + p.focus.map(function(k){ return KIND_SHORT[k]; }).join(", ") : "") + (who.length ? " · " + who.join(", ") : ""));
+      }
+      return L.join("\n");
+    }
+
+    /* The smart arrangement. Every loose item gets the day (and, for shop work, the person) that suits it best:
+       the day's purpose first, then how full the day already is, then the deadline. Nothing changes until approved. */
+    function optimizeWeek(ws){
+      var t = today(), we = addD(ws, 6), from = ws < t ? t : ws, days = [];
+      for (var d = from; d <= we; d = addD(d, 1)) days.push(d);
+      var load = {}, cap = {};
+      days.forEach(function(d){
+        var p = dayProfile(wd(d)), off = fixedOn(d).some(function(f){ return f.off; });
+        var me = off ? 0 : ME_CAP[p.me] || 0;
+        wsOn(d).forEach(function(w){ me -= (n(w.hours) || 2) * 60; });
+        meetingsOn(d).forEach(function(x){ me -= x.r.hours * 60; });
+        cap[d] = { me:Math.max(0, me), denis: p.denis && !off ? 360 : 0, shikum: shikumDay(d) ? shikumMins(d) : 0 };
+        load[d] = { me:0, denis:0, shikum:0 };
+        tasksOn(d).forEach(function(x){ if (!x.done && x.start) load[d].me += n(x.mins) || 60; });
+      });
+      var items = [];
+      function add(o){ o.mins = n(o.mins) || KIND_MINS[o.kind] || 60; items.push(o); }
+      allTasks().forEach(function(x){
+        if (x.done || !x.title.trim() || x.start) return;
+        var inWeek = x.day && x.day >= from && x.day <= we;
+        if (!inWeek && x.day) return;
+        add({ type:"task", id:x.id, title:x.title, kind:taskKind(x), who:x.who || "me", cur:x.day || null, due:x.due || null, mins:x.mins, on: inWeek || (x.due && x.due <= we) });
+      });
+      allOrders().forEach(function(o){
+        if (o.closed) return;
+        var next = o.steps.filter(function(s){ return !s.done; })[0];
+        if (!next || (next.day && (next.day < from || next.day > we))) return;
+        var k = stepKind(next);
+        add({ type:"step", id:next.id, oid:o.id, title:next.text + " · " + (o.title || "הזמנה"), kind:k, who: k === "production" || k === "maintenance" ? next.who || "any" : "me",
+          cur:next.day || null, due:o.due || null, mins:null, on:true });
+      });
+      days.forEach(function(d){
+        prepOn(d).forEach(function(x){
+          if (prepDone(x.ev, x.f, x.p)) return;
+          add({ type:"prep", id:x.f.id + ":" + x.p.id, ev:x.ev, title:x.p.text + " · לפני " + (x.f.title || "האירוע"), kind:x.p.kind || guessKind(x.p.text), who:"me", cur:d,
+            due:x.ev, mins:x.p.mins || (guessKind(x.p.text) === "errand" ? 90 : 20), on:true, base:addD(x.ev, -(n(x.p.before) || 0)) });
+        });
+        docsOn(d).forEach(function(x){ add({ type:"doc", id:x.id, title:"להוציא " + DOC_KINDS[x.kind] + (x.party ? " · " + x.party : ""), kind:"admin", who:"me", cur:d, due:null, mins:20, on:true }); });
+      });
+      items.sort(function(a, b){ return String(a.due || "9999").localeCompare(String(b.due || "9999")) || b.mins - a.mins; });
+      var out = [];
+      items.forEach(function(it){
+        var best = null;
+        days.forEach(function(d, idx){
+          if (it.due && d > it.due) return;
+          if (it.type === "prep" && d === it.due && it.kind === "errand"){ /* still fine: the same morning, before the event */ }
+          var p = dayProfile(wd(d)), fi = (p.focus || []).indexOf(it.kind);
+          var execs = it.who === "any" ? ["denis", "shikum", "me"] : [it.who];
+          execs.forEach(function(ex){
+            if (!cap[d][ex]) return;
+            if (ex === "me" && it.kind !== "message"){
+              if (p.me === "away" && fi < 0) return;
+              if ((it.kind === "production") && fi < 0) return;
+            }
+            if ((ex === "denis" || ex === "shikum") && it.kind !== "production" && it.kind !== "maintenance") return;
+            var after = load[d][ex] + it.mins, ratio = after / cap[d][ex];
+            var sc = (fi === 0 ? 3 : fi > 0 ? 2.5 - fi * 0.3 : 0.6);
+            if (ex !== "me") sc += 1;
+            if (it.cur === d) sc += 0.5;
+            if (it.type === "prep" && it.base === d) sc += 0.4;
+            sc -= ratio * 2.5;
+            if (ratio > 1) sc -= 4;
+            sc -= idx * (it.due ? 0.25 : 0.1);
+            if (!best || sc > best.sc) best = { d:d, ex:ex, sc:sc, fi:fi, ratio:ratio };
+          });
+        });
+        if (!best) return;
+        load[best.d][best.ex] += it.mins;
+        var p = dayProfile(wd(best.d)), why = [];
+        if (best.ex === "denis") why.push("דניס בסדנה, יכול לבד");
+        else if (best.ex === "shikum") why.push("יום שיקום, מייצרים איתם");
+        if (best.fi >= 0 && p.label) why.push(p.label);
+        if (it.cur && it.cur !== best.d && cap[it.cur] && load[it.cur].me > cap[it.cur].me) why.push(DAYS[wd(it.cur)] + " כבר מלא");
+        if (it.due) why.push("עד " + dm(it.due));
+        out.push({ it:it, day:best.d, ex:best.ex, why:why.join(" · "), on: it.on && (it.cur !== best.d || (it.who === "any" && best.ex !== "me")), same: it.cur === best.d });
+      });
+      return out.sort(function(a, b){ return a.day.localeCompare(b.day); });
+    }
+    function applyOptimize(list){
+      var n0 = 0;
+      list.forEach(function(x){
+        if (!x.on) return;
+        var it = x.it;
+        if (it.type === "task"){ var t = S.tasks[it.id]; if (!t) return; t.day = x.day; t.rolledFrom = null; if (it.who === "any" || x.ex !== "me") t.who = x.ex; saveTask(t, 0); n0++; }
+        else if (it.type === "step"){ var o = S.orders[it.oid], s = o && findIn(o.steps, it.id); if (!s) return; s.day = x.day; s.rolledFrom = null; if (x.ex !== "me") s.who = x.ex; persist("orders/" + o.id, 0); n0++; }
+        else if (it.type === "prep"){ setPrepMove(it.ev, it.id, x.day === it.base ? "" : x.day, true); n0++; }
+        else if (it.type === "doc"){ var d = S.docs[it.id]; if (!d) return; d.planDay = x.day; persist("docs/" + d.id, 0); n0++; }
+      });
+      return n0;
+    }
+
+    /* =========================================================
+       📐 The cost and production calculator, opened from an order.
+       It runs in its own frame (calc.html); its price list, settings,
+       templates and each order's drawing are kept in the account here.
+       ========================================================= */
+    var CALC = { el:null, frame:null, oid:null, ready:false, timer:null };
+    function calcSeedSettings(){
+      var b = biz();
+      return { biz:{ name:b.name || "", line:"", phone:b.phone || "", email:b.email || "", address:b.address || "", taxId:b.taxId || "" } };
+    }
+    function calcClose(summary){
+      clearTimeout(CALC.timer);
+      if (CALC.el) CALC.el.remove();
+      var o = CALC.oid && S.orders[CALC.oid];
+      CALC.el = CALC.frame = null; CALC.oid = null; CALC.ready = false;
+      document.body.style.overflow = "";
+      if (o && summary && n(summary.beforeVat)) toast("המחיר מהמחשבון נכנס להזמנה: " + ils(summary.beforeVat, true) + " לפני מע״מ.");
+      render();
+    }
+    function calcOpenFor(oid){
+      var o = S.orders[oid]; if (!o) return;
+      if (CALC.el) calcClose();
+      CALC.oid = oid; CALC.ready = false;
+      var w = document.createElement("div");
+      w.className = "m-calcwrap"; w.setAttribute("role", "dialog"); w.setAttribute("aria-label", "מחשבון עלות וייצור");
+      w.innerHTML = '<div class="m-calcbar"><b>📐 ' + esc(o.title || "הזמנה") + '</b><span class="small" id="m-calcstate">טוען את המחשבון…</span><button type="button" class="btn btn-sm" id="m-calcx">✕ סגירה</button></div>' +
+        '<iframe class="m-calcframe" title="מחשבון עלות וייצור" src="calc.html?embed=1"></iframe>';
+      document.body.appendChild(w);
+      document.body.style.overflow = "hidden";
+      CALC.el = w; CALC.frame = w.querySelector("iframe");
+      w.querySelector("#m-calcx").addEventListener("click", function(){ calcClose(null); });
+      CALC.timer = setTimeout(function(){
+        if (CALC.ready || !CALC.el) return;
+        var st = CALC.el.querySelector("#m-calcstate");
+        if (st) st.textContent = "המחשבון לא נטען. כדאי לבדוק את החיבור לאינטרנט ולנסות שוב.";
+      }, 20000);
+    }
+    function calcApply(o, sm){
+      if (!sm) return;
+      var one = sm.items && sm.items.length === 1 ? sm.items[0] : null;
+      o.calc = { beforeVat:r2(sm.beforeVat), total:r2(sm.total), hours:r2(sm.hours), direct:r2(sm.direct), profit:r2(sm.profit), at:new Date().toISOString() };
+      if (one && one.Q && Math.abs(n(one.line) - n(sm.beforeVat)) < 0.01){ o.qty = one.Q; o.unitPrice = r2(one.unit); }
+      else { o.unitPrice = ""; o.amount = r2(sm.beforeVat); }
+      persist("orders/" + o.id, 400);
+      syncAllLedgerAuto();
+    }
+    window.addEventListener("message", function(ev){
+      var d = ev.data;
+      if (!CALC.frame || ev.source !== CALC.frame.contentWindow || !d || typeof d.type !== "string") return;
+      var o = CALC.oid && S.orders[CALC.oid];
+      if (d.type === "nq:ready"){
+        CALC.ready = true;
+        var st = CALC.el && CALC.el.querySelector("#m-calcstate");
+        if (st) st.textContent = "המחיר חוזר להזמנה כשלוחצים ״חזרה להזמנה״";
+        CALC.frame.contentWindow.postMessage({ type:"nq:init", prices:S.calc.prices || null, settings:S.calc.settings || calcSeedSettings(), library:S.calc.library ? S.calc.library.items || [] : null,
+          quote:o && S.calcq[o.id] ? S.calcq[o.id] : null, order:o ? { title:o.title, client:o.client, qty:o.qty } : {} }, "*");
+        return;
+      }
+      if (d.type === "nq:save"){
+        if (d.group === "prices" || d.group === "settings"){ S.calc[d.group] = d.data; persist("calc/" + d.group, 800); }
+        else if (d.group === "library"){ S.calc.library = { items:Array.isArray(d.data) ? d.data : [] }; persist("calc/library", 800); }
+        else if (d.group === "current" && o){ S.calcq[o.id] = d.data; persist("calcq/" + o.id, 800); calcApply(o, d.summary); }
+        return;
+      }
+      if (d.type === "nq:file" && d.data){ saveFile(String(d.filename || "מחשבון"), d.data); return; }
+      if (d.type === "nq:done"){ if (o && d.summary) calcApply(o, d.summary); calcClose(d.summary); }
+    });
+
     function summaryText(k){
       var st = S.settings, m = monthOf(k), f = farmCalc(m), b = biz(), client = st.client.name || "החווה", L = [];
       L.push((st.client.contact ? "היי " + st.client.contact + "," : "היי,") + " הסיכום של " + monthLabel(k) + ":");
@@ -9018,7 +9571,14 @@
         case "hx": k = p[1]; m = S.months[k]; it = m ? findIn(pdata(m, p[2]).specials, p[3]) : null; return it ? { obj:it, key:p[4], save:"months/" + k } : null;
         case "mf": k = p[1]; m = S.months[k]; it = m ? findIn(m.farm[p[2]], p[3]) : null; return it ? { obj:it, key:p[4], save:"months/" + k } : null;
         case "mr": return { special: function(v){ mutMonth(p[1], function(mm){ mm.farm.rent = v === "" ? null : v; }); } };
-        case "or": it = S.orders[p[1]]; return it ? { obj:it, key:p[2], save:"orders/" + p[1] } : null;
+        case "or": it = S.orders[p[1]]; return it ? { obj:it, key:p[2], save:"orders/" + p[1], after: function(){ syncAllLedgerAuto(); } } : null;
+        case "wk": { var wk = S.settings.week || (S.settings.week = defaultWeek()); it = wk[p[1]] || (wk[p[1]] = { label:"", me:"full", focus:[], denis:false }); return { obj:it, key:p[2], save:"app/settings" }; }
+        case "wkf": return { special: function(v){
+          var wk = S.settings.week || (S.settings.week = defaultWeek()), dp = wk[p[1]] || (wk[p[1]] = { label:"", me:"full", focus:[], denis:false });
+          var f = (dp.focus || []).filter(function(x){ return x !== p[2]; });
+          if (v) f.push(p[2]);
+          dp.focus = f; persist("app/settings");
+        } };
         case "os": { var o2 = S.orders[p[1]]; it = o2 ? findIn(o2.steps, p[2]) : null; return it ? { obj:it, key:p[3], save:"orders/" + p[1], after: function(){ if (p[3] === "day"){ it.day = it.day || null; it.rolledFrom = null; } if (p[3] === "text") it.act = it.act || stepAction(it.text); } } : null; }
         case "t": { var t = S.tasks[p[1]]; if (!t) return null; return { obj:t, key:p[2], after: function(){ if (p[2] === "day" || p[2] === "start"){ t[p[2]] = t[p[2]] || null; } if (p[2] === "day") t.rolledFrom = null; if (t.title.trim()) saveTask(t, 600); else render(); } }; }
         case "ts": { var t2 = S.tasks[p[1]]; it = t2 ? findIn(t2.subtasks, p[2]) : null; return it ? { obj:it, key:p[3], after: function(){ if (t2.title.trim()) saveTask(t2, 600); } } : null; }
@@ -9042,13 +9602,13 @@
     /* =========================================================
        Actions
        ========================================================= */
-    function setPrepMove(ev, key, date){
+    function setPrepMove(ev, key, date, quiet){
       var x = prepFind(key, ev); if (!x) return;
       var base = addD(ev, -(n(x.p.before) || 0)), d = S.prep[ev] || (S.prep[ev] = { date:ev, checks:{} });
       d.moved = d.moved || {};
       if (!date || date === base) delete d.moved[key]; else d.moved[key] = date;
       persist("prep/" + ev, 0);
-      if (date && date !== base) toast("הוזז ל" + dayLabel(date) + ", רק הפעם.");
+      if (date && date !== base && !quiet) toast("הוזז ל" + dayLabel(date) + ", רק הפעם.");
     }
     function saveOpenOrders(){ LSX.set("ui:openOrders", S.openOrders); }
     function arm(key){ if (S.armed === key){ S.armed = null; return true; } S.armed = key; render(); return false; }
@@ -9067,7 +9627,44 @@
       closeSheet: closeSheet,
       openSettings: function(){ openSheet({ type:"settings" }); },
       month: function(i, a){ goToMonth(a === "0" ? todayMonthKey() : shiftMonth(currentMonthKey, +a)); render(); },
-      week: function(i, a){ S.week = a === "0" ? weekStartOf(today()) : addD(S.week, 7 * +a); render(); },
+      week: function(i, a){ S.week = a === "0" ? weekStartOf(today()) : addD(S.week, 7 * +a); S.day = null; render(); },
+      pickDay: function(i, d){ S.day = d; render(); },
+
+      /* Phone navigation */
+      nav: function(i, v){
+        if (v === "more"){ openSheet({ type:"more" }); return; }
+        if (v === "settings"){ openSheet({ type:"settings" }); return; }
+        S.sheet = null; S.armed = null;
+        switchView(v);
+      },
+      quickOrder: function(i, kind){ S.sheet = null; switchView("orders"); A.orderAdd(null, kind); },
+      goOrder: function(oid){
+        if (!S.orders[oid]) return;
+        S.sheet = null; S.openOrders[oid] = true; saveOpenOrders(); switchView("orders");
+        setTimeout(function(){ var e = document.querySelector('[data-k="o-' + oid + '"]'); if (e) e.scrollIntoView({ block:"start" }); }, 120);
+      },
+      goFarmMonth: function(i, k){ S.sheet = null; goToMonth(k); switchView("farm"); setTimeout(function(){ var e = document.querySelector('[data-k="p-deals"]'); if (e) e.scrollIntoView({ block:"start" }); }, 120); },
+      monthEndDone: function(k){ mutMonth(k, function(m){ m.close.sent = today(); }); toast("סוף " + monthName(k) + " סומן כטופל."); },
+      docIssued: function(did){ var d = S.docs[did]; if (!d) return; d.state = "sent"; d.issued = d.issued || today(); persist("docs/" + did, 0); toast("סומן שהוצא."); },
+      reload: function(){ try{ location.reload(); }catch(e){ toast("אפשר לרענן את הדף מהדפדפן."); } },
+      backupOut: function(){ exportBackup(); },
+      backupIn: function(){ var f = document.getElementById("file-import"); if (f) f.click(); },
+      report: function(){ S.sheet = null; render(); openReport(currentMonthKey, {}); },
+      pasteImport: function(){
+        var e = document.getElementById("m-paste"), v = e && e.value.trim();
+        if (!v){ toast("קודם להדביק את הטקסט של הגיבוי."); return; }
+        if (importBackupText(v)){ S.sheet = null; render(); }
+      },
+
+      /* Smart arrangement of the week */
+      optOpen: function(){ S.opt = { week:S.week, list:optimizeWeek(S.week) }; openSheet({ type:"opt" }); },
+      optToggle: function(i){ var x = S.opt && S.opt.list[+i]; if (x){ x.on = !x.on; render(); } },
+      optApply: function(){
+        var k2 = applyOptimize(S.opt.list);
+        S.opt = null; S.sheet = null; render();
+        toast(k2 ? plural(k2, "פריט אחד סודר", "פריטים סודרו") + " מחדש." : "לא שונה כלום.");
+      },
+      openWeekSet: function(){ openSheet({ type:"settings" }); setTimeout(function(){ var e = document.getElementById("m-weekset"); if (e) e.scrollIntoView({ block:"start" }); }, 80); },
 
       /* Programs: sessions of a group program */
       sesStatus: function(sid, a){ var p = a.split("|"); mutMonth(currentMonthKey, function(m){ var s = findIn(pdata(m, p[0]).sessions, sid); if (s) s.status = p[1]; }); },
@@ -9308,7 +9905,17 @@
       orderAdd: function(i, kind){ var o = newOrder(kind); S.openOrders[o.id] = true; saveOpenOrders(); persist("orders/" + o.id, 0); S.focus = fid("or:" + o.id + ":title"); },
       orderToggle: function(oid){ if (S.openOrders[oid]) delete S.openOrders[oid]; else S.openOrders[oid] = true; saveOpenOrders(); render(); },
       orderDel: function(oid){ if (!arm("orderDel|" + oid)) return; delete S.orders[oid]; delete S.openOrders[oid]; saveOpenOrders(); Store.remove("orders/" + oid); gcalSoon(); render(); },
-      orderClose: function(oid){ var o = S.orders[oid]; if (!o) return; o.closed = !o.closed; persist("orders/" + oid, 0); },
+      orderClose: function(oid){
+        var o = S.orders[oid]; if (!o) return;
+        o.closed = !o.closed;
+        var billed = o.closed && !o.billMonth && orderTotal(o);
+        if (billed) o.billMonth = mk(today());
+        persist("orders/" + oid, 0);
+        syncAllLedgerAuto();
+        if (billed) toast(isFarmClient(o.client) ? "ההזמנה נכנסה להתחשבנות של " + monthName(o.billMonth) + " ולפנקס." : "ההזמנה נכנסה לפנקס של " + monthName(o.billMonth) + ".");
+      },
+      calcOpen: function(oid){ calcOpenFor(oid); },
+      orderUnbill: function(oid){ var o = S.orders[oid]; if (!o) return; o.billMonth = null; persist("orders/" + oid, 0); syncAllLedgerAuto(); },
       stepToggle: function(sid, oid){ var o = S.orders[oid], s = o && findIn(o.steps, sid); if (!s) return; s.done = !s.done; persist("orders/" + oid, 0); },
       stepAdd: function(oid){ var o = S.orders[oid]; if (!o) return; var s = { id:id(), text:"", done:false, day:null, act:"" }; o.steps.push(s); persist("orders/" + oid, 0); S.focus = fid("os:" + oid + ":" + s.id + ":text"); },
       stepDel: function(sid, oid){ var o = S.orders[oid]; if (!o) return; o.steps = o.steps.filter(function(s){ return s.id !== sid; }); persist("orders/" + oid, 0); },
@@ -9332,25 +9939,25 @@
       },
       orderBill: function(oid){
         var o = S.orders[oid]; if (!o) return;
-        if (!n(o.amount)){ toast("קודם לרשום סכום להזמנה."); S.focus = fid("or:" + oid + ":amount"); render(); return; }
+        if (!orderTotal(o)){ toast("קודם לרשום מחיר להזמנה."); S.focus = fid("or:" + oid + ":unitPrice"); render(); return; }
         var step = o.steps.filter(function(s){ return s.act === "bill"; })[0];
+        var k = o.billMonth || mk(today());
+        o.billMonth = k;
         if (isFarmClient(o.client)){
-          var k = currentMonthKey;
-          mutMonth(k, function(m){ m.farm.toMe.push({ id:id(), name:(o.title || "הזמנה") + (n(o.qty) ? " (" + o.qty + ")" : ""), amount:n(o.amount), kind: o.kind === "make" ? "shop" : "farmwork", rate:"", orderId:o.id }); });
-          o.billedMonth = k;
-          toast("נוסף להתחשבנות של " + monthName(k) + ".");
-        } else {
+          toast("נכנס להתחשבנות של " + monthName(k) + " ולפנקס החודשי.");
+        } else if (!o.docId){
           var num0 = n(S.settings.dealSeq) || 1001;
           S.settings.dealSeq = num0 + 1;
           persist("app/settings", 0);
-          var qty = n(o.qty) || 1, net = n(o.amount), vat = r2(net * vatPct() / 100);
-          var d = newDoc({ kind:"deal", src:"order", number:String(num0), party:o.client, title:o.title, month:currentMonthKey, state:"sent", issued:today(),
+          var qty = n(o.qty) || 1, net = orderTotal(o), vat = r2(net * vatPct() / 100);
+          var d = newDoc({ kind:"deal", src:"order", number:String(num0), party:o.client, title:o.title, month:k, state:"sent", issued:today(),
             lines:[{ desc:o.title || "הזמנה", qty:qty, price:r2(net / qty), total:net }], net:net, vat:vat, amount:r2(net + vat) });
           o.docId = d.id;
           saveFile("חשבון עסקה " + d.number + " - " + d.title + ".pdf", dealPdf(d));
         }
         if (step) step.done = true;
         persist("orders/" + oid, 0);
+        syncAllLedgerAuto();
       },
 
       /* Calendar */
@@ -9396,7 +10003,8 @@
     /* =========================================================
        Render
        ========================================================= */
-    var VIEWS = { ledger:vLedger, farm:vFarm, docs:vDocs, orders:vOrders, calendar:vCalendar };
+    var VIEWS = { ledger:vLedger, today:vToday, farm:vFarm, docs:vDocs, orders:vOrders, calendar:vCalendar };
+    var NAV_OF = { today:"today", calendar:"calendar", orders:"orders", farm:"farm" };
     var queued = false;
     function render(){ if (queued) return; queued = true; requestAnimationFrame(function(){ queued = false; renderNow(); }); }
     function renderNow(){
@@ -9411,6 +10019,10 @@
           else morph(host, VIEWS[currentView]());
         }
       }
+      Array.prototype.forEach.call(document.querySelectorAll("#m-bottom button"), function(b){
+        var on = (NAV_OF[currentView] || "more") === b.getAttribute("data-arg");
+        if (on) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current");
+      });
       var root = document.getElementById("m-sheet-root");
       if (root) morph(root, sheetHTML());
       document.body.style.overflow = S.sheet ? "hidden" : "";
@@ -9434,6 +10046,8 @@
         setSync();
         render();
       });
+      if (isPhone()) switchView("today");
+      if (window.matchMedia){ var mq = window.matchMedia("(max-width: 760px)"); var onMq = function(){ if (!mq.matches && currentView === "today") switchView("calendar"); render(); }; if (mq.addEventListener) mq.addEventListener("change", onMq); else if (mq.addListener) mq.addListener(onMq); }
       var last = today();
       setInterval(function(){
         var t = today();
