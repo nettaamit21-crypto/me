@@ -631,7 +631,10 @@
     .m-weekrow select{ grid-column:2; }
     .m-caltools{ margin-top:12px; }
     .m-order .m-ometa .inline-group{ flex-wrap:wrap; }
-    .modal-backdrop .modal{ max-height:calc(100vh - 24px); }
+    .modal-backdrop{ padding:calc(8px + env(safe-area-inset-top, 0px)) 8px calc(8px + env(safe-area-inset-bottom, 0px)); }
+    .modal-backdrop .modal{ display:flex; flex-direction:column; max-height:100%; width:100%; margin:0 auto; }
+    .modal-backdrop .modal-head, .modal-backdrop .modal-foot{ flex:none; }
+    .modal-backdrop .modal-body{ flex:1 1 auto; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior:contain; }
   }
   @media (max-width:620px){
     .m-pgrid{ grid-template-columns:1fr 1fr; }
@@ -7089,8 +7092,43 @@
 
     /* The original ledger state, stored as a few documents so every device sees the same books. */
     var CORE_KEYS = ["meta","installmentPlans","pricing","cutting","business","savings","vat","ui","cashflow","hourly","capture","lastViewedMonth"];
+    /* Merging two devices' edits of the same document: list items are matched by id, so a line added
+       on the phone and a line added on the computer both survive; a field changed on one side wins. */
+    function hasIds(a){ return Array.isArray(a) && a.every(function(x){ return x && typeof x === "object" && typeof x.id === "string"; }); }
+    function mergeList(b, l, r){
+      b = b || []; var bm = {}, rm = {}, seen = {}, out = [];
+      b.forEach(function(x){ bm[x.id] = x; }); r.forEach(function(x){ rm[x.id] = x; });
+      l.forEach(function(x){
+        seen[x.id] = 1;
+        var bi = bm[x.id], ri = rm[x.id];
+        if (!ri){ if (!bi || stable(x) !== stable(bi)) out.push(x); return; }
+        out.push(bi && stable(x) === stable(bi) ? ri : bi && stable(ri) !== stable(bi) && stable(x) !== stable(bi) && isObj(x) ? mergeObj(bi, x, ri) : x);
+      });
+      r.forEach(function(x){
+        if (seen[x.id]) return;
+        var bi = bm[x.id];
+        if (bi && stable(x) === stable(bi)) return;
+        out.push(x);
+      });
+      return out;
+    }
+    function isObj(o){ return o && typeof o === "object" && !Array.isArray(o); }
+    function mergeObj(b, l, r){
+      b = isObj(b) ? b : {};
+      var out = {}, keys = {};
+      Object.keys(l).concat(Object.keys(r)).forEach(function(k){ keys[k] = 1; });
+      Object.keys(keys).forEach(function(k){
+        var lv = l[k], rv = r[k], bv = b[k];
+        if (lv === undefined){ if (bv === undefined) out[k] = rv; return; }
+        if (rv === undefined){ if (bv === undefined || stable(lv) !== stable(bv)) out[k] = lv; return; }
+        if (hasIds(lv) && hasIds(rv)) out[k] = mergeList(hasIds(bv) ? bv : [], lv, rv);
+        else if (isObj(lv) && isObj(rv)) out[k] = mergeObj(bv, lv, rv);
+        else out[k] = stable(lv) !== stable(bv) ? lv : rv;
+      });
+      return out;
+    }
     var LedgerSync = {
-      lastSent: {}, timers: {}, inflight: {}, again: {}, loaded: false, pushTimer: null, deferred: false,
+      lastSent: {}, base: {}, inflight: {}, again: {}, stale: {}, loaded: false, pushTimer: null, deferred: false,
       docsOf: function(st){
         var out = {}, core = {};
         CORE_KEYS.forEach(function(k){ if (st[k] !== undefined) core[k] = st[k]; });
@@ -7109,23 +7147,49 @@
       },
       push: function(){
         var self = this, docs = this.docsOf(state);
-        Object.keys(docs).forEach(function(p){
-          var j = stable(docs[p]);
-          if (self.lastSent[p] === j) return;
-          self.write(p, cl(docs[p]), j);
-        });
+        Object.keys(docs).forEach(function(p){ if (self.stale[p] || self.lastSent[p] !== stable(docs[p])) self.write(p); });
+        Object.keys(this.stale).forEach(function(p){ if (!docs[p]) self.write(p); });
       },
-      write: function(p, data, j){
+      /* Put a document's content back into the ledger's state */
+      apply: function(p, d){
+        if (p === "ledger/core"){ var lr = state.cutting && state.cutting.lastResult; CORE_KEYS.forEach(function(x){ if (d[x] !== undefined) state[x] = d[x]; }); if (lr && state.cutting) state.cutting.lastResult = lr; }
+        else if (p === "ledger/clients"){ state.clients = d.clients || []; state.quotes = d.quotes || []; }
+        else state.months[p.slice(8)] = d;
+      },
+      /* Read what is there now, merge our edits into it, then write. */
+      write: function(p){
         var self = this;
-        if (this.inflight[p]){ this.again[p] = [data, j]; return; }
+        if (this.inflight[p]){ this.again[p] = true; return; }
         this.inflight[p] = true;
-        this.lastSent[p] = j;
-        Store.db.doc(p).set(data).then(function(){}, function(e){ self.lastSent[p] = null; saveError(e); }).then(function(){
+        delete this.stale[p];
+        Store.db.doc(p).get().then(function(snap){
+          var remote = snap.exists ? cl(snap.data()) : null, local = cl(self.docsOf(state)[p] || null), out = local;
+          if (remote && stable(remote) !== self.lastSent[p]){
+            out = local ? mergeObj(self.base[p], local, remote) : remote;
+            if (stable(out) !== stable(local)){ self.apply(p, out); state = migrateState(state); remoteRefresh(); }
+          }
+          if (!out) return;
+          var j = stable(out);
+          if (remote && j === stable(remote)){ self.lastSent[p] = j; self.base[p] = cl(out); return; }
+          self.lastSent[p] = j;
+          return Store.db.doc(p).set(cl(out)).then(function(){ self.base[p] = cl(out); });
+        }).then(function(){}, function(e){ self.lastSent[p] = null; saveError(e); }).then(function(){
           self.inflight[p] = false;
-          var a = self.again[p];
-          if (a){ delete self.again[p]; self.write(p, a[0], a[1]); }
+          if (self.again[p]){ delete self.again[p]; self.write(p); }
           setSync();
         });
+      },
+      /* A change made on another device */
+      remote: function(p, d){
+        var j = stable(d);
+        if (j === this.lastSent[p]) return false;
+        if (this.inflight[p] || this.pushTimer){ this.stale[p] = true; return false; }
+        var local = cl(this.docsOf(state)[p] || null);
+        var out = local ? mergeObj(this.base[p], local, d) : d;
+        this.base[p] = cl(d); this.lastSent[p] = j;
+        this.apply(p, out);
+        if (stable(out) !== j) this.changed();
+        return true;
       },
       pending: function(){ var self = this; return (this.pushTimer ? 1 : 0) + Object.keys(this.inflight).filter(function(k){ return self.inflight[k]; }).length; },
       start: function(){
@@ -7152,6 +7216,7 @@
             Object.keys(docs).forEach(function(p){
               var raw = p === "ledger/core" ? core : p === "ledger/clients" ? cs : got.lmonths[p.slice(8)];
               self.lastSent[p] = raw ? stable(raw) : null;
+              self.base[p] = raw ? cl(raw) : null;
             });
             self.loaded = true;
             try{ window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){ /* cache only */ }
@@ -7165,17 +7230,9 @@
           q.docs.forEach(function(d){ o[d.id] = cl(d.data()); });
           got.ledger = o;
           if (!self.loaded){ both(); return; }
-          ["core","clients"].forEach(function(k){
-            var p = "ledger/" + k;
-            if (!o[k] || self.inflight[p] || self.pushTimer) return;
-            var j = stable(o[k]);
-            if (j === self.lastSent[p]) return;
-            self.lastSent[p] = j;
-            if (k === "core"){ var lr = state.cutting && state.cutting.lastResult; CORE_KEYS.forEach(function(x){ if (o.core[x] !== undefined) state[x] = o.core[x]; }); if (lr) state.cutting.lastResult = lr; }
-            else { state.clients = o.clients.clients || []; state.quotes = o.clients.quotes || []; }
-            state = migrateState(state);
-            remoteRefresh();
-          });
+          var ch = false;
+          ["core","clients"].forEach(function(k){ if (o[k] && self.remote("ledger/" + k, o[k])) ch = true; });
+          if (ch){ state = migrateState(state); remoteRefresh(); }
         }, dbError);
         Store.db.collection("lmonths").onSnapshot(function(q){
           var o = {};
@@ -7183,15 +7240,7 @@
           got.lmonths = o;
           if (!self.loaded){ both(); return; }
           var changed = false;
-          Object.keys(o).forEach(function(k){
-            var p = "lmonths/" + k;
-            if (self.inflight[p] || self.pushTimer) return;
-            var j = stable(o[k]);
-            if (j === self.lastSent[p]) return;
-            self.lastSent[p] = j;
-            state.months[k] = o[k];
-            changed = true;
-          });
+          Object.keys(o).forEach(function(k){ if (self.remote("lmonths/" + k, o[k])) changed = true; });
           if (changed){ state = migrateState(state); remoteRefresh(); }
         }, dbError);
       }
@@ -7255,7 +7304,7 @@
         if (!S.gcalLoaded){ S.gcal = { map:inc }; S.gcalLoaded = true; return; }
         Object.keys(inc).forEach(function(k){ if (!(k in S.gcal.map)) S.gcal.map[k] = inc[k]; });
       });
-      Store.watchColl("docs", function(all){ mergeColl("docs", S.docs, all); render(); });
+      Store.watchColl("docs", function(all){ mergeColl("docs", S.docs, all); syncAllLedgerAuto(); render(); });
       Store.watchColl("tasks", function(all){ mergeColl("tasks", S.tasks, all, fixTask); S.seen.tasks = true; autoRoll(); render(); });
       Store.watchColl("orders", function(all){ mergeColl("orders", S.orders, all, fixOrder); S.seen.orders = true; migrateOrderLines(); autoRoll(); syncAllLedgerAuto(); render(); });
       Store.watchColl("calc", function(all){ Object.keys(all).forEach(function(k){ if (!Store.busy("calc/" + k)) S.calc[k] = all[k]; }); });
@@ -7647,9 +7696,9 @@
 
     /* The month's farm figures appear in the ledger as locked lines, so the books always match. */
     function autoLines(k){
-      var m = S.months[k];
-      if (!m) return null;
-      var f = farmCalc(m), st = S.settings, out = { recurringIncome:[], oneTimeIncome:[], recurringExpenses:[], oneTimeExpenses:[] };
+      /* A month with no farm record yet only carries hand-recorded invoices and billed orders. */
+      var real = !!S.months[k], m = S.months[k] || monthOf(k);
+      var f = real ? farmCalc(m) : { calcs:[], rent:0, pctTotal:0, purchases:[] }, st = S.settings, out = { recurringIncome:[], oneTimeIncome:[], recurringExpenses:[], oneTimeExpenses:[] };
       function line(idv, name, amount, qty){
         var q = qty || 1;
         return { id:"auto-" + idv, name:name, qty:q, unit:"unit", unitPrice: q ? r2(amount / q) : amount, amount:r2(amount), auto:true, locked:false, vatInc:false };
@@ -7665,6 +7714,13 @@
         if (c.net) out.oneTimeIncome.push(line("ws-" + w.id, wsName(w) + (w.client ? " · " + w.client : "") + " · " + dm(w.date), c.net, 1));
       });
       salesLines(m).forEach(function(l){ out.oneTimeIncome.push(line("tm-" + l.id, l.name || "מכירה לחווה", n(l.amount), 1)); });
+      /* An invoice or receipt recorded by hand for a private client is income too (farm money comes from the reconciliation). */
+      allDocs().forEach(function(d){
+        if (d.month !== k || !n(d.amount) || d.parent || d.wsId || d.src || (d.party && isFarmClient(d.party))) return;
+        if (d.kind !== "invoice" && d.kind !== "invrec" && d.kind !== "receipt") return;
+        var net = d.net != null && d.net !== "" ? n(d.net) : r2(n(d.amount) / (1 + vatPct() / 100));
+        out.oneTimeIncome.push(line("d-" + d.id, "🧾 " + (d.party || "לקוח") + (d.title ? " · " + d.title : ""), net, 1));
+      });
       ordersBilled(k).forEach(function(o){
         var farm = isFarmClient(o.client);
         out.oneTimeIncome.push(line("o-" + o.id, (farm ? "הזמנה: " : "") + orderName(o) + (farm ? "" : " · " + (o.client || "לקוח")), orderTotal(o), n(o.qty) || 1));
@@ -7691,7 +7747,13 @@
       if (currentView === "ledger" && currentMonthKey === k) renderLedger();
       return true;
     }
-    function syncAllLedgerAuto(){ Object.keys(S.months).forEach(syncLedgerAuto); }
+    function syncAllLedgerAuto(){
+      var ks = {};
+      Object.keys(S.months).forEach(function(k){ ks[k] = 1; });
+      allDocs().forEach(function(d){ if (isMonthKey(d.month || "")) ks[d.month] = 1; });
+      allOrders().forEach(function(o){ if (o.billMonth) ks[o.billMonth] = 1; });
+      Object.keys(ks).forEach(syncLedgerAuto);
+    }
 
     /* =========================================================
        Documents: חשבון עסקה, חשבונית, קבלה
@@ -8400,7 +8462,7 @@
         '<button type="button" data-mact="newTask" data-arg="' + t + '"><span>✔︎</span>משימה</button>' +
         '<button type="button" data-mact="quickOrder" data-arg="make"><span>📦</span>הזמנה</button>' +
         '<button type="button" data-mact="quickOrder" data-arg="request"><span>🛠</span>בקשה מהחווה</button>' +
-        '<button type="button" data-mact="nav" data-arg="capture"><span>₪</span>הוצאה או מכירה</button></div>';
+        '<button type="button" data-mact="nav" data-arg="capture"><span>₪</span>הכנסה או הוצאה</button></div>';
       var att = attention();
       if (att.length) h += '<div class="panel m-attp" data-k="att"><div class="panel-head"><h4>מחכה לך</h4></div><div class="m-atts">' + att.join("") + "</div></div>";
       h += '<div class="panel m-dayp" data-k="today"><div class="panel-head"><h4>היום</h4><button type="button" class="link-btn" data-mact="nav" data-arg="calendar">לכל השבוע</button></div>' + (dayItems(t, true) || '<p class="empty-note">אין כלום היום.</p>') + "</div>";
@@ -9705,7 +9767,7 @@
         case "fx": it = findIn(S.settings.fixed, p[1]); return it ? { obj:it, key:p[2], save:"app/settings" } : null;
         case "fxw": it = findIn(S.settings.fixed, p[1]); return it ? { special: function(v){ if (v === "date"){ it.weekday = null; it.date = it.date || today(); } else { it.weekday = +v; it.date = null; } persist("app/settings"); } } : null;
         case "fxp": { var f2 = findIn(S.settings.fixed, p[1]); it = f2 ? findIn(f2.prep, p[2]) : null; return it ? { obj:it, key:p[3], save:"app/settings" } : null; }
-        case "doc": return S.docs[p[1]] ? { obj:S.docs[p[1]], key:p[2], save:"docs/" + p[1] } : null;
+        case "doc": return S.docs[p[1]] ? { obj:S.docs[p[1]], key:p[2], save:"docs/" + p[1], after: function(){ syncAllLedgerAuto(); } } : null;
       }
       return null;
     }
