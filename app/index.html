@@ -7857,11 +7857,27 @@
     /* =========================================================
        Calendar: fixed weekly schedule, prep lists, tasks, steps
        ========================================================= */
+    /* A fixed event repeats on one weekday, on a list of weekdays (days), or happens on one date. */
+    function fixedDays(f){
+      if (f.date) return [];
+      if (Array.isArray(f.days)) return f.days.map(Number).sort();
+      return f.weekday == null || f.weekday === "" ? [] : [n(f.weekday)];
+    }
+    function fixedWhen(f){
+      if (f.date) return dayLabel(f.date);
+      var ds = fixedDays(f);
+      if (!ds.length) return "בלי ימים";
+      if (ds.length === 7) return "כל יום";
+      if (ds.join() === "0,1,2,3,4,5") return "ראשון עד שישי";
+      if (ds.length === 1) return "כל " + DAYS[ds[0]];
+      var names = ds.map(function(x){ return DAYS[x]; });
+      return "ימי " + names.slice(0, -1).join(", ") + " ו" + names[names.length - 1];
+    }
     function fixedOn(date){
       var w = wd(date);
       return (S.settings.fixed || []).filter(function(f){
         if (f.date) return f.date === date;
-        return f.weekday === w && (f.skip || []).indexOf(date) < 0;
+        return fixedDays(f).indexOf(w) >= 0 && (f.skip || []).indexOf(date) < 0;
       }).sort(function(a, b){ return (toMin(a.start) || 0) - (toMin(b.start) || 0); });
     }
     function isWorkday(date){
@@ -8369,12 +8385,12 @@
     function calExtras(){
       var t = today(), h = "";
       var fixed = (S.settings.fixed || []).slice().sort(function(a, b){
-        var x = a.date ? 10 : a.weekday, y = b.date ? 10 : b.weekday;
+        var x = a.date ? 10 : fixedDays(a).concat([9])[0], y = b.date ? 10 : fixedDays(b).concat([9])[0];
         return x - y || (toMin(a.start) || 0) - (toMin(b.start) || 0);
       }).filter(function(f){ return !f.date || f.date >= t; });
       h += '<div class="panel" data-k="cal-fixed"><div class="panel-head"><div><h4>הלו״ז הקבוע</h4><div class="panel-sub">מה חוזר כל שבוע, ולכל דבר רשימת ההכנות שלו. לוחצים על אירוע כדי לכתוב מה צריך להכין</div></div></div><div class="panel-rows">' +
         (fixed.length ? fixed.map(function(f){
-          var when = f.date ? dayLabel(f.date) : "כל " + DAYS[f.weekday];
+          var when = fixedWhen(f);
           var time = f.allDay ? "כל היום" : f.off ? "יום חופש" : (f.start || "") + (f.end ? "–" + f.end : "");
           return '<button type="button" class="row m-fxrow" data-k="fx-' + esc(f.id) + '" data-mact="openEvent" data-id="' + esc(f.id) + '"><b>' + esc(when) + '</b><span class="mono small">' + esc(time) + '</span><span class="row-name">' + esc(f.title || "אירוע") + "</span>" +
             ((f.prep || []).length ? '<span class="badge badge-soft">' + f.prep.length + " הכנות</span>" : '<span class="small muted">בלי הכנות</span>') + "</button>";
@@ -8542,10 +8558,11 @@
       return modalWrap(t.title ? "משימה" : "משימה חדשה", t.rolledFrom && !t.done ? "הועברה מ־" + dayLabel(t.rolledFrom) + " כי לא סומנה כבוצעה" : "", body, foot);
     }
     function beforeOptions(f){
-      var w = f.date ? wd(f.date) : n(f.weekday);
+      var ds = f.date ? [wd(f.date)] : fixedDays(f), one = ds.length === 1, w = ds[0] || 0;
       return [0, 1, 2, 3, 4, 5, 6].map(function(b){
-        var day = DAYS[(w - b + 7) % 7];
-        return [String(b), b === 0 ? "באותו יום (" + day + ")" : day + " · " + (b === 1 ? "יום לפני" : b === 2 ? "יומיים לפני" : b + " ימים לפני")];
+        var day = DAYS[(w - b + 7) % 7], rel = b === 1 ? "יום לפני" : b === 2 ? "יומיים לפני" : b + " ימים לפני";
+        if (!one) return [String(b), b === 0 ? "באותו יום" : rel];
+        return [String(b), b === 0 ? "באותו יום (" + day + ")" : day + " · " + rel];
       });
     }
     function sheetPrep(){
@@ -8620,12 +8637,15 @@
       var f = (S.settings.fixed || []).filter(function(x){ return x.id === S.sheet.id; })[0];
       if (!f) return "";
       var b = "fx:" + f.id + ":";
-      var when = f.date ? "date" : String(f.weekday);
+      var when = f.date ? "date" : Array.isArray(f.days) ? "days" : String(n(f.weekday));
       var body = '<div class="calc-grid">' +
         fld("מה", inp(b + "title", f.title, { id:"m-ev-title", ph:"למשל: חוסן" }), null, "m-ev-title", true) +
-        fld("מתי", sel("fxw:" + f.id, when, DAYS.map(function(d, i){ return [String(i), "כל יום " + d]; }).concat([["date", "תאריך אחד"]]), { id:"m-ev-when" }), null, "m-ev-when") +
+        fld("מתי", sel("fxw:" + f.id, when, DAYS.map(function(d, i){ return [String(i), "כל יום " + d]; }).concat([["days", "כמה ימים בשבוע"], ["date", "תאריך אחד"]]), { id:"m-ev-when" }), null, "m-ev-when") +
         (f.date ? fld("תאריך", inp(b + "date", f.date, { type:"date", id:"m-ev-date" }), null, "m-ev-date") : "") +
         (f.allDay || f.off ? "" : fld("משעה", inp(b + "start", f.start, { type:"time", id:"m-ev-start" }), null, "m-ev-start") + fld("עד שעה", inp(b + "end", f.end, { type:"time", id:"m-ev-end" }), null, "m-ev-end")) + "</div>" +
+        (when === "days" ? '<div class="m-flags m-evdays"><span class="small muted">באילו ימים:</span>' + DAYS.map(function(d, i){
+          return '<label class="m-flag"><input type="checkbox" id="' + fid("fxd:" + f.id + ":" + i) + '" data-bind="fxd:' + f.id + ":" + i + '"' + (f.days.indexOf(i) >= 0 ? " checked" : "") + "> " + d + "</label>";
+        }).join("") + "</div>" : "") +
         '<div class="m-flags">' +
         '<label class="m-flag"><input type="checkbox" id="m-ev-soft" data-bind="' + b + 'soft"' + (f.soft ? " checked" : "") + "> רק אם יש הרשמה</label>" +
         '<label class="m-flag"><input type="checkbox" id="m-ev-allday" data-bind="' + b + 'allDay"' + (f.allDay ? " checked" : "") + "> כל היום</label>" +
@@ -8638,7 +8658,8 @@
         }).join("") + '<button type="button" class="btn-add" data-mact="prepAdd" data-id="' + esc(f.id) + '">+ פריט הכנה</button>';
       var armed = S.armed === "evDelete|" + f.id;
       var foot = bt(armed ? "לחיצה נוספת מוחקת" : "מחיקת האירוע", "evDelete", { cls:"btn-danger", id:f.id }) + bt("סיום", "closeSheet", { cls:"btn-primary" });
-      return modalWrap(f.title || "אירוע קבוע", f.date ? dayLabel(f.date) : "כל יום " + DAYS[f.weekday], body, foot);
+      var ds = fixedDays(f);
+      return modalWrap(f.title || "אירוע קבוע", !f.date && !Array.isArray(f.days) && ds.length === 1 ? "כל יום " + DAYS[ds[0]] : fixedWhen(f), body, foot);
     }
     function sheetDoc(){
       var d = S.docs[S.sheet.id];
@@ -9765,7 +9786,17 @@
         case "t": { var t = S.tasks[p[1]]; if (!t) return null; return { obj:t, key:p[2], after: function(){ if (p[2] === "start") t.autoTime = false; if (p[2] === "day" || p[2] === "start"){ t[p[2]] = t[p[2]] || null; } if (p[2] === "day") t.rolledFrom = null; if (t.title.trim()) saveTask(t, 600); else render(); } }; }
         case "ts": { var t2 = S.tasks[p[1]]; it = t2 ? findIn(t2.subtasks, p[2]) : null; return it ? { obj:it, key:p[3], after: function(){ if (t2.title.trim()) saveTask(t2, 600); } } : null; }
         case "fx": it = findIn(S.settings.fixed, p[1]); return it ? { obj:it, key:p[2], save:"app/settings" } : null;
-        case "fxw": it = findIn(S.settings.fixed, p[1]); return it ? { special: function(v){ if (v === "date"){ it.weekday = null; it.date = it.date || today(); } else { it.weekday = +v; it.date = null; } persist("app/settings"); } } : null;
+        case "fxw": it = findIn(S.settings.fixed, p[1]); return it ? { special: function(v){
+          if (v === "date"){ it.weekday = null; delete it.days; it.date = it.date || today(); }
+          else if (v === "days"){ it.days = fixedDays(it).length ? fixedDays(it) : [wd(today())]; it.weekday = null; it.date = null; }
+          else { it.weekday = +v; delete it.days; it.date = null; }
+          persist("app/settings");
+        } } : null;
+        case "fxd": it = findIn(S.settings.fixed, p[1]); return it && Array.isArray(it.days) ? { special: function(v){
+          var ds = it.days.map(Number).filter(function(x){ return x !== +p[2]; });
+          if (v) ds.push(+p[2]);
+          it.days = ds.sort(); persist("app/settings");
+        } } : null;
         case "fxp": { var f2 = findIn(S.settings.fixed, p[1]); it = f2 ? findIn(f2.prep, p[2]) : null; return it ? { obj:it, key:p[3], save:"app/settings" } : null; }
         case "doc": return S.docs[p[1]] ? { obj:S.docs[p[1]], key:p[2], save:"docs/" + p[1], after: function(){ syncAllLedgerAuto(); } } : null;
       }
