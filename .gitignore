@@ -1,0 +1,15 @@
+# video editor work folders and media (never commit footage)
+motion/node_modules/
+motion/package-lock.json
+motion/package.json
+motion/dist/
+motion/work/
+motion/out/
+motion/v*/
+motion/ref*/
+motion/inputs/
+__pycache__/
+*.mp4
+*.mov
+*.MOV
+*.wav

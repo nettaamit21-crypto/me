@@ -1,0 +1,79 @@
+<title>Never ask him</title>
+<style>
+html.alpha #shape{box-shadow:0 0 0 2px rgba(201,162,77,.9),0 16px 46px rgba(0,0,0,.35)}
+.hd{position:absolute;left:-350px;top:24px;display:flex;align-items:center;gap:18px;white-space:nowrap}
+.n{flex:none;width:58px;height:58px;border-radius:29px;background:#0B0B0C;display:flex;align-items:center;justify-content:center}
+.tt{font-size:42px;font-weight:700;color:#0B0B0C;letter-spacing:-.01em}
+.row{position:absolute;left:-350px;top:116px;display:flex;gap:16px}
+.ch{height:60px;padding:0 26px;border-radius:30px;box-sizing:border-box;border:2px solid #C9A24D;color:#0B0B0C;font-size:30px;font-weight:600;display:flex;align-items:center;white-space:nowrap}
+.sf{font-family:'Liberation Serif',Georgia,serif;font-style:italic}
+.q{position:absolute;left:-350px;white-space:nowrap;color:#F5F1E8;font-size:46px}
+.q b{color:#E2C27A;font-weight:400}
+.qm{position:absolute;left:300px;top:6px;font-size:120px;line-height:1;color:#C9A24D;opacity:.85}
+.nm{position:absolute;left:-290px;top:-26px;color:#F5F1E8;font-size:38px;font-weight:600;white-space:nowrap}
+.bt{position:absolute;left:84px;top:-33px;width:226px;height:66px;border-radius:33px;display:flex;align-items:center;justify-content:center;gap:10px;font-size:30px;font-weight:600}
+.wi{position:absolute;left:-210px;top:-28px;width:56px;height:56px;border-radius:28px;background:#0B0B0C;display:flex;align-items:center;justify-content:center}
+.wt{position:absolute;left:-136px;top:-25px;font-size:40px;color:#0B0B0C;white-space:nowrap}
+.cl{position:absolute;left:-360px;font-size:34px;font-weight:700;color:#0B0B0C;white-space:nowrap}
+.cr{position:absolute;left:40px;height:62px;padding:0 26px;border-radius:31px;box-sizing:border-box;font-size:32px;font-weight:600;display:flex;align-items:center;white-space:nowrap}
+.dv{position:absolute;left:-360px;top:114px;width:720px;height:2px;background:#C9A24D;transform-origin:0 50%}
+.sk{position:absolute;left:18px;right:18px;top:30px;height:3px;background:#6E685C;transform-origin:0 50%}
+.sic{position:absolute;left:-300px;top:-36px;width:72px;height:72px;border-radius:36px;display:flex;align-items:center;justify-content:center}
+.sa{position:absolute;left:-206px;top:-40px;font-size:40px;font-weight:600;color:#F5F1E8;white-space:nowrap}
+.sbb{position:absolute;left:-206px;top:6px;font-size:26px;font-weight:500;color:#8E8778;white-space:nowrap}
+</style>
+<div data-slot="shape">
+  <div class="L" id="L1"><div class="hd"><span class="n" id="nx"></span><span class="tt">Never ask him for</span></div>
+    <div class="row"><div class="ch" id="e0">His effort</div><div class="ch" id="e1">His time</div><div class="ch" id="e2">To plan a date</div></div></div>
+  <div class="L" id="Lq"><div class="qm sf">&rdquo;</div>
+    <div class="q sf" id="q1" style="top:34px">Needs a reminder to <b>love</b> you</div>
+    <div class="q sf" id="q2" style="top:116px">Will need a reminder to <b>stay</b></div></div>
+  <div class="L" id="Lf"><div class="nm">Follow for more</div><div class="bt" id="bt"><span id="icK"></span><span id="bl">Follow</span></div></div>
+  <div class="L" id="Lw"><div class="wi" id="wi"></div><div class="wt sf">Sit back and watch</div></div>
+  <div class="L" id="Lc"><div class="cl" id="a0" style="top:38px">Without being asked</div>
+    <div class="cr" id="a1" style="top:26px;background:#C9A24D;color:#0B0B0C">Who he really is</div>
+    <div class="dv" id="dv"></div>
+    <div class="cl" id="b0" style="top:150px;color:#8E8778">Everything else</div>
+    <div class="cr" id="b1" style="top:138px;border:2px solid #C9A6A0;border-color:#8E8778;color:#8E8778"><span class="sf" style="font-size:36px">Performance</span><div class="sk" id="sk"></div></div></div>
+  <div class="L" id="Ls"><div class="sic" id="sic"></div><div class="sa">Send this</div><div class="sbb">to someone who needs to hear it</div></div>
+</div><!--/shape-->
+<script>
+const $=id=>document.getElementById(id);
+M.IC.send=['M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z','m21.854 2.147-10.94 10.939'];
+M.IC.eye=['M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0','M12 9a3 3 0 1 0 0 6a3 3 0 1 0 0-6'];
+$('nx').innerHTML=M.icon('x',30,'#C9A24D',3.2); $('wi').innerHTML=M.icon('eye',32,'#E2C27A',2.4);
+// times on the rough cut (clip placed at 0)
+const POP={e0:3.40,e1:5.28,e2:6.94, a0:17.48,a1:19.58,b0:20.90,b1:21.68};
+const LINE={q1:8.64,q2:10.28};
+const fol=M.track(0,[[13.50,1,[20,0.78]]]), snd=M.track(0,[[22.85,1,[20,0.78]]]);
+const IV='#F5F1E8', BK='#0B0B0C';
+M.scene({
+  W:1080,H:460,bg:null,T:24.24,intro:2.0,center:[540,200],
+  SH:{c:{w:780,h:214,r:44,bg:IV,cam:1}, q:{w:800,h:214,r:44,bg:BK,cam:1}, f:{w:660,h:124,r:62,bg:BK,cam:1},
+      w:{w:500,h:104,r:52,bg:IV,cam:1}, k:{w:800,h:236,r:44,bg:IV,cam:1}, s:{w:680,h:124,r:62,bg:BK,cam:1}},
+  start:'c', SEQ:[[7.93,'q'],[12.18,'f'],[15.50,'w'],[17.29,'k'],[22.30,'s']],
+  // every state hangs from the same top edge, so the shape grows downward and never jumps
+  geom:(t,g)=>{g.cy=-62+g.h/2; g.fy=0; return g;},
+  layers:[
+    {el:'L1',tin:2.0,tout:7.93,anchor:'t'},
+    {el:'Lq',tin:7.93,tout:12.18,anchor:'t'},
+    {el:'Lf',tin:12.18,tout:15.50,update:(t)=>{const k=M.clamp(fol(t)), b=$('bt').style; b.background=k>0.5?'#C9A24D':IV; b.color=BK;
+      M.setText($('bl'),t<13.53?'Follow':'Following'); $('icK').innerHTML=t<13.53?'':M.icon('check',26,BK,3.4); $('icK').style.display=t<13.53?'none':'';}},
+    {el:'Lw',tin:15.50,tout:17.29},
+    {el:'Lc',tin:17.29,tout:22.30,anchor:'t',update:(t)=>{const d=M.eio(M.clamp((t-20.7)/0.4)); $('dv').style.transform=`scaleX(${d})`; $('dv').style.opacity=0.6*d;
+      $('sk').style.transform=`scaleX(${M.eio(M.clamp((t-21.95)/0.35))})`;}},
+    {el:'Ls',tin:22.30,tout:null,update:(t)=>{const k=M.clamp(snd(t)), s=$('sic').style; s.background=`rgba(201,162,77,${k.toFixed(3)})`;
+      s.boxShadow=`inset 0 0 0 2px rgba(201,162,77,${(1-k).toFixed(3)})`; $('sic').innerHTML=M.icon('send',36,k>0.5?BK:'#C9A24D',2.6);}},
+  ],
+  extra:(t)=>{
+    for(const [id,ti] of Object.entries(POP)){const v=M.vis(t,ti,null,{din:0,lin:0.22}), e=$(id);
+      e.style.opacity=v.o; e.style.filter=v.blur>0.05?`blur(${v.blur}px)`:'none';
+      const k=M.clamp((t-ti)/0.35), glow=0.35*Math.sin(Math.PI*k);
+      if(id.startsWith('e')) e.style.background=`rgba(201,162,77,${glow.toFixed(3)})`;
+      e.style.transform=`translateY(${((1-v.a)*10).toFixed(1)}px) scale(${(1+0.06*Math.sin(Math.PI*k)).toFixed(3)})`;}
+    for(const [id,ti] of Object.entries(LINE)){const v=M.vis(t,ti,null,{din:0,lin:0.3}), e=$(id);
+      e.style.opacity=v.o; e.style.filter=v.blur>0.05?`blur(${v.blur}px)`:'none'; e.style.transform=`translateY(${((1-v.a)*14).toFixed(1)}px)`;}
+  },
+  cursor:{size:42,clicks:[13.50,22.85],keys:[[0,300,360],[13.0,300,360],[13.35,196,12],[13.6,196,12],[14.3,300,360],[22.3,-200,360],[22.7,-264,10],[22.95,-264,10],[23.7,-220,360]]},
+});
+</script>

@@ -1,0 +1,17 @@
+{
+ "_note": "Brand kit per business. Cards, buttons and hairlines use these colours; the handle goes on the Follow/CTA card only in this brand's own videos.",
+ "hanagriya": {
+  "name": "הנגרייה בחוות רום",
+  "niche": "נגרייה בחוות רום, הר כמון: סדנאות נגרות לזוגות, משפחות וקבוצות, לצד נגרייה שיקומית",
+  "language": "he",
+  "colors": {
+   "ink": "#2A1F17",
+   "gold": "#B8874A",
+   "gold_light": "#D4B183",
+   "ivory": "#F3EDE3",
+   "muted": "#6E5D4E"
+  },
+  "handle": "נטע עמית · הנגרייה",
+  "clips": "motion/clips/"
+ }
+}

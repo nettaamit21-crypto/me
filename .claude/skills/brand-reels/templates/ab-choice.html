@@ -1,0 +1,72 @@
+<title>The choice: A or B</title>
+<style>
+html.alpha #shape{box-shadow:0 0 0 2px rgba(201,162,77,.9),0 16px 46px rgba(0,0,0,.35)}
+.sf{font-family:'Liberation Serif',Georgia,serif;font-style:italic}
+.ab{position:absolute;white-space:nowrap}
+.bd{font-weight:700;color:#0B0B0C;letter-spacing:-.01em}
+.lb{font-size:22px;font-weight:600;letter-spacing:.16em;color:#8E8778}
+.ab.lt{color:#F5F1E8}
+.cc{position:absolute;width:56px;height:56px;border-radius:28px;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:700}
+.ink{background:#0B0B0C;color:#E2C27A}.gold{background:#C9A24D;color:#0B0B0C}.ghost{box-shadow:inset 0 0 0 2px rgba(245,241,232,.5);color:#F5F1E8}
+.ch{position:absolute;height:52px;padding:0 22px;border-radius:26px;box-sizing:border-box;border:2px solid #C9A24D;color:#0B0B0C;font-size:26px;font-weight:600;display:flex;align-items:center;white-space:nowrap}
+.gd{background:#C9A24D;border-color:#C9A24D}
+.mu{border-color:#B9AF9C;color:#8E8778}
+.sk{position:absolute;left:12px;right:12px;top:50%;height:3px;margin-top:-1px;background:#6E685C;transform-origin:0 50%}
+.vr{position:absolute;left:0;top:30px;width:2px;height:200px;background:#E4DCCB}
+.ar{position:absolute;font-size:30px;color:#8E8778}
+.pb{position:absolute;height:72px;border-radius:36px;box-sizing:border-box;border:2px solid #C9A24D;color:#F5F1E8;font-size:32px;font-weight:600;display:flex;align-items:center;padding:0 30px;gap:12px;white-space:nowrap}
+</style>
+<div data-slot="shape">
+  <div class="L" id="Lh"><div class="ab lb" style="left:-410px;top:24px">EVERY WOMAN HAS TO CHOOSE</div>
+    <div class="cc ghost" id="ha0" style="left:-410px;top:66px">A</div><div class="ab lt" id="ha1" style="left:-336px;top:72px;font-size:33px;font-weight:600">The man <span class="sf" style="color:#E2C27A">she</span> can’t stop thinking about</div>
+    <div class="cc gold" id="hb0" style="left:-410px;top:140px">B</div><div class="ab lt" id="hb1" style="left:-336px;top:146px;font-size:33px;font-weight:600">The man who can’t stop thinking about <span class="sf" style="color:#E2C27A">her</span></div></div>
+  <div class="L" id="Lp"><div class="vr"></div>
+    <div class="cc ink" style="left:-420px;top:24px">A</div><div class="ab bd" style="left:-350px;top:32px;font-size:32px">Heart racing</div>
+    <svg class="ab" style="left:-420px;top:96px" width="390" height="80" viewBox="0 0 390 80"><polyline id="ecgA" fill="none" stroke="#B4513A" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/></svg>
+    <div class="ch mu" id="pa" style="left:-420px;top:192px">Phone checked 100× a day</div>
+    <div id="colB"><div class="cc gold" style="left:30px;top:24px">B</div><div class="ab bd" style="left:100px;top:32px;font-size:32px"><span id="pb1">Steady.</span> <span id="pb2">Safe.</span></div>
+    <svg class="ab" style="left:30px;top:96px" width="390" height="80" viewBox="0 0 390 80"><polyline id="ecgB" fill="none" stroke="#C9A24D" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/></svg></div></div>
+  <div class="L" id="Lr"><div class="ab lb" style="left:-410px;top:24px">HERE’S WHAT NOBODY TELLS YOU</div>
+    <div class="ab bd" style="left:-410px;top:76px;font-size:32px">Racing heart</div><div class="ar" style="left:-180px;top:74px">→</div>
+    <div class="ch mu" id="r1" style="left:-130px;top:68px">Love<div class="sk" id="rs1"></div></div><div class="ch gd" id="r2" style="left:20px;top:68px">Anxiety</div>
+    <div id="row2"><div class="ab bd" style="left:-410px;top:152px;font-size:32px">Safe</div><div class="ar" style="left:-180px;top:150px">→</div>
+    <div class="ch mu" style="left:-130px;top:144px">Boring<div class="sk" id="rs2"></div></div><div class="ch gd" id="r4" style="left:20px;top:144px">Peace</div></div></div>
+  <div class="L" id="Lq"><div class="ab lb" style="left:-410px;top:24px">TELL ME IN THE COMMENTS</div>
+    <div class="pb" id="q1" style="left:-410px;top:66px"><span class="cc ghost" style="position:static;width:40px;height:40px;font-size:22px">A</span>Love him more</div>
+    <div class="ab sf" id="qor" style="left:-44px;top:80px;font-size:34px;color:#8E8778">or</div>
+    <div class="pb" id="q2" style="left:6px;top:66px;background:#C9A24D;color:#0B0B0C"><span class="cc ink" style="position:static;width:40px;height:40px;font-size:22px">B</span>Be loved more</div></div>
+</div><!--/shape-->
+<script>
+const $=id=>document.getElementById(id);
+// rough-cut times; clip placed at 0. The card shows only in WIN (~37% of the video); states change while hidden.
+const WIN=[[1.0,7.6],[9.6,12.6],[29.4,31.5],[40.3,42.8],[46.9,49.2],[53.8,58.88]];
+const onScreen=t=>{for(const [a,b] of WIN){if(t>=a-0.01&&t<=b+0.35) return Math.min(M.eio(M.clamp((t-a)/0.3)),1-M.eio(M.clamp((t-b)/0.3)));} return 0;};
+const POP={ha0:2.94,ha1:2.94,hb0:5.72,hb1:5.72,pa:11.83,pb1:29.72,pb2:30.90,r1:40.3,r2:40.75,q1:53.98,qor:55.50,q2:56.37};
+const rnd=k=>{const x=Math.sin(k*12.9898)*43758.5453;return x-Math.floor(x);};
+// A: fast, irregular, spiky beats; B: slow, even, gentle beats. Pure functions of t (scrolling trace).
+const ecgA=(x,t)=>{const p=x+t*260, k=Math.floor(p/34), u=p-k*34, a=0.55+0.45*rnd(k);
+  let y=Math.sin(p*0.9)*1.2*rnd(k+7); if(u>12&&u<16) y-= (u-12)/4*34*a; else if(u>=16&&u<20) y+= -34*a+(u-16)/4*(34*a+20*a); else if(u>=20&&u<24) y+=20*a*(1-(u-20)/4); return 40+y;};
+const ecgB=(x,t)=>{const p=x+t*90, u=p%96; let y=0; if(u>40&&u<56) y=-16*Math.sin(Math.PI*(u-40)/16); else if(u>=56&&u<64) y=6*Math.sin(Math.PI*(u-56)/8); return 40+y;};
+const line=(f,t)=>{let s='';for(let x=0;x<=390;x+=3) s+=x+','+f(x,t).toFixed(1)+' ';return s;};
+const IV='#F5F1E8', BK='#0B0B0C';
+M.scene({
+  W:1080,H:560,bg:null,T:58.88,intro:1.0,center:[540,250],
+  SH:{h:{w:920,h:220,r:44,bg:BK,cam:1}, p:{w:900,h:262,r:40,bg:IV,cam:1}, r:{w:880,h:212,r:40,bg:IV,cam:1}, q:{w:900,h:166,r:44,bg:BK,cam:1}},
+  start:'h', SEQ:[[8.6,'p'],[38.0,'r'],[51.5,'q']],
+  geom:(t,g)=>{g.cy=-140+g.h/2; g.fy=0; const k=onScreen(t); g.op*=k; g.sc*=0.9+0.1*k; return g;},
+  layers:[
+    {el:'Lh',tin:1.0,tout:8.6,anchor:'t'},
+    {el:'Lp',tin:8.6,tout:38.0,anchor:'t',update:(t)=>{$('ecgA').setAttribute('points',line(ecgA,t));
+      $('ecgB').setAttribute('points',line(ecgB,t)); $('colB').style.opacity=t<29?0:1;}},
+    {el:'Lr',tin:38.0,tout:51.5,anchor:'t',update:(t)=>{$('rs1').style.transform=`scaleX(${M.eio(M.clamp((t-40.45)/0.35))})`;
+      $('rs2').style.transform=`scaleX(${M.eio(M.clamp((t-47.0)/0.35))})`; $('row2').style.opacity=t<46?0:1;
+      const v=M.vis(t,47.25,null,{din:0,lin:0.25}); M.apply($('r4'),v);}},
+    {el:'Lq',tin:51.5,tout:null,anchor:'t'},
+  ],
+  extra:(t)=>{
+    for(const [id,ti] of Object.entries(POP)){const v=M.vis(t,ti,null,{din:0,lin:0.25}), e=$(id);
+      e.style.opacity=v.o; e.style.filter=v.blur>0.05?`blur(${v.blur}px)`:'none';
+      const k=M.clamp((t-ti)/0.35); e.style.transform=`translateY(${((1-v.a)*12).toFixed(1)}px) scale(${(1+0.05*Math.sin(Math.PI*k)).toFixed(3)})`;}
+  },
+});
+</script>

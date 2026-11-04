@@ -1,0 +1,65 @@
+<title>Let him lose you</title>
+<style>
+html.alpha #shape{box-shadow:0 0 0 2px rgba(201,162,77,.9),0 16px 46px rgba(0,0,0,.35)}
+.sf{font-family:'Liberation Serif',Georgia,serif;font-style:italic}
+.ab{position:absolute;white-space:nowrap}
+.bd{font-weight:700;color:#0B0B0C;letter-spacing:-.01em}
+.lb{font-size:22px;font-weight:600;letter-spacing:.16em;color:#8E8778}
+.ic{position:absolute;width:52px;height:52px;border-radius:26px;display:flex;align-items:center;justify-content:center;background:#0B0B0C}
+.av{position:absolute;width:56px;height:56px;border-radius:28px;background:linear-gradient(135deg,#3A3631,#24211E);box-shadow:inset 0 0 0 2px rgba(201,162,77,.6)}
+.bub{position:absolute;height:64px;border-radius:32px 32px 32px 10px;display:flex;align-items:center;padding:0 30px;box-sizing:border-box;white-space:nowrap}
+.dot{width:12px;height:12px;border-radius:6px;background:#B9AF9C;margin:0 5px;display:inline-block}
+.btn{position:absolute;top:29px;height:66px;border-radius:33px;display:flex;align-items:center;justify-content:center;gap:10px;font-size:30px;font-weight:600;box-sizing:border-box}
+.sic{position:absolute;left:-350px;top:26px;width:72px;height:72px;border-radius:36px;display:flex;align-items:center;justify-content:center}
+</style>
+<div data-slot="shape">
+  <div class="L" id="Lh"><div class="ab sf" style="left:-370px;top:20px;font-size:58px;color:#F5F1E8">Let him lose you.</div>
+    <div class="ab sf" id="h2" style="left:-370px;top:100px;font-size:34px;color:#E2C27A">…the best thing that ever happened to him</div></div>
+  <div class="L" id="Ld">
+    <div class="ic" id="di0" style="left:-340px;top:24px"></div><div class="ab bd" id="d0" style="left:-270px;top:30px;font-size:34px">Don’t text him</div>
+    <div class="ic" id="di1" style="left:-340px;top:96px"></div><div class="ab bd" id="d1" style="left:-270px;top:102px;font-size:34px">Don’t chase him</div>
+    <div class="ic" id="di2" style="left:-340px;top:168px"></div><div class="ab bd" id="d2" style="left:-270px;top:174px;font-size:34px">Don’t explain yourself again</div></div>
+  <div class="L" id="Lm"><div class="ab lb" style="left:-290px;top:24px">2:00 AM</div>
+    <div class="av" style="left:-290px;top:66px"></div><div class="ab" style="left:-218px;top:78px;font-size:30px;font-weight:600;color:#F5F1E8">Him</div>
+    <div class="bub" id="typ" style="left:-290px;top:140px;background:#2A2826"><span class="dot" id="t0"></span><span class="dot" id="t1"></span><span class="dot" id="t2"></span></div>
+    <div class="bub" id="msg" style="left:-290px;top:140px;background:#F5F1E8;color:#0B0B0C;font-size:32px;font-weight:600">I made a mistake.</div></div>
+  <div class="L" id="Le"><div class="sic" id="sic"></div><div class="ab" style="left:-258px;top:22px;font-size:36px;font-weight:600;color:#F5F1E8">Follow &amp; send this</div>
+    <div class="ab" style="left:-258px;top:68px;font-size:24px;font-weight:500;color:#8E8778">to a friend who needs it tonight</div>
+    <div class="btn" id="fo" style="left:150px;width:220px"><span id="foi"></span><span id="fol">Follow</span></div></div>
+</div><!--/shape-->
+<script>
+const $=id=>document.getElementById(id);
+M.IC.send=['M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z','m21.854 2.147-10.94 10.939'];
+for(const i of [0,1,2]) $('di'+i).innerHTML=M.icon('x',24,'#E2C27A',3);
+// rough-cut times; clip placed at 0. The card shows only in WIN (~37% of the video).
+const WIN=[[0.1,4.5],[7.2,11.0],[31.6,35.3],[39.0,43.44]];
+const onScreen=t=>{for(const [a,b] of WIN){if(t>=a-0.01&&t<=b+0.35) return Math.min(M.eio(M.clamp((t-a)/0.3)),1-M.eio(M.clamp((t-b)/0.3)));} return 0;};
+const POP={h2:2.28,di0:7.30,d0:7.30,di1:8.30,d1:8.30,di2:9.30,d2:9.30};
+const fol=M.track(0,[[39.62,1,[20,0.78]]]), snd=M.track(0,[[40.95,1,[20,0.78]]]);
+const IV='#F5F1E8', BK='#0B0B0C', GD='#C9A24D';
+M.scene({
+  W:1080,H:560,bg:null,T:43.44,intro:0.1,center:[540,250],
+  SH:{h:{w:840,h:170,r:44,bg:BK,cam:1}, d:{w:760,h:250,r:40,bg:IV,cam:1}, m:{w:660,h:234,r:44,bg:BK,cam:1}, e:{w:820,h:124,r:62,bg:BK,cam:1}},
+  start:'h', SEQ:[[6.4,'d'],[30.8,'m'],[38.2,'e']],
+  geom:(t,g)=>{g.cy=-140+g.h/2; g.fy=0; const k=onScreen(t); g.op*=k; g.sc*=0.9+0.1*k; return g;},
+  layers:[
+    {el:'Lh',tin:0.1,tout:6.4,anchor:'t'},
+    {el:'Ld',tin:6.4,tout:30.8,anchor:'t'},
+    {el:'Lm',tin:30.8,tout:38.2,anchor:'t',update:(t)=>{
+      // he is typing on "typing", the message lands on "I made a mistake"
+      const ty=M.vis(t,33.45,34.18,{din:0,lin:0.2,lout:0.15}); M.apply($('typ'),ty);
+      for(let i=0;i<3;i++){const p=0.5+0.5*Math.sin((t-33.45)*9-i*0.9); $('t'+i).style.transform=`translateY(${(-6*p).toFixed(1)}px)`; $('t'+i).style.opacity=0.5+0.5*p;}
+      const m=M.vis(t,34.22,null,{din:0,lin:0.25}); M.apply($('msg'),m);}},
+    {el:'Le',tin:38.2,tout:null,anchor:'t',update:(t)=>{const k=M.clamp(snd(t)), s=$('sic').style; s.background=`rgba(201,162,77,${k.toFixed(3)})`;
+      s.boxShadow=`inset 0 0 0 2px rgba(201,162,77,${(1-k).toFixed(3)})`; $('sic').innerHTML=M.icon('send',36,k>0.5?BK:GD,2.6);
+      const f=M.clamp(fol(t)), o=$('fo').style; o.background=f>0.5?GD:IV; o.color=BK; M.setText($('fol'),t<39.65?'Follow':'Following');
+      $('foi').innerHTML=t<39.65?'':M.icon('check',26,BK,3.4); $('foi').style.display=t<39.65?'none':'';}},
+  ],
+  extra:(t)=>{
+    for(const [id,ti] of Object.entries(POP)){const v=M.vis(t,ti,null,{din:0,lin:0.25}), e=$(id);
+      e.style.opacity=v.o; e.style.filter=v.blur>0.05?`blur(${v.blur}px)`:'none';
+      const k=M.clamp((t-ti)/0.35); e.style.transform=`translateY(${((1-v.a)*12).toFixed(1)}px) scale(${(1+0.05*Math.sin(Math.PI*k)).toFixed(3)})`;}
+  },
+  cursor:{size:42,clicks:[39.62,40.95],keys:[[0,330,380],[39.0,330,380],[39.45,260,-78],[39.75,260,-78],[40.75,-314,-78],[41.05,-314,-78],[41.9,330,380]]},
+});
+</script>

@@ -1,0 +1,58 @@
+<title>Four signs (new character)</title>
+<style>
+html.alpha #shape{box-shadow:0 14px 40px rgba(0,0,0,.28)}
+.tr{position:absolute;left:-330px;top:22px;display:flex;align-items:center;gap:20px;white-space:nowrap}
+.n{flex:none;width:64px;height:64px;border-radius:32px;background:#C9A24D;color:#0B0B0C;font-size:34px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.tt{font-size:42px;font-weight:700;color:#0B0B0C;letter-spacing:-.01em}
+.ch{position:absolute;top:112px;height:58px;padding:0 24px;border-radius:29px;box-sizing:border-box;border:2px solid #C9A24D;color:#0B0B0C;font-size:29px;font-weight:600;display:flex;align-items:center;white-space:nowrap}
+.fl{position:absolute;left:-290px;top:-40px}
+.av{position:absolute;left:-290px;top:-40px;width:80px;height:80px;border-radius:40px;background:#C9A24D;display:flex;align-items:center;justify-content:center;color:#0B0B0C;font-size:32px;font-weight:700}
+.nm{position:absolute;left:-190px;top:-36px;color:#F5F1E8;font-size:36px;font-weight:600;white-space:nowrap}
+.sb{position:absolute;left:-190px;top:8px;color:#8E8778;font-size:22px;font-weight:600;letter-spacing:.14em;white-space:nowrap}
+.bt{position:absolute;left:84px;top:-33px;width:226px;height:66px;border-radius:33px;display:flex;align-items:center;justify-content:center;gap:10px;font-size:30px;font-weight:600}
+.sic{position:absolute;left:-300px;top:-36px;width:72px;height:72px;border-radius:36px;display:flex;align-items:center;justify-content:center}
+.sa{position:absolute;left:-206px;top:-40px;font-size:40px;font-weight:600;color:#F5F1E8;white-space:nowrap}
+.sbb{position:absolute;left:-206px;top:6px;font-size:26px;font-weight:500;color:#8E8778;white-space:nowrap}
+</style>
+<div data-slot="shape">
+  <div class="L" id="L1"><div class="tr"><span class="n">1</span><span class="tt">No effort</span></div>
+    <div class="ch" id="c10" style="left:-330px">No romance</div><div class="ch" id="c11" style="left:-92px">No dates</div><div class="ch" id="c12" style="left:110px">No flowers</div></div>
+  <div class="L" id="Lf"><div class="nm" style="left:-290px;top:-26px;font-size:38px">Follow for more</div><div class="bt" id="bt"><span id="icK"></span><span id="bl">Follow</span></div></div>
+  <div class="L" id="L2"><div class="tr"><span class="n">2</span><span class="tt">Always broke for you</span></div>
+    <div class="ch" id="c20" style="left:-330px">His time</div><div class="ch" id="c21" style="left:-124px">His money</div><div class="ch" id="c22" style="left:104px">His energy</div></div>
+  <div class="L" id="L3"><div class="tr"><span class="n">3</span><span class="tt">Not there emotionally</span></div>
+    <div class="ch" id="c30" style="left:-330px">You still feel alone</div></div>
+  <div class="L" id="L4"><div class="tr"><span class="n">4</span><span class="tt">No patience with you</span></div>
+    <div class="ch" id="c40" style="left:-330px">Pulls away</div><div class="ch" id="c41" style="left:-92px">Snaps</div><div class="ch" id="c42" style="left:90px">Goes silent</div></div>
+  <div class="L" id="Ls"><div class="sic" id="sic"></div><div class="sa">Send this</div><div class="sbb">to someone who needs to hear it</div></div>
+</div><!--/shape-->
+<script>
+const $=id=>document.getElementById(id);
+M.IC.send=['M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z','m21.854 2.147-10.94 10.939'];
+// local times (clip in at 6.9 on the rough cut)
+const CH={c10:2.24,c11:3.38,c12:4.28, c20:20.47,c21:21.29,c22:22.07, c30:29.27, c40:38.71,c41:39.57,c42:40.63};
+const fol=M.track(0,[[12.2,1,[20,0.78]]]), snd=M.track(0,[[43.5,1,[20,0.78]]]);
+const IV='#F5F1E8', BK='#0B0B0C';
+M.scene({
+  W:1080,H:420,bg:null,T:44.7,intro:0.16,center:[540,150],
+  SH:{t1:{w:700,h:108,r:54,bg:IV,cam:1}, c:{w:740,h:194,r:44,bg:IV,cam:1}, f:{w:660,h:124,r:62,bg:BK,cam:1}, s:{w:680,h:124,r:62,bg:BK,cam:1}},
+  start:'t1', SEQ:[[2.2,'c'],[11.8,'f'],[14.4,'t1'],[20.4,'c'],[24.65,'t1'],[29.2,'c'],[34.2,'t1'],[38.65,'c'],[42.9,'s']],
+  // title rows sit at a fixed top (-54 from the card centre at its one-row height) so they don't jump when chips arrive
+  geom:(t,g)=>{const top=-54; g.cy=(t>11.8&&t<14.4)||t>42.9?0:top+g.h/2; g.fy=0; return g;},
+  layers:[
+    {el:'L1',tin:0.16,tout:11.8,anchor:'t'},
+    {el:'Lf',tin:11.8,tout:14.4,update:(t)=>{const k=M.clamp(fol(t)), b=$('bt').style; b.background=k>0.5?'#C9A24D':IV; b.color=BK;
+      M.setText($('bl'),t<12.23?'Follow':'Following'); $('icK').innerHTML=t<12.23?'':M.icon('check',26,BK,3.4); $('icK').style.display=t<12.23?'none':'';}},
+    {el:'L2',tin:14.4,tout:24.65,anchor:'t'},
+    {el:'L3',tin:24.65,tout:34.2,anchor:'t'},
+    {el:'L4',tin:34.2,tout:42.9,anchor:'t'},
+    {el:'Ls',tin:42.9,tout:null,update:(t)=>{const k=M.clamp(snd(t)), s=$('sic').style; s.background=`rgba(201,162,77,${k.toFixed(3)})`;
+      s.boxShadow=`inset 0 0 0 2px rgba(201,162,77,${(1-k).toFixed(3)})`; $('sic').innerHTML=M.icon('send',36,k>0.5?BK:'#C9A24D',2.6);}},
+  ],
+  extra:(t)=>{for(const [id,ti] of Object.entries(CH)){const v=M.vis(t,ti,null,{din:0,lin:0.22}), e=$(id);
+      e.style.opacity=v.o; e.style.filter=v.blur>0.05?`blur(${v.blur}px)`:'none';
+      const k=M.clamp((t-ti)/0.35); e.style.background=`rgba(201,162,77,${(0.35*Math.sin(Math.PI*k)).toFixed(3)})`;
+      e.style.transform=`translateY(${((1-v.a)*10).toFixed(1)}px) scale(${(1+0.06*Math.sin(Math.PI*k)).toFixed(3)})`;}},
+  cursor:{size:42,clicks:[12.2,43.5],keys:[[0,300,340],[11.7,300,340],[12.05,196,12],[12.3,196,12],[12.95,300,340],[42.9,-200,340],[43.3,-264,10],[43.6,-264,10],[44.3,-220,340]]},
+});
+</script>

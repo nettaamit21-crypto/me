@@ -1,0 +1,65 @@
+{
+ "T": 56.16,
+ "hook": {
+  "at": 0.45,
+  "big": "10",
+  "line": "things every woman needs to know",
+  "sub": {
+   "at": 2.99,
+   "html": "<b>Number 9</b> will make some men angry"
+  }
+ },
+ "tips": [
+  {
+   "at": 5.18,
+   "title": "Never teach him to love you"
+  },
+  {
+   "at": 9.82,
+   "title": "The right man does it unasked"
+  },
+  {
+   "at": 14.02,
+   "title": "If he wants to cheat, he will"
+  },
+  {
+   "at": 17.94,
+   "title": "No more “that’s just how I am”"
+  },
+  {
+   "at": 23.66,
+   "title": "He treats you how he feels"
+  },
+  {
+   "at": 28.18,
+   "title": "When he shows you, believe him"
+  },
+  {
+   "at": 31.42,
+   "title": "No man is too busy"
+  },
+  {
+   "at": 34.7,
+   "title": "Believe the actions"
+  },
+  {
+   "at": 38.54,
+   "title": "No second chance"
+  },
+  {
+   "at": 46.78,
+   "title": "You’re not asking too much"
+  }
+ ],
+ "send": {
+  "at": 52.4,
+  "click": 52.75,
+  "title": "Send this",
+  "sub": "to a woman who needs number 10"
+ },
+ "follow": {
+  "at": 55.1,
+  "click": 55.45,
+  "label": "Follow for more"
+ }
+}
