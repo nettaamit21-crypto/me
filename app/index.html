@@ -6873,7 +6873,7 @@
       mode: "loading", dl: null,
       settings: null, settingsLoaded: false,
       months: {}, docs: {}, tasks: {}, orders: {}, prep: {},
-      seen: {},
+      seen: {}, def: {},
       week: weekStartOf(today()),
       sheet: null, armed: null, focus: null,
       showClosedDocs: false, showDoneOrders: false,
@@ -6984,32 +6984,44 @@
       }
     };
 
+    /* A snapshot can come from the device's cache before the saved copy arrives (a phone tab that slept
+       for days shows last week's tasks first). Such a view is shown, but nothing is written because of it. */
+    function metaOf(s){ return { cache: !!(s && s.metadata && s.metadata.fromCache) }; }
     var Store = {
-      db: null, subs: {}, dirty: {}, timers: {}, inflight: {}, again: {}, fresh: {},
+      db: null, subs: {}, dirty: {}, timers: {}, inflight: {}, again: {}, fresh: {}, base: {},
       busy: function(p){ return !!(this.dirty[p] || this.inflight[p] || this.fresh[p]); },
       watchDoc: function(p, cb){
         var self = this;
         if (this.subs[p]) return;
         if (S.mode === "db"){
-          this.subs[p] = this.db.doc(p).onSnapshot(function(s){ if (self.busy(p)) return; cb(s.exists ? cl(s.data()) : null); }, dbError);
+          this.subs[p] = this.db.doc(p).onSnapshot(function(s){
+            if (self.busy(p)) return;
+            var d = s.exists ? cl(s.data()) : null;
+            if (d) self.base[p] = cl(d);
+            cb(d, metaOf(s));
+          }, dbError);
         } else {
           this.subs[p] = function(){};
           var v = LSX.get(p);
-          setTimeout(function(){ cb(v); }, 0);
+          setTimeout(function(){ cb(v, {}); }, 0);
         }
       },
       watchColl: function(c, cb){
+        var self = this;
         if (this.subs[c]) return;
         if (S.mode === "db"){
           this.subs[c] = this.db.collection(c).onSnapshot(function(q){
             var out = {};
-            q.docs.forEach(function(d){ out[d.id] = cl(d.data()); });
-            cb(out);
+            q.docs.forEach(function(d){
+              out[d.id] = cl(d.data());
+              if (!self.busy(c + "/" + d.id)) self.base[c + "/" + d.id] = cl(d.data());
+            });
+            cb(out, metaOf(q));
           }, dbError);
         } else {
           this.subs[c] = function(){};
           var v = LSX.coll(c);
-          setTimeout(function(){ cb(v); }, 0);
+          setTimeout(function(){ cb(v, {}); }, 0);
         }
       },
       save: function(p, delay){
@@ -7029,11 +7041,28 @@
         data = cl(data);
         this.inflight[p] = true;
         setSync();
-        var pr = S.mode === "db" ? this.db.doc(p).set(data) : (LSX.set(p, data) ? Promise.resolve() : Promise.reject({ code:"local_full" }));
+        var pr = S.mode !== "db" ? (LSX.set(p, data) ? Promise.resolve() : Promise.reject({ code:"local_full" }))
+          : MERGED[p.split("/")[0]] ? this.mergeWrite(p, data) : this.db.doc(p).set(data);
         pr.then(function(){ S.saveError = false; delete self.fresh[p]; }, function(e){ self.dirty[p] = true; saveError(e); }).then(function(){
           self.inflight[p] = false;
           if (self.again[p]){ delete self.again[p]; self.flush(p); }
           setSync();
+        });
+      },
+      /* Another device may have changed or deleted this document since this one last saw it. Read the saved
+         copy first: keep the fields this device changed, take the rest from the saved copy, and never bring
+         back a document that was deleted elsewhere. */
+      mergeWrite: function(p, data){
+        var self = this;
+        return this.db.doc(p).get().then(function(snap){
+          var remote = snap.exists ? cl(snap.data()) : null, base = self.base[p], out = data;
+          if (!remote && base && !self.fresh[p]){ dropDoc(p); return; }
+          if (remote && base && stable(remote) !== stable(base)){
+            out = p === "app/gcal" ? { map: mergeMap(base.map || {}, data.map || {}, remote.map || {}) } : mergeObj(base, data, remote);
+            if (stable(out) !== stable(data)) adoptDoc(p, out);
+          }
+          if (remote && stable(out) === stable(remote)){ self.base[p] = remote; return; }
+          return self.db.doc(p).set(out).then(function(){ self.base[p] = cl(out); });
         });
       },
       remove: function(p){
@@ -7048,6 +7077,31 @@
       pending: function(){ var self = this; return Object.keys(this.timers).length + Object.keys(this.inflight).filter(function(k){ return self.inflight[k]; }).length; }
     };
 
+    var MERGED = { app:1, tasks:1, orders:1, docs:1, months:1, prep:1 };
+    function dropDoc(p){
+      var a = p.split("/"), m = { tasks:S.tasks, orders:S.orders, docs:S.docs, months:S.months, prep:S.prep }[a[0]];
+      if (m && m[a[1]]){ delete m[a[1]]; render(); }
+    }
+    function adoptDoc(p, d){
+      var a = p.split("/"), c = a[0], k = a[1];
+      if (c === "tasks") S.tasks[k] = fixTask(d, k);
+      else if (c === "orders") S.orders[k] = fixOrder(d, k);
+      else if (c === "months") S.months[k] = fixMonth(d, k);
+      else if (c === "docs") S.docs[k] = d;
+      else if (c === "prep") S.prep[k] = d;
+      else if (p === "app/settings") S.settings = fillDefaults(d, defaultSettings());
+      else if (p === "app/gcal") S.gcal = { map: d.map || {} };
+      render();
+    }
+    /* The calendar map: each entry is one event, taken whole from whichever side changed it. */
+    function mergeMap(b, l, r){
+      var out = {};
+      Object.keys(l).concat(Object.keys(r)).forEach(function(k){
+        var v = stable(l[k]) !== stable(b[k]) ? l[k] : r[k];
+        if (v !== undefined) out[k] = v;
+      });
+      return out;
+    }
     function dataFor(p){
       var a = p.split("/"), c = a[0], k = a[1];
       if (c === "app" && k === "settings") return S.settings;
@@ -7277,36 +7331,41 @@
       Object.keys(incoming).forEach(function(k){ if (Store.busy(c + "/" + k)) return; target[k] = fix ? fix(incoming[k], k) : incoming[k]; });
     }
     function startData(){
-      Store.watchDoc("app/settings", function(d){
+      Store.watchDoc("app/settings", function(d, meta){
         var old = d && n(d.v) < 3;
         S.settings = fillDefaults(d || {}, defaultSettings());
-        if (old && ensurePrograms(S.settings)) Store.save("app/settings", 0);
+        if (old && ensurePrograms(S.settings) && !meta.cache) Store.save("app/settings", 0);
         /* Meetings used to be copied into the fixed schedule; the calendar now reads them from the programs. */
         var linked = (S.settings.fixed || []).filter(function(f){ return /^prog:/.test(f.link || ""); });
-        if (linked.length){ S.settings.fixed = S.settings.fixed.filter(function(f){ return linked.indexOf(f) < 0; }); Store.save("app/settings", 0); }
+        if (linked.length){ S.settings.fixed = S.settings.fixed.filter(function(f){ return linked.indexOf(f) < 0; }); if (!meta.cache) Store.save("app/settings", 0); }
         S.settingsLoaded = true;
+        if (!meta.cache) S.def.settings = true;
         autoRoll();
         syncAllLedgerAuto();
         render();
       });
-      Store.watchColl("months", function(all){
+      Store.watchColl("months", function(all, meta){
         var old = Object.keys(all).filter(function(k){ return all[k] && (all[k].hosen || all[k].shikum); });
         mergeColl("months", S.months, all, fixMonth);
-        old.forEach(function(k){ if (S.months[k] && !Store.busy("months/" + k)) Store.save("months/" + k, 0); });
+        if (!meta.cache) old.forEach(function(k){ if (S.months[k] && !Store.busy("months/" + k)) Store.save("months/" + k, 0); });
         S.seen.months = true;
+        if (!meta.cache) S.def.months = true;
         migrateOrderLines();
         syncAllLedgerAuto();
         render();
       });
-      /* Only this device's syncs change the map while it is open; a later snapshot can only add events made elsewhere. */
-      Store.watchDoc("app/gcal", function(d){
+      /* The calendar map: until the saved copy arrives it is replaced whole; after that an event changed
+         here stays as this device has it, and everything else follows the saved copy. */
+      Store.watchDoc("app/gcal", function(d, meta){
         var inc = d && d.map && typeof d.map === "object" ? d.map : {};
-        if (!S.gcalLoaded){ S.gcal = { map:inc }; S.gcalLoaded = true; return; }
-        Object.keys(inc).forEach(function(k){ if (!(k in S.gcal.map)) S.gcal.map[k] = inc[k]; });
+        if (!S.gcalLoaded || !S.def.gcal){ S.gcal = { map:inc }; S.gcalLoaded = true; }
+        else S.gcal = { map: mergeMap(S.gcalBase || {}, S.gcal.map, inc) };
+        S.gcalBase = cl(inc);
+        if (!meta.cache) S.def.gcal = true;
       });
-      Store.watchColl("docs", function(all){ mergeColl("docs", S.docs, all); syncAllLedgerAuto(); render(); });
-      Store.watchColl("tasks", function(all){ mergeColl("tasks", S.tasks, all, fixTask); S.seen.tasks = true; autoRoll(); render(); });
-      Store.watchColl("orders", function(all){ mergeColl("orders", S.orders, all, fixOrder); S.seen.orders = true; migrateOrderLines(); autoRoll(); syncAllLedgerAuto(); render(); });
+      Store.watchColl("docs", function(all, meta){ mergeColl("docs", S.docs, all); if (!meta.cache) S.def.docs = true; syncAllLedgerAuto(); render(); });
+      Store.watchColl("tasks", function(all, meta){ mergeColl("tasks", S.tasks, all, fixTask); S.seen.tasks = true; if (!meta.cache) S.def.tasks = true; autoRoll(); render(); });
+      Store.watchColl("orders", function(all, meta){ mergeColl("orders", S.orders, all, fixOrder); S.seen.orders = true; if (!meta.cache) S.def.orders = true; migrateOrderLines(); autoRoll(); syncAllLedgerAuto(); render(); });
       Store.watchColl("calc", function(all){ Object.keys(all).forEach(function(k){ if (!Store.busy("calc/" + k)) S.calc[k] = all[k]; }); });
       Store.watchColl("calcq", function(all){ mergeColl("calcq", S.calcq, all); });
       Store.watchColl("prep", function(all){ mergeColl("prep", S.prep, all); render(); });
@@ -7646,6 +7705,7 @@
     /* Earlier versions copied a billed order into the month as a line of its own; now the order itself is the record. */
     function migrateOrderLines(){
       if (!S.seen.months || !S.seen.orders) return;
+      if (S.mode === "db" && !(S.def.months && S.def.orders)) return;
       Object.keys(S.months).forEach(function(k){
         var m = S.months[k], moved = false;
         m.farm.toMe = m.farm.toMe.filter(function(l){
@@ -7732,6 +7792,7 @@
     }
     function syncLedgerAuto(k){
       if (!S.settingsLoaded || (S.mode === "db" && !LedgerSync.loaded)) return false;
+      if (S.mode === "db" && !(S.def.settings && S.def.months && S.def.orders && S.def.docs)) return false;
       var want = autoLines(k);
       if (!want) return false;
       var lm = state.months[k];
@@ -7926,13 +7987,14 @@
     /* Whatever was not ticked on an earlier day moves on by itself to the next workday. */
     function autoRoll(){
       if (!S.settingsLoaded || !S.seen.tasks) return;
+      if (S.mode === "db" && !(S.def.settings && S.def.tasks)) return;
       var t = today(), to = rollTarget();
       allTasks().forEach(function(x){
         if (x.done || !x.day || x.day >= t || x.waiting) return;
         x.rolledFrom = x.day; x.day = to; x.start = null; x.moved = (x.moved || 0) + 1;
         saveTask(x, 0);
       });
-      if (!S.seen.orders) return;
+      if (!S.seen.orders || (S.mode === "db" && !S.def.orders)) return;
       allOrders().forEach(function(o){
         if (o.closed) return;
         var ch = false;
@@ -9315,7 +9377,7 @@
       var gs = S.gsync;
       if (!S.mcp){ gs.msg = GCAL_STOP.capability_disabled; render(); return; }
       if (gs.busy){ gs.again = true; return; }
-      if (!S.gcalLoaded){ gs.msg = "עוד טוען את הנתונים. כדאי לנסות שוב בעוד רגע."; render(); return; }
+      if (!S.gcalLoaded || (S.mode === "db" && !S.def.gcal)){ gs.msg = "עוד טוען את הנתונים. כדאי לנסות שוב בעוד רגע."; render(); return; }
       var g = S.settings.gcal || {}, r = gcalRange(), want = gcalItems(r[0], r[1]), map = S.gcal.map, cal = g.cal || "";
       var ops = [];
       Object.keys(map).forEach(function(key){ var e = map[key]; if (e.date >= r[0] && e.date <= r[1] && !want[key]) ops.push({ kind:"del", key:key }); });
