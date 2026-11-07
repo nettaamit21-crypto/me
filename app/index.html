@@ -9294,8 +9294,9 @@
        Google Calendar: the app's week, mirrored into the calendar
        ========================================================= */
     var GCAL = "Google Calendar";
+    /* Last week, this week and next go to Google Calendar. Later weeks are planned each Saturday, so they stay off it. */
     function gcalRange(){
-      var a = addD(weekStartOf(today()), -7), b = addD(a, 7 * 6 - 1);
+      var a = addD(weekStartOf(today()), -7), b = addD(a, 7 * 3 - 1);
       if (S.week < a) a = S.week;
       if (addD(S.week, 6) > b) b = addD(S.week, 6);
       return [a, b];
