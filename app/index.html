@@ -1376,8 +1376,18 @@
   function vatRate(){ return num(state.vat.rate)/100; }
 
   /* האם השורה בכלל נושאת מע"מ */
+  /* עוסק מורשה מתאריך: חודשים שלפני הפתיחה נספרים בלי מע"מ */
+  var VAT_MK = null;
+  function vatSinceKey(){ var s = state.vat && state.vat.since; return s ? String(s).slice(0, 7) : ""; }
+  function vatSinceLabel(){ var p = String(state.vat.since || "").split("-"); return p.length === 3 ? parseInt(p[2], 10) + "." + parseInt(p[1], 10) + "." + p[0] : ""; }
+  function vatOnFor(mk){
+    if (!state.vat || !state.vat.enabled) return false;
+    var s = vatSinceKey(); mk = mk || VAT_MK || currentMonthKey;
+    return !s || !mk || mk >= s;
+  }
+  function withVatMonth(mk, fn){ var prev = VAT_MK; VAT_MK = mk; try { return fn(); } finally { VAT_MK = prev; } }
   function lineHasVat(item, flow){
-    if (!state.vat.enabled) return false;
+    if (!vatOnFor()) return false;
     if (itemScope(item) === "personal") return false;   /* פרטי אינו מקוזז */
     if (item.noVat) return false;
     return true;
@@ -1407,11 +1417,13 @@
   function vatPosition(monthKey){
     var m = state.months[monthKey];
     var out = { output:0, input:0, payable:0, enabled: !!state.vat.enabled };
-    if (!m || !state.vat.enabled) return out;
-    filterScope(m.recurringIncome, "business").concat(filterScope(m.oneTimeIncome, "business"))
-      .forEach(function(i){ out.output += lineParts(i, "in").vat; });
-    filterScope(m.recurringExpenses, "business").concat(filterScope(m.oneTimeExpenses, "business"))
-      .forEach(function(i){ out.input += lineParts(i, "out").vat; });
+    if (!m || !vatOnFor(monthKey)) return out;
+    withVatMonth(monthKey, function(){
+      filterScope(m.recurringIncome, "business").concat(filterScope(m.oneTimeIncome, "business"))
+        .forEach(function(i){ out.output += lineParts(i, "in").vat; });
+      filterScope(m.recurringExpenses, "business").concat(filterScope(m.oneTimeExpenses, "business"))
+        .forEach(function(i){ out.input += lineParts(i, "out").vat; });
+    });
     out.payable = out.output - out.input;
     return out;
   }
@@ -1453,7 +1465,8 @@
     return { amount: payable, months: months, day: clampDay(monthKey, num(state.vat.payDay)) };
   }
 
-  function computeTotals(monthKey, scope){
+  function computeTotals(monthKey, scope){ return withVatMonth(monthKey, function(){ return computeTotalsAt(monthKey, scope); }); }
+  function computeTotalsAt(monthKey, scope){
     scope = scope || "business";
     var m = state.months[monthKey];
     if (!m) return emptyTotals();
@@ -2249,7 +2262,7 @@
     var vatNote = el("span", { className:"unit-note" });
     var vatBtn = el("button", { className:"link-btn", type:"button", style:"text-decoration:none;" });
     function paintVat(){
-      if (!state.vat.enabled || itemScope(item) === "personal"){
+      if (!vatOnFor() || itemScope(item) === "personal"){
         vatBtn.style.display = "none"; vatNote.textContent = ""; return;
       }
       vatBtn.style.display = "";
@@ -2376,7 +2389,7 @@
 
     var vatBtn = el("button", { className:"link-btn", type:"button", style:"text-decoration:none;" });
     function paintVatBtn(){
-      if (!state.vat.enabled || itemScope(item) === "personal"){ vatBtn.style.display = "none"; return; }
+      if (!vatOnFor() || itemScope(item) === "personal"){ vatBtn.style.display = "none"; return; }
       vatBtn.style.display = "";
       if (item.noVat) vatBtn.textContent = "פטור";
       else if (lineVatIncluded(item, "in")) vatBtn.textContent = "כולל מע\"מ";
@@ -4688,7 +4701,7 @@
             amt = it.mode === "percent" ? (num(it.value)/100) * incomeTotal : num(it.value);
           } else {
             /* בתזרים סופרים את מה שבאמת עובר בבנק, כלומר ברוטו */
-            amt = lineGross(it, kind === "in" ? "in" : "out");
+            amt = withVatMonth(srcMonth, function(){ return lineGross(it, kind === "in" ? "in" : "out"); });
           }
           itemSchedule(it, srcMonth, itemKind, amt).forEach(function(p){
             if (dkMonth(p.date) !== monthKey) return;
@@ -6413,7 +6426,7 @@
       el("div", {}, [
         el("h4", { style:"font-family:Georgia,serif; font-size:0.95rem;", textContent:"מע\"מ" }),
         el("div", { className:"panel-sub", textContent: v.enabled
-          ? "כל שורה מסומנת אם הסכום כולל מע\"מ או לא. הרווח נמדד בנטו, התזרים בברוטו."
+          ? (v.since ? "עוסק מורשה מ־" + vatSinceLabel() + ". " : "") + "כל שורה מסומנת אם הסכום כולל מע\"מ או לא. הרווח נמדד בנטו, התזרים בברוטו."
           : "כבוי. הסכומים נספרים כמו שהם, בלי הפרדת מע\"מ." })
       ]),
       el("button", { className:"btn btn-sm" + (v.enabled ? "" : " btn-brass"), type:"button",
@@ -6426,6 +6439,14 @@
     host.appendChild(head);
 
     if (!v.enabled) return;
+    if (!vatOnFor(currentMonthKey)){
+      host.appendChild(el("div", { className:"small muted", style:"margin-top:10px;",
+        textContent:"החודש הזה לפני פתיחת העוסק המורשה (" + vatSinceLabel() + "), ולכן אין בו מע\"מ." }));
+      host.appendChild(el("div", { style:"display:flex; gap:8px; flex-wrap:wrap; margin-top:12px;" }, [
+        el("button", { className:"btn btn-sm", type:"button", textContent:"הגדרות מע\"מ", onclick: openVatSettings })
+      ]));
+      return;
+    }
 
     var per = vatPeriodPosition(currentMonthKey);
     var cur = vatPosition(currentMonthKey);
@@ -6498,7 +6519,12 @@
   function openVatSettings(){
     var v = state.vat;
     var box = el("div", {});
+    var sinceInp = el("input", { type:"date", dir:"ltr" });
+    sinceInp.value = v.since || "";
+    sinceInp.addEventListener("change", function(e){ v.since = e.target.value || ""; });
     box.appendChild(grid([
+      el("div", { className:"field" }, [ el("label", { textContent:"עוסק מורשה מתאריך" }), sinceInp,
+        el("span", { className:"hint", textContent:"חודשים לפני כן נספרים בלי מע\"מ" }) ]),
       fieldNum("שיעור מע\"מ %", v, "rate", null),
       fieldSelect("תדירות דיווח", v, "reportEvery", [
         { value:"1", label:"חודשי" }, { value:"2", label:"דו-חודשי" }
