@@ -8192,6 +8192,7 @@
               bt("⬇ PDF", "dealPdf", { cls:"btn-sm", id:d.id }) + bt("📋 למורנינג", "morning", { cls:"btn-sm", id:d.id }) +
               (stale ? bt("לעדכן לפי המפגשים", "issueDeal", { cls:"btn-sm btn-brass", arg:k + "|" + x[0] }) : "");
           } else right = bt("להוציא חשבון עסקה", "issueDeal", { cls:"btn-primary btn-sm", arg:k + "|" + x[0], disabled: !pre });
+          if (x[0] !== "sales") right = bt("📄 הצעת מחיר לאישור", "progQuote", { cls:"btn-sm", arg:k + "|" + x[0], disabled: !pre }) + right;
           return '<div class="row" data-k="deal-' + esc(x[0]) + '"><span class="row-name"><b>' + esc(x[1]) + '</b><br><span class="small muted">' + info + "</span></span>" + right + "</div>";
         }).join("") + "</div></div>";
 
@@ -8936,6 +8937,43 @@
         footer: b.name
       };
       if (!spec.rows.length) spec.rows = [[d.title || "שירות", "1", ils(d.net || d.amount, true), ils(d.net || d.amount, true)]];
+      return pdfBlob(drawDoc(spec));
+    }
+    /* One program's month as a quote, so the farm can approve the sessions and hours before the deal invoice goes out. */
+    function progQuotePdf(k, pid){
+      var st = S.settings, b = biz(), p = progById(pid);
+      if (!p) return null;
+      var c = progCalc(p, monthOf(k), k), rows = [], notes = [], cols;
+      function label(s){ var f = SESSION_STATUS.filter(function(x){ return x[0] === s; })[0]; return f ? f[1] : s === "cancel" ? "בוטל" : s; }
+      if (c.type === "group"){
+        cols = [{ label:"מפגש", w:0.46, align:"right" }, { label:"משתתפים", w:0.14, align:"right" }, { label:"פירוט", w:0.22, align:"left" }, { label:"סה״כ", w:0.18, align:"left" }];
+        c.rows.forEach(function(r){
+          var what = dmy(r.s.date) + " · " + label(r.s.status) + (r.s.note ? " · " + r.s.note : "");
+          var detail = !r.factor ? "ללא חיוב" : r.fixedPrice ? "מחיר קבוע" : ils(r.baseAmt, true) + " + " + ils(r.wood, true);
+          rows.push([what, r.factor ? String(r.billed) : "—", detail, ils(r.total, true)]);
+        });
+        c.d.specials.forEach(function(x){ if (n(x.amount)) rows.push(["פרויקט מיוחד: " + (x.desc || ""), "", "", ils(n(x.amount), true)]); });
+        notes.push("תמחור: " + ils(c.base, true) + " למפגש, ועוד " + ils(n(p.woodPerPerson), true) + " למשתתף לתקציב עץ.");
+        if (p.hoursDetail) notes.push("התשלום הבסיסי כולל: " + p.hoursDetail + ".");
+        notes = notes.concat(p.terms || [], p.notes || []);
+      } else {
+        cols = [{ label:"מפגש", w:0.46, align:"right" }, { label:"שעות", w:0.14, align:"right" }, { label:"לשעה", w:0.2, align:"left" }, { label:"סה״כ", w:0.2, align:"left" }];
+        c.rows.forEach(function(r){
+          var held = r.status === "held";
+          rows.push([(r.rid ? r.name : "מפגש") + " " + dmy(r.date) + (held ? "" : " · " + label(r.status)), held ? String(r.hours) : "—", ils(c.rate, true), ils(r.amount, true)]);
+        });
+        notes.push(ils(c.rate, true) + " לשעה × " + n(p.hoursPer) + " שעות למפגש. סה״כ " + c.hoursSum + " שעות ב־" + c.count + " מפגשים" + (c.meets ? " ו־" + c.meets + " פגישות" : "") + ".");
+      }
+      notes.push("מסמך זה הוא הצעת מחיר ואישור פעילות לחודש, ואינו חשבונית מס.");
+      var spec = {
+        biz: { name:b.name, lines:bizLines() }, title:"הצעת מחיר",
+        meta: ["מס׳ " + quoteNo(k, p), "תאריך: " + dmy(today()), "חודש השירות: " + monthLabel(k)],
+        to: { name: st.client.name || "", lines: [st.client.address, st.client.contact ? "לידי: " + st.client.contact : ""] },
+        subject: p.name + (p.group ? " (" + p.group + ")" : "") + " · " + monthLabel(k),
+        cols: cols, rows: rows,
+        totals: [["סה״כ לפני מע״מ", ils(c.pre, true)], ["מע״מ " + vatPct() + "%", ils(c.vat, true)], ["סה״כ כולל מע״מ", ils(c.total, true)]],
+        notes: notes, sign: ["חתימת הספק", "אישור החווה: שם, חתימה ותאריך"], footer: b.name
+      };
       return pdfBlob(drawDoc(spec));
     }
     function quotePdf(q){
@@ -10141,6 +10179,10 @@
         if (!d) return;
         toast("חשבון עסקה " + d.number + " מוכן: " + ils(d.amount, true) + " כולל מע״מ.");
         saveFile("חשבון עסקה " + d.number + " - " + d.title + ".pdf", dealPdf(d));
+      },
+      progQuote: function(i, a){
+        var q = String(a).split("|"), p = progById(q[1]), pdf = p ? progQuotePdf(q[0], q[1]) : null;
+        if (pdf) saveFile("הצעת מחיר " + quoteNo(q[0], p) + ".pdf", pdf);
       },
       dealPdf: function(did){ var d = S.docs[did]; if (d) saveFile("חשבון עסקה " + d.number + " - " + d.title + ".pdf", dealPdf(d)); },
       morning: function(did){ var d = S.docs[did]; if (d) copy(morningText(d), "השורות הועתקו. אפשר להדביק במסמך חדש במורנינג."); },
