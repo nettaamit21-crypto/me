@@ -1419,7 +1419,9 @@
     var out = { output:0, input:0, payable:0, enabled: !!state.vat.enabled };
     if (!m || !vatOnFor(monthKey)) return out;
     withVatMonth(monthKey, function(){
-      filterScope(m.recurringIncome, "business").concat(filterScope(m.oneTimeIncome, "business"))
+      /* בדיווח בפועל קובע תאריך חשבונית המס, לא חודש העבודה */
+      if (state.vat.basis === "docs" && typeof M !== "undefined" && M.vatOut) out.output = M.vatOut(monthKey);
+      else filterScope(m.recurringIncome, "business").concat(filterScope(m.oneTimeIncome, "business"))
         .forEach(function(i){ out.output += lineParts(i, "in").vat; });
       filterScope(m.recurringExpenses, "business").concat(filterScope(m.oneTimeExpenses, "business"))
         .forEach(function(i){ out.input += lineParts(i, "out").vat; });
@@ -6454,7 +6456,7 @@
       el("div", { className:"combo-cell" }, [
         el("div", { className:"k", textContent:"מע\"מ שגביתי מלקוחות" }),
         el("div", { className:"v", style:"color:var(--pine);", textContent: formatCurrency(cur.output) }),
-        el("div", { className:"d", textContent:"עסקאות החודש" })
+        el("div", { className:"d", textContent: v.basis === "docs" ? "לפי חשבוניות המס שהוצאו החודש" : "עסקאות החודש" })
       ]),
       el("div", { className:"combo-cell" }, [
         el("div", { className:"k", textContent:"מע\"מ ששילמתי על קניות" }),
@@ -6530,6 +6532,9 @@
         { value:"1", label:"חודשי" }, { value:"2", label:"דו-חודשי" }
       ], null),
       fieldNum("יום תשלום המע\"מ", v, "payDay", null, { hint:"בחודש שאחרי סוף התקופה" }),
+      fieldSelect("המע\"מ על הכנסות נספר", v, "basis", [
+        { value:"docs", label:"לפי תאריך חשבונית המס" }, { value:"month", label:"לפי חודש העבודה" }
+      ], null),
       fieldSelect("מחירים שאני נוקב ללקוח", v, "incomeIncludes", [
         { value:"true", label:"כוללים מע\"מ" }, { value:"false", label:"לפני מע\"מ" }
       ], null),
@@ -7643,8 +7648,10 @@
       var purchases = m.farm.toFarm.map(function(l){ return { id:l.id, name:l.name || "רכישה", amount:n(l.amount), line:l }; });
       var purchTotal = r2(purchases.reduce(function(a, x){ return a + x.amount; }, 0));
       var toFarmTotal = r2(rent + pctTotal + purchTotal), net = r2(toMeTotal - toFarmTotal), v = vatPct();
+      /* VAT sits on my invoice to the farm. The farm's own charges carry VAT only if it charges VAT. */
+      var meVat = r2(toMeTotal * v / 100), farmVat = farmChargesVat() ? r2(toFarmTotal * v / 100) : 0;
       return { calcs:calcs, toMe:toMe, toMeTotal:toMeTotal, rent:rent, pct:pct, pctTotal:pctTotal, purchases:purchases, purchTotal:purchTotal,
-        toFarmTotal:toFarmTotal, net:net, netVat:r2(net * (1 + v/100)) };
+        toFarmTotal:toFarmTotal, net:net, meVat:meVat, farmVat:farmVat, netVat:r2(net + meVat - farmVat) };
     }
     /* =========================================================
        Private workshops: couples, families, groups
@@ -7784,6 +7791,27 @@
     }
 
     function salesLines(m){ return m.farm.toMe.filter(function(l){ return n(l.amount); }); }
+    function farmChargesVat(){ return !!(S.settings.farm && S.settings.farm.vatOnCharges); }
+
+    /* When the farm money for month k really moves: the day the farm paid my invoice, or the
+       agreed pay day in the next month. Its charges are settled then too, unless the month says otherwise. */
+    function farmSettle(k, m){
+      var day = Math.min(28, n((S.settings.farm || {}).payDay) || 20);
+      var due = (m.farm && m.farm.payDate) || shiftMonthKey(k, 1) + "-" + pad2(day);
+      var paid = allDocs().filter(function(d){ return d.month === k && d.party && isFarmClient(d.party) && d.state === "paid" && d.paid; })
+        .map(function(d){ return d.paid; }).sort().pop();
+      var inDate = paid || due;
+      return { inDate:inDate, outDate:(m.farm && m.farm.outDate) || inDate };
+    }
+    /* A private order is paid when its document says so, or on the last day planned for it. */
+    function orderCashDate(o){
+      var d = o.docId && S.docs[o.docId];
+      if (d && d.state === "paid" && d.paid) return d.paid;
+      if (d && d.due) return d.due;
+      var days = (o.steps || []).filter(function(s){ return s.day && !s.done; }).map(function(s){ return s.day; }).sort();
+      return days.length ? days[days.length - 1] : null;
+    }
+    function atDate(x, date){ if (date && /^\d{4}-\d{2}-\d{2}$/.test(date)) x.sched = [{ date:date, pct:100 }]; return x; }
 
     /* The month's farm figures appear in the ledger as locked lines, so the books always match. */
     function autoLines(k){
@@ -7794,31 +7822,34 @@
         var q = qty || 1;
         return { id:"auto-" + idv, name:name, qty:q, unit:"unit", unitPrice: q ? r2(amount / q) : amount, amount:r2(amount), auto:true, locked:false, vatInc:false };
       }
+      var settle = real ? farmSettle(k, m) : { inDate:null, outDate:null };
+      function toFarm(x){ if (!farmChargesVat()) x.noVat = true; return atDate(x, settle.outDate); }
       f.calcs.forEach(function(c){
         if (!c.pre) return;
-        if (c.type === "hourly") out.recurringIncome.push(line("p-" + c.p.id, progShort(c.p) + " · " + c.hoursSum + " שעות", c.pre, c.hoursSum || 1));
-        else out.recurringIncome.push(line("p-" + c.p.id, progShort(c.p) + " · " + plural(c.count, "מפגש אחד", "מפגשים"), c.pre, c.count || 1));
+        var x = c.type === "hourly" ? line("p-" + c.p.id, progShort(c.p) + " · " + c.hoursSum + " שעות", c.pre, c.hoursSum || 1)
+          : line("p-" + c.p.id, progShort(c.p) + " · " + plural(c.count, "מפגש אחד", "מפגשים"), c.pre, c.count || 1);
+        out.recurringIncome.push(c.p.viaFarm === false ? x : atDate(x, settle.inDate));
       });
       (m.workshops || []).forEach(function(w){
         if (w.status === "cancelled") return;
         var c = wsCalc(w);
         if (c.net) out.oneTimeIncome.push(line("ws-" + w.id, wsName(w) + (w.client ? " · " + w.client : "") + " · " + dm(w.date), c.net, 1));
       });
-      salesLines(m).forEach(function(l){ out.oneTimeIncome.push(line("tm-" + l.id, l.name || "מכירה לחווה", n(l.amount), 1)); });
+      salesLines(m).forEach(function(l){ out.oneTimeIncome.push(atDate(line("tm-" + l.id, l.name || "מכירה לחווה", n(l.amount), 1), settle.inDate)); });
       /* An invoice or receipt recorded by hand for a private client is income too (farm money comes from the reconciliation). */
       allDocs().forEach(function(d){
         if (d.month !== k || !n(d.amount) || d.parent || d.wsId || d.src || (d.party && isFarmClient(d.party))) return;
         if (d.kind !== "invoice" && d.kind !== "invrec" && d.kind !== "receipt") return;
         var net = d.net != null && d.net !== "" ? n(d.net) : r2(n(d.amount) / (1 + vatPct() / 100));
-        out.oneTimeIncome.push(line("d-" + d.id, "🧾 " + (d.party || "לקוח") + (d.title ? " · " + d.title : ""), net, 1));
+        out.oneTimeIncome.push(atDate(line("d-" + d.id, "🧾 " + (d.party || "לקוח") + (d.title ? " · " + d.title : ""), net, 1), d.state === "paid" ? d.paid : d.due));
       });
       ordersBilled(k).forEach(function(o){
         var farm = isFarmClient(o.client);
-        out.oneTimeIncome.push(line("o-" + o.id, (farm ? "הזמנה: " : "") + orderName(o) + (farm ? "" : " · " + (o.client || "לקוח")), orderTotal(o), n(o.qty) || 1));
+        out.oneTimeIncome.push(atDate(line("o-" + o.id, (farm ? "הזמנה: " : "") + orderName(o) + (farm ? "" : " · " + (o.client || "לקוח")), orderTotal(o), n(o.qty) || 1), farm ? settle.inDate : orderCashDate(o)));
       });
-      if (f.rent) out.recurringExpenses.push(line("rent", "שכירות · " + (st.client.name || "החווה"), f.rent));
-      if (f.pctTotal) out.recurringExpenses.push(line("pct", "עמלות ל" + (st.client.name || "חווה"), f.pctTotal));
-      f.purchases.forEach(function(p){ if (p.amount) out.oneTimeExpenses.push(line("tf-" + p.id, "דרך " + (st.client.name || "החווה") + ": " + p.name, p.amount)); });
+      if (f.rent) out.recurringExpenses.push(toFarm(line("rent", "שכירות · " + (st.client.name || "החווה"), f.rent)));
+      if (f.pctTotal) out.recurringExpenses.push(toFarm(line("pct", "עמלות ל" + (st.client.name || "חווה"), f.pctTotal)));
+      f.purchases.forEach(function(p){ if (p.amount) out.oneTimeExpenses.push(toFarm(line("tf-" + p.id, "דרך " + (st.client.name || "החווה") + ": " + p.name, p.amount))); });
       return out;
     }
     function syncLedgerAuto(k){
@@ -8246,7 +8277,7 @@
         }).join("") +
         '<button type="button" class="btn-add" style="margin-top:6px;" data-mact="addFarm" data-arg="' + k + '|toFarm">+ רכישה דרך החווה</button>' +
         '<div class="result-row total"><span>סה״כ</span><span class="val">' + esc(ils(f.toFarmTotal, true)) + "</span></div></div></div>" +
-        '<div class="price-hero"><div><div class="lbl">' + (f.net >= 0 ? "יתרה לטובת " + esc(b.short) : "יתרה לטובת " + esc(client)) + " · לפני מע״מ</div><div class=\"big\">" + esc(ils(Math.abs(f.net), true)) + '</div></div><div class="side"><div class="lbl" style="text-align:left;">כולל מע״מ ' + vatPct() + "%</div><div>" + esc(ils(Math.abs(f.netVat), true)) + "</div></div></div>" +
+        '<div class="price-hero"><div><div class="lbl">' + (f.net >= 0 ? "יתרה לטובת " + esc(b.short) : "יתרה לטובת " + esc(client)) + " · לפני מע״מ</div><div class=\"big\">" + esc(ils(Math.abs(f.net), true)) + '</div></div><div class="side"><div class="lbl" style="text-align:left;">' + (f.farmVat ? "כולל מע״מ " + vatPct() + "%" : "לתשלום, עם מע״מ " + vatPct() + "% על החשבונית שלי") + "</div><div>" + esc(ils(Math.abs(f.netVat), true)) + "</div></div></div>" +
         (st.farm.note ? '<div class="small muted" style="margin-top:8px;">מההסכם: ' + esc(st.farm.note) + "</div>" : "") +
         '<div class="m-actions" style="margin-top:12px;">' + bt("⬇ קובץ אקסל ל" + contact, "xlsx", { cls:"btn-primary", arg:k }) + bt("📋 העתקת סיכום", "copySummary", { arg:k }) +
         (m.close.sent ? '<span class="badge badge-pine">נשלח ב־' + esc(dmy(m.close.sent)) + "</span>" + bt("ביטול הסימון", "markSent", { cls:"btn-sm", arg:k }) : bt("✓ סימון שנשלח", "markSent", { arg:k })) + "</div></div>";
@@ -8800,7 +8831,8 @@
         sf("המספר הבא לחשבון עסקה", "dealSeq", { im:"numeric", num:true, dir:"ltr" }) + "</div>";
       h += '<div class="calc-section">החווה והמנהלת</div><div class="calc-grid">' + sf("שם הלקוח", "client.name") + sf("כתובת", "client.address") + sf("המנהלת האדמיניסטרטיבית", "client.contact") + sf("אימייל", "client.contactEmail", { dir:"ltr" }) + "</div>";
       h += '<div class="calc-section">ההסכם עם החווה</div><div class="calc-grid">' + sf("שכירות חודשית (₪, לפני מע״מ)", "farm.rent", { im:"decimal", num:true }) +
-        sf("אחוז מפרויקטים לחווה", "farm.rates.farmwork", { im:"decimal", num:true }) + sf("אחוז ממכירות בחנות", "farm.rates.shop", { im:"decimal", num:true }) + sf("הערה מההסכם", "farm.note") + "</div>" +
+        sf("אחוז מפרויקטים לחווה", "farm.rates.farmwork", { im:"decimal", num:true }) + sf("אחוז ממכירות בחנות", "farm.rates.shop", { im:"decimal", num:true }) + sf("החווה משלמת ביום", "farm.payDay", { im:"numeric", num:true, ph:"20", hint:"בחודש שאחרי, לתזרים" }) + sf("הערה מההסכם", "farm.note") + "</div>" +
+        '<label class="m-flag"><input type="checkbox" id="m-farm-vat" data-bind="s:farm.vatOnCharges"' + (st.farm.vatOnCharges ? " checked" : "") + "> החווה גובה ממני מע״מ על השכירות, העמלות והרכישות</label>" +
         '<div class="small muted" style="margin-top:6px;">התמחור של חוסן, שיקום ושאר התוכניות (כולל האחוז לחווה מכל תוכנית) נמצא בלשונית חוות רום, ליד כל תוכנית.</div>';
       h += '<div class="calc-section" id="m-weekset">השבוע שלי</div><p class="small muted" style="margin:0 0 8px;">מה מתאים לכל יום, אם אני בנגרייה ומתי דניס עובד. ״סידור חכם״ בלוח השנה מסדר לפי זה, וחשבוניות נכנסות ליום של הנהלת החשבונות. ימי השיקום נלקחים מהתוכניות.</p>' +
         '<div class="m-actions m-rhythm" style="margin:0 0 8px;"><b>מהלך היום</b>' +
@@ -9231,8 +9263,13 @@
       var vat = vatPct();
       var netLabel = f.net >= 0 ? 'יתרה לטובת ' + short : 'יתרה לטובת ' + client;
       var nr = add([{ v: netLabel + ' (לפני מע״מ)', s: 1 }, { v: Math.abs(f.net), s: 5, f: f.net >= 0 ? 'B' + tot + '-E' + tot : 'E' + tot + '-B' + tot }]);
-      add([{ v: 'מע״מ ' + vat + '%' }, { v: r2(Math.abs(f.net) * vat / 100), f: 'ROUND(B' + nr + '*' + (vat / 100) + ',2)' }]);
-      add([{ v: netLabel + ' (כולל מע״מ)', s: 6 }, { v: Math.abs(f.netVat), s: 5, f: 'B' + nr + '+B' + (nr + 1) }]);
+      if (f.farmVat) {
+        add([{ v: 'מע״מ ' + vat + '%' }, { v: r2(Math.abs(f.net) * vat / 100), f: 'ROUND(B' + nr + '*' + (vat / 100) + ',2)' }]);
+        add([{ v: netLabel + ' (כולל מע״מ)', s: 6 }, { v: Math.abs(f.netVat), s: 5, f: 'B' + nr + '+B' + (nr + 1) }]);
+      } else {
+        add([{ v: 'מע״מ ' + vat + '% על החשבונית של ' + short }, { v: f.meVat, f: 'ROUND(B' + tot + '*' + (vat / 100) + ',2)' }]);
+        add([{ v: (f.netVat >= 0 ? 'לתשלום ל' + short : 'לתשלום ל' + client) + ' (כולל מע״מ)', s: 6 }, { v: Math.abs(f.netVat), s: 5, f: 'ABS(B' + tot + '+B' + (nr + 1) + '-E' + tot + ')' }]);
+      }
       f.calcs.forEach(function (c) {
         if (!c.rows.length || !c.pre) return;
         add([]);
@@ -9842,7 +9879,8 @@
       if (f.pctTotal) parts.push("אחוזים " + ils(f.pctTotal, true));
       if (f.purchTotal) parts.push("רכישות " + ils(f.purchTotal, true));
       L.push("מגיע ל" + client + ": " + ils(f.toFarmTotal, true) + " (" + parts.join(", ") + ").");
-      L.push("יתרה לטובת " + (f.net >= 0 ? b.short : client) + ": " + ils(Math.abs(f.net), true) + " לפני מע״מ, " + ils(Math.abs(f.netVat), true) + " כולל מע״מ.");
+      if (f.farmVat) L.push("יתרה לטובת " + (f.net >= 0 ? b.short : client) + ": " + ils(Math.abs(f.net), true) + " לפני מע״מ, " + ils(Math.abs(f.netVat), true) + " כולל מע״מ.");
+      else L.push("יתרה לטובת " + (f.net >= 0 ? b.short : client) + ": " + ils(Math.abs(f.net), true) + " לפני מע״מ. עם מע״מ " + vatPct() + "% על החשבונית שלי (" + ils(f.meVat, true) + "): " + ils(Math.abs(f.netVat), true) + ".");
       L.push("הקובץ המלא מצורף." + (b.owner ? " תודה, " + b.owner : ""));
       return L.join("\n");
     }
@@ -10421,6 +10459,12 @@
       ledgerChanged: function(){ LedgerSync.changed(); render(); },
       quotePdf: function(q){ saveFile("הצעת מחיר " + quoteNumberLabel(q) + ".pdf", quotePdf(q)); },
       inViewer: function(){ return !!S.dl; },
+      /* Output VAT of the tax invoices (חשבונית / חשבונית מס קבלה) issued in month mk */
+      vatOut: function(mk){
+        var v = vatPct() / 100;
+        return r2(allDocs().filter(function(d){ return (d.kind === "invoice" || d.kind === "invrec") && d.state !== "todo" && String(d.issued || "").slice(0, 7) === mk && n(d.amount); })
+          .reduce(function(a, d){ return a + (d.vat != null && d.vat !== "" ? n(d.vat) : d.net != null && d.net !== "" ? n(d.amount) - n(d.net) : n(d.amount) - n(d.amount) / (1 + v)); }, 0));
+      },
       backupExtra: function(){ return { settings:S.settings, months:S.months, docs:S.docs, tasks:S.tasks, orders:S.orders, prep:S.prep }; },
       restoreExtra: function(x){
         if (!x || typeof x !== "object") return;
