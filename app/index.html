@@ -7698,7 +7698,12 @@
     /* Orders: their price, and the month they are billed in (the farm's reconciliation, or the ledger) */
     function orderTotal(o){ return n(o.unitPrice) ? r2((n(o.qty) || 1) * n(o.unitPrice)) : n(o.amount); }
     function orderName(o){ return (o.title || "הזמנה") + (n(o.qty) > 1 ? " (" + o.qty + ")" : ""); }
-    function orderKind(o){ return o.kind === "request" ? "farmwork" : "shop"; }
+    /* How the farm takes its share of an order: sold to the farm itself (farm work rate) or sold through the farm shop. */
+    function orderKind(o){
+      if (o.via === "farm") return "farmwork";
+      if (o.via === "shop") return "shop";
+      return o.kind === "request" ? "farmwork" : "shop";
+    }
     function ordersBilled(k){ return allOrders().filter(function(o){ return o.billMonth === k && orderTotal(o); }); }
     function farmOrders(k){ return ordersBilled(k).filter(function(o){ return isFarmClient(o.client); }); }
     function salesTotal(m){ return r2(salesLines(m).reduce(function(a, l){ return a + n(l.amount); }, 0) + farmOrders(m.key).reduce(function(a, o){ return a + orderTotal(o); }, 0)); }
@@ -8304,6 +8309,11 @@
         (n(o.unitPrice) ? '<span class="inline-group"><span class="cap muted">סה״כ</span><b class="mono">' + esc(ils(tot, true)) + "</b></span>"
           : '<span class="inline-group"><span class="cap muted">או סה״כ</span><span class="muted mono">₪</span>' + inp(b + "amount", o.amount, { cls:"m-field mono m-wide", ph:"0", im:"decimal", num:true, label:"סכום כולל לפני מע״מ", dir:"ltr" }) + "</span>") +
         '<span class="small muted">לפני מע״מ</span>' +
+        (isFarmClient(o.client) ? (function(){
+          var r = S.settings.farm.rates || {};
+          return '<span class="inline-group"><span class="cap muted">נמכר</span>' + sel(b + "via", orderKind(o) === "farmwork" ? "farm" : "shop",
+            [["farm", "לחווה · " + n(r.farmwork) + "%"], ["shop", "דרך החנות · " + n(r.shop) + "%"]], { cls:"row-select", label:"איך זה נמכר" }) + "</span>";
+        })() : "") +
         '<button type="button" class="btn btn-sm m-desk" data-mact="calcOpen" data-id="' + esc(o.id) + '" title="לשרטט ולתמחר במחשבון העלות והייצור">📐 ' + (o.calc ? "המחשבון · " + esc(ils(o.calc.beforeVat)) : "תמחור במחשבון") + "</button></div>" +
         billLine(o) +
         '<div class="bar"><span style="width:' + (total ? Math.round(done / total * 100) : 0) + '%;background:var(--pine);"></span></div><div class="m-steps">';
