@@ -1386,6 +1386,25 @@
     return !s || !mk || mk >= s;
   }
   function withVatMonth(mk, fn){ var prev = VAT_MK; VAT_MK = mk; try { return fn(); } finally { VAT_MK = prev; } }
+  /* מע"מ צפוי: הכנסה שעוד לא שולמה תקבל חשבונית מס ביום התשלום, ולכן נספרת בחודש שבו הכסף נכנס */
+  function vatExpected(mk){
+    var td = todayDateKey(), tot = 0;
+    Object.keys(state.months || {}).forEach(function(src){
+      var m = state.months[src];
+      if (!m || !isMonthKey(src)) return;
+      withVatMonth(src, function(){
+        filterScope(m.recurringIncome || [], "business").concat(filterScope(m.oneTimeIncome || [], "business")).forEach(function(it){
+          if (typeof M !== "undefined" && M.vatCovered && M.vatCovered(src, it)) return;
+          var full = num(it.amount); if (!full) return;
+          var v = lineParts(it, "in").vat; if (!v) return;
+          itemSchedule(it, src, "in").forEach(function(p){
+            if (String(p.date).slice(0, 7) === mk && p.date >= td) tot += v * p.amount / full;
+          });
+        });
+      });
+    });
+    return tot;
+  }
   function lineHasVat(item, flow){
     if (!vatOnFor()) return false;
     if (itemScope(item) === "personal") return false;   /* פרטי אינו מקוזז */
@@ -1420,7 +1439,7 @@
     if (!m || !vatOnFor(monthKey)) return out;
     withVatMonth(monthKey, function(){
       /* בדיווח בפועל קובע תאריך חשבונית המס, לא חודש העבודה */
-      if (state.vat.basis === "docs" && typeof M !== "undefined" && M.vatOut) out.output = M.vatOut(monthKey);
+      if (state.vat.basis === "docs" && typeof M !== "undefined" && M.vatOut) out.output = M.vatOut(monthKey) + vatExpected(monthKey);
       else filterScope(m.recurringIncome, "business").concat(filterScope(m.oneTimeIncome, "business"))
         .forEach(function(i){ out.output += lineParts(i, "in").vat; });
       filterScope(m.recurringExpenses, "business").concat(filterScope(m.oneTimeExpenses, "business"))
@@ -7830,6 +7849,23 @@
           : line("p-" + c.p.id, progShort(c.p) + " · " + plural(c.count, "מפגש אחד", "מפגשים"), c.pre, c.count || 1);
         out.recurringIncome.push(c.p.viaFarm === false ? x : atDate(x, settle.inDate));
       });
+      /* Sessions still planned (from today on) enter the ledger as an estimate, so the cash flow shows what to expect.
+         The reconciliation and the documents count only what was marked as held. */
+      var td = today();
+      f.calcs.forEach(function(c){
+        if (c.type !== "group" || c.p.viaFarm === false) return;
+        var pl = c.rows.filter(function(r){ return r.s.status === "pending" && String(r.s.date) >= td; });
+        if (!pl.length) return;
+        var p = c.p, base = n(p.labor) + n(p.upkeep) + n(p.wear), amt = 0, wood = 0;
+        pl.forEach(function(r){
+          var fixed = r.s.price !== "" && r.s.price != null, w = fixed ? 0 : Math.min(n(p.maxBill) || 99, r.agreed) * n(p.woodPerPerson);
+          amt += fixed ? n(r.s.price) : base + w; wood += w;
+        });
+        var sh = progShort(p);
+        out.recurringIncome.push(atDate(line("plan-" + p.id, sh + " · " + plural(pl.length, "מפגש מתוכנן אחד", "מפגשים מתוכננים") + " (צפי)", r2(amt), pl.length), settle.inDate));
+        if (n(p.farmRate)) out.recurringExpenses.push(toFarm(line("plan-pct-" + p.id, n(p.farmRate) + "% מהמפגשים המתוכננים של " + sh + " (צפי)", r2(amt * n(p.farmRate) / 100))));
+        if (wood) out.oneTimeExpenses.push(toFarm(line("plan-wood-" + p.id, "עץ למפגשים המתוכננים של " + sh + " (צפי)", r2(wood))));
+      });
       (m.workshops || []).forEach(function(w){
         if (w.status === "cancelled") return;
         var c = wsCalc(w);
@@ -7988,6 +8024,10 @@
     }
     function fixedWhen(f){
       if (f.date) return dayLabel(f.date);
+      var rng = f.from || f.until ? " · " + (f.from ? "מ־" + dm(f.from) : "") + (f.from && f.until ? " " : "") + (f.until ? "עד " + dm(f.until) : "") : "";
+      return fixedWhen0(f) + rng;
+    }
+    function fixedWhen0(f){
       var ds = fixedDays(f);
       if (!ds.length) return "בלי ימים";
       if (ds.length === 7) return "כל יום";
@@ -8000,6 +8040,7 @@
       var w = wd(date);
       return (S.settings.fixed || []).filter(function(f){
         if (f.date) return f.date === date;
+        if ((f.from && date < f.from) || (f.until && date > f.until)) return false;
         return fixedDays(f).indexOf(w) >= 0 && (f.skip || []).indexOf(date) < 0;
       }).sort(function(a, b){ return (toMin(a.start) || 0) - (toMin(b.start) || 0); });
     }
@@ -10459,6 +10500,13 @@
       ledgerChanged: function(){ LedgerSync.changed(); render(); },
       quotePdf: function(q){ saveFile("הצעת מחיר " + quoteNumberLabel(q) + ".pdf", quotePdf(q)); },
       inViewer: function(){ return !!S.dl; },
+      vatCovered: function(k, item){
+        var id = String(item.id || "");
+        if (id.indexOf("auto-d-") === 0) return true;
+        var farmLine = /^auto-(p|tm|plan)-/.test(id) || (id.indexOf("auto-o-") === 0 && S.orders[id.slice(7)] && isFarmClient(S.orders[id.slice(7)].client));
+        if (!farmLine) return false;
+        return allDocs().some(function(d){ return d.month === k && d.party && isFarmClient(d.party) && (d.kind === "invoice" || d.kind === "invrec") && d.state !== "todo"; });
+      },
       /* Output VAT of the tax invoices (חשבונית / חשבונית מס קבלה) issued in month mk */
       vatOut: function(mk){
         var v = vatPct() / 100;
