@@ -9061,7 +9061,7 @@
           var held = r.status === "held";
           rows.push([(r.rid ? r.name : "מפגש") + " " + dmy(r.date) + (held ? "" : " · " + label(r.status)), held ? String(r.hours) : "—", ils(c.rate, true), ils(r.amount, true)]);
         });
-        notes.push(ils(c.rate, true) + " לשעה × " + n(p.hoursPer) + " שעות למפגש. סה״כ " + c.hoursSum + " שעות ב־" + c.count + " מפגשים" + (c.meets ? " ו־" + c.meets + " פגישות" : "") + ".");
+        notes.push(ils(c.rate, true) + " לשעה × " + n(p.hoursPer) + " שעות למפגש. סה״כ " + c.hoursSum + " שעות ב־" + c.count + " מפגשים" + (c.meets ? (c.meets === 1 ? " ופגישה אחת" : " ו־" + c.meets + " פגישות") : "") + ".");
       }
       notes.push("מסמך זה הוא הצעת מחיר ואישור פעילות לחודש, ואינו חשבונית מס.");
       var spec = {
@@ -9320,7 +9320,7 @@
           if (c.specials) add([{ v: 'פרויקטים מיוחדים', s: 7 }, { v: c.specials, s: 3 }]);
         } else {
           add([{ v: 'פירוט ' + progShort(c.p) + ' · ' + ils(c.rate, true) + ' לשעה', s: 4 }, { v: 'סכום (₪)', s: 4 }, null, { v: 'סטטוס', s: 4 }]);
-          c.rows.forEach(function (r) { add([{ v: dmy(r.date), s: 7 }, { v: r.amount, s: 3 }, null, { v: (r.rid ? r.name + ' · ' : '') + (r.status === 'held' ? (r.future ? 'מתוכנן' : 'התקיים') + ' · ' + r.hours + ' שעות' : 'בוטל'), s: 7 }]); });
+          c.rows.forEach(function (r) { add([{ v: dmy(r.date), s: 7 }, { v: r.amount, s: 3 }, null, { v: (r.rid ? r.name + ' · ' : '') + (r.status === 'held' ? (r.future ? 'מתוכנן' : 'התקיים') + ' · ' + (Number(r.hours) === 1 ? 'שעה אחת' : r.hours + ' שעות') : 'בוטל'), s: 7 }]); });
         }
       });
       if (st.farm.note) { add([]); add([{ v: 'מההסכם: ' + st.farm.note, s: 8 }]); }
