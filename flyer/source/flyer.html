@@ -19,17 +19,18 @@
     background: linear-gradient(to top, rgba(250,248,245,.92) 0, rgba(250,248,245,.75) 45%, rgba(250,248,245,0) 100%); }
   .top { position: absolute; top: 11mm; right: 42mm; left: 9mm; color: var(--walnut); }
   .hello { font: 500 8.6pt/1.3 'Heebo', sans-serif; color: var(--oak); letter-spacing: .03em; margin: 0 0 3.2mm; }
-  h1 { font-family: 'Frank Ruhl Libre', serif; font-weight: 800; margin: 0; line-height: .98; }
-  h1 .big { display: block; font-size: 37pt; letter-spacing: -.01em; }
-  h1 .small { display: block; font-size: 21pt; font-weight: 600; margin-top: 1.2mm; }
-  .body { font: 400 9.6pt/1.5 'Heebo', sans-serif; color: var(--ink); margin: 4.2mm 0 0; }
-  .body.second { margin-top: 2.2mm; }
-  .bottom { position: absolute; bottom: 8mm; right: 9mm; left: 9mm; display: flex; align-items: flex-end; justify-content: space-between; }
-  .contact { color: var(--walnut); }
-  .contact .label { font: 400 8pt/1.2 'Heebo', sans-serif; color: var(--oak); letter-spacing: .03em; }
-  .contact .name { font: 700 13.5pt/1.25 'Heebo', sans-serif; }
-  .contact .phone { direction: ltr; unicode-bidi: isolate; font-weight: 500; }
-  .place { font: 400 7.6pt/1.3 'Heebo', sans-serif; color: var(--oak); text-align: left; letter-spacing: .03em; }
+  h1 { font-family: 'Frank Ruhl Libre', serif; font-weight: 800; font-size: 27pt; line-height: 1.05; margin: 0; letter-spacing: -.005em; }
+  .body { font: 400 10pt/1.5 'Heebo', sans-serif; color: var(--ink); margin: 4mm 0 0; }
+  .body.second { margin-top: 1.6mm; }
+  .contact { position: absolute; bottom: 8.5mm; right: 9mm; color: var(--walnut); text-align: right; }
+  .contact .label { font: 500 9pt/1.3 'Heebo', sans-serif; color: var(--oak); letter-spacing: .02em; }
+  .contact .phone { direction: ltr; unicode-bidi: isolate; font: 700 19pt/1.15 'Heebo', sans-serif; letter-spacing: .01em; }
+  .contact .place { font: 400 7.2pt/1.4 'Heebo', sans-serif; color: var(--oak); margin-top: .6mm; }
+  .ltr { direction: ltr; unicode-bidi: isolate; }
+  .inset { position: absolute; left: 6mm; bottom: 10mm; width: 40mm; margin: 0; background: #fff; padding: 1.3mm 1.3mm 0;
+    transform: rotate(-2.5deg); box-shadow: 0 .5mm 2.2mm rgba(42,31,23,.28); }
+  .inset img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+  .inset figcaption { font: 400 6.4pt/1 'Heebo', sans-serif; color: var(--oak); text-align: center; padding: 1.3mm 0 1.5mm; }
 </style>
 </head>
 <body>
@@ -39,16 +40,18 @@
     <div class="wash-bottom"></div>
     <div class="top">
       <p class="hello">שלום לכל הקהילה ולאורחים על ההר</p>
-      <h1><span class="big">מרחב חדש</span><span class="small">נפתח בחוות רום</span></h1>
-      <p class="body">הנגרייה פותחת את שעריה לקהל הרחב,<br>לסדנאות לזוגות, למשפחות ולקבוצות.</p>
-      <p class="body second">בונים בידיים מתנות וצעצועים לילדים,<br>אדניות או רהיט לבית.</p>
+      <h1>הנגרייה השיקומית<br>בחוות רום</h1>
+      <p class="body">פותחת את שעריה לקהל הרחב, ומציעה מגוון<br>של סדנאות לזוגות, למשפחות ולקבוצות.</p>
+      <p class="body second">בונים בידיים מתנות וצעצועים לילדים.</p>
     </div>
-    <div class="bottom">
-      <div class="contact">
-        <div class="label">לפרטים ולהרשמה</div>
-        <div class="name">נטע עמית · <span class="phone">052-8666104</span></div>
-      </div>
-      <div class="place">חוות רום<br>הר כמון</div>
+    <figure class="inset">
+      <img src="view.jpg" alt="הנוף מהנגרייה: שתי אדניות עץ והר כמון">
+      <figcaption>הנוף מהנגרייה</figcaption>
+    </figure>
+    <div class="contact">
+      <div class="label">נטע עמית · לפרטים והרשמה</div>
+      <div class="phone">052-8666104</div>
+      <div class="place">חוות רום · הר כמון, הגליל · <span class="ltr">havatrom.co.il</span></div>
     </div>
   </div>
 </body>
