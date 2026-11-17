@@ -44,17 +44,28 @@ def place_in_arch(img, content, x0, x1, top, bottom):
 
 # ---------- green flyer ----------
 g = cv2.imread(f'{S}/f2_in/19.webp')
-# 1. arches: convoy (from center) -> left; workers -> center
-CEN = (343, 775, 493, 1062); LEF = (49, 333, 579, 1028)
+# 1. arches: convoy (center) -> left, view (right) -> center, workers -> right, people centered
+CEN = (343, 775, 493, 1062); LEF = (49, 333, 579, 1028); RIG = (787, 1077, 579, 1028)
 convoy = g[CEN[2]:CEN[3]+1, CEN[0]:CEN[1]+1].copy()
+view = g[RIG[2]:RIG[3]+1, RIG[0]:RIG[1]+1].copy()
 lw, lh = LEF[1]-LEF[0]+1, LEF[3]-LEF[2]+1
-left_content = cover(convoy, lw, lh, (0.5, 0.75))
-workers = cv2.imread(f'{S}/f2_in/21.webp')
-workers = workers[330:1580, 0:950]
 cw, ch = CEN[1]-CEN[0]+1, CEN[3]-CEN[2]+1
-center_content = cover(workers, cw, ch, (0.5, 0.5))
+rw, rh = RIG[1]-RIG[0]+1, RIG[3]-RIG[2]+1
+left_content = cover(convoy, lw, lh, (0.5, 0.75))
+vs = cw / view.shape[1]
+view_up = cv2.resize(view, (cw, int(round(view.shape[0] * vs))), interpolation=cv2.INTER_LANCZOS4)
+blur = cv2.GaussianBlur(view_up, (0, 0), 1.2)
+view_up = cv2.addWeighted(view_up, 1.35, blur, -0.35, 0)
+off = int(round((view_up.shape[0] - ch) * 0.8))
+center_content = view_up[off:off+ch, :]
+workers = cv2.imread(f'{S}/f2_in/21.webp')[380:1560, 0:760]
+right_content = cover(workers, rw, rh, (0.5, 0.5))
 g = place_in_arch(g, left_content, *LEF)
 g = place_in_arch(g, center_content, *CEN)
+g = place_in_arch(g, right_content, *RIG)
+# old caption under the right arch goes; it is re-set under the center arch
+gray = cv2.cvtColor(g, cv2.COLOR_BGR2GRAY)
+g = inpaint(g, stroke_mask(gray, (840, 1036, 1040, 1062), True, 200, 5))
 gray = cv2.cvtColor(g, cv2.COLOR_BGR2GRAY)
 # 2. greeting line
 g = inpaint(g, stroke_mask(gray, (150, 160, 990, 205), True, 175, 5))
